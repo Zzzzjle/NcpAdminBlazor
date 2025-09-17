@@ -2,7 +2,9 @@
 
 namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
 {
-    public class ApplicationUserPermission
+    public partial record ApplicationUserPermissionId : IInt64StronglyTypedId;
+
+    public class ApplicationUserPermission : Entity<ApplicationUserPermissionId>
     {
         protected ApplicationUserPermission()
         {
@@ -10,7 +12,7 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
 
         public ApplicationUserId ApplicationUserId { get; private set; } = null!;
         public string PermissionCode { get; private set; } = string.Empty;
-        public List<RoleId> SourceRoleIds { get; } = [];
+        public ICollection<RoleId> SourceRoleIds { get; } = [];
 
         public ApplicationUserPermission(string permissionCode, RoleId? sourceRoleId = null)
         {

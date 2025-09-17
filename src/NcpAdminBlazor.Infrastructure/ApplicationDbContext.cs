@@ -1,4 +1,6 @@
 ﻿using NcpAdminBlazor.Domain.AggregatesModel.OrderAggregate;
+using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
+using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NcpAdminBlazor.Domain.AggregatesModel.DeliverAggregate;
@@ -28,4 +30,6 @@ public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext>
 
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<DeliverRecord> DeliverRecords => Set<DeliverRecord>();
+    public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
+    public DbSet<Role> Roles => Set<Role>();
 }

@@ -2,12 +2,13 @@
 
 namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
 {
-    public class ApplicationUserRole
+    public partial record ApplicationUserRoleId : IInt64StronglyTypedId;
+    public class ApplicationUserRole : Entity<ApplicationUserRoleId>
     {
         protected ApplicationUserRole() { }
 
-        public ApplicationUserId ApplicationUserId { get; private set; } = default!;
-        public RoleId RoleId { get; private set; } = default!;
+        public ApplicationUserId ApplicationUserId { get; private set; } = null!;
+        public RoleId RoleId { get; private set; } = null!;
         public string RoleName { get; private set; } = string.Empty;
 
         public ApplicationUserRole(RoleId roleId, string roleName)

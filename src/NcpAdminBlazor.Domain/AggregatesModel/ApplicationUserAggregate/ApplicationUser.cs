@@ -1,4 +1,5 @@
 ﻿using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
+using NcpAdminBlazor.Domain.DomainEvents.User;
 // ReSharper disable VirtualMemberCallInConstructor
 
 namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
@@ -56,6 +57,9 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
             {
                 Permissions.Add(adminUserPermission);
             }
+            
+            // 发布用户创建领域事件
+            AddDomainEvent(new ApplicationUserCreatedDomainEvent(this));
         }
 
         public void UpdateRoleInfo(RoleId roleId, string roleName)
@@ -151,6 +155,39 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
         {
             if (PasswordHash != oldPasswordHash) throw new KnownException("旧密码不正确");
             PasswordHash = newPasswordHash;
+            AddDomainEvent(new ApplicationUserPasswordChangedDomainEvent(this));
+        }
+        
+        /// <summary>
+        /// 修改密码（包含盐值更新）
+        /// </summary>
+        /// <param name="oldPasswordHash">旧密码哈希</param>
+        /// <param name="newPasswordHash">新密码哈希</param>
+        /// <param name="newPasswordSalt">新密码盐值</param>
+        public void ChangePassword(string oldPasswordHash, string newPasswordHash, string newPasswordSalt)
+        {
+            if (PasswordHash != oldPasswordHash) throw new KnownException("旧密码不正确");
+            PasswordHash = newPasswordHash;
+            PasswordSalt = newPasswordSalt;
+            AddDomainEvent(new ApplicationUserPasswordChangedDomainEvent(this));
+        }
+        
+        /// <summary>
+        /// 验证用户登录
+        /// </summary>
+        /// <param name="passwordHash">密码哈希</param>
+        /// <returns>登录是否成功</returns>
+        public bool VerifyLogin(string passwordHash)
+        {
+            if (IsDeleted) throw new KnownException("用户已被删除，无法登录");
+            if (Status != 1) throw new KnownException("用户已被禁用，无法登录");
+            
+            var loginSuccess = PasswordHash == passwordHash;
+            if (loginSuccess)
+            {
+                AddDomainEvent(new ApplicationUserLoginDomainEvent(this));
+            }
+            return loginSuccess;
         }
         
         public void Delete()
@@ -158,6 +195,7 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
             if (IsDeleted) throw new KnownException("用户已经被删除！");
             IsDeleted = true;
             DeletedAt = DateTimeOffset.Now;
+            AddDomainEvent(new ApplicationUserDeletedDomainEvent(this));
         }
 
     }

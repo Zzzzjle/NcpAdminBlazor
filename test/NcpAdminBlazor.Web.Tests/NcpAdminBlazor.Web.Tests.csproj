@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\NcpAdminBlazor.Web\NcpAdminBlazor.Web.csproj" />
+    <ProjectReference Include="..\..\src\NcpAdminBlazor.Shared\NcpAdminBlazor.Shared.csproj" />
   </ItemGroup>
 
 </Project>

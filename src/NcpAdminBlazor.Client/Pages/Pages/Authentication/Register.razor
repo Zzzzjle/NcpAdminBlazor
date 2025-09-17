@@ -4,11 +4,8 @@
 @using NcpAdminBlazor.Client.Client.Models
 @page "/pages/authentication/register"
 @layout LoginLayout
-@inject Providers.TokenAuthenticationStateProvider TokenAuthenticationStateProvider
 @inject HttpClient HttpClient
-
 @inject NavigationManager NavigationManager
-
 
 
 <br />
@@ -31,9 +28,8 @@
     <MudText Typo="Typo.h4" GutterBottom="true">Sign Up</MudText>
     <MudText>Already have an account? <MudLink Href="/pages/authentication/login">Sign In</MudLink></MudText>
 
-    <MudTextField T="string" @bind-Value="_model.FirstName" Required="true" RequiredError="First name is required!" Label="First Name " Variant=" Variant.Outlined" Class="mt-4"></MudTextField>
-    <MudTextField T="string" @bind-Value="_model.LastName" Required="true" RequiredError="Last name is required!" Label="Last Name " Variant=" Variant.Outlined" Class="mt-4"></MudTextField>
-    <MudTextField T="string" @bind-Value="_model.JobTitle" Required="true" RequiredError="Job title is required!" Label="Job Title " Variant=" Variant.Outlined" Class="mt-4"></MudTextField>
+    <MudTextField T="string" @bind-Value="_model.Name" Required="true" RequiredError="First name is required!" Label="First Name " Variant=" Variant.Outlined" Class="mt-4"></MudTextField>
+    <MudTextField T="string" @bind-Value="_model.Phone" Required="true" RequiredError="Last name is required!" Label="Last Name " Variant=" Variant.Outlined" Class="mt-4"></MudTextField>
 
     <MudTextField T="string" @bind-Value="Email" Required="true" RequiredError="Email is required!" Label="E-mail " Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" Variant=" Variant.Outlined" Class="mt-4" Fo></MudTextField>
 

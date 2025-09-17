@@ -20,6 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NcpAdminBlazor.Shared\NcpAdminBlazor.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <_ContentIncludedByDefault Remove="NcpAdminBlazor.Client\obj\NcpAdminBlazor.Client.csproj.nuget.dgspec.json" />
     <_ContentIncludedByDefault Remove="NcpAdminBlazor.Client\obj\project.assets.json" />
   </ItemGroup>

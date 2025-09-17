@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using NcpAdminBlazor.Infrastructure;
 using NcpAdminBlazor.Web.Endpoints.UserEndpoints;
+using NcpAdminBlazor.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using NetCorePal.Extensions.Dto;
 
@@ -32,7 +33,11 @@ public class UserTests : IClassFixture<MyWebApplicationFactory>
     {
         string userName = "testname";
         string password = "testpassword";
-        var loginRequest = new LoginRequest(userName, password);
+        var loginRequest = new LoginRequest 
+        { 
+            LoginName = userName, 
+            Password = password 
+        };
         var response = await _client.PostAsJsonAsync($"/api/user/login", loginRequest);
         Assert.True(response.IsSuccessStatusCode);
         var responseData = await response.Content.ReadFromNewtonsoftJsonAsync<ResponseData<string>>();

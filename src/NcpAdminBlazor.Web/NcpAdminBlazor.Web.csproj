@@ -57,6 +57,7 @@
     <ProjectReference Include="..\NcpAdminBlazor.Client\NcpAdminBlazor.Client.csproj" />
     <ProjectReference Include="..\NcpAdminBlazor.Domain\NcpAdminBlazor.Domain.csproj" />
     <ProjectReference Include="..\NcpAdminBlazor.Infrastructure\NcpAdminBlazor.Infrastructure.csproj" />
+    <ProjectReference Include="..\NcpAdminBlazor.Shared\NcpAdminBlazor.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

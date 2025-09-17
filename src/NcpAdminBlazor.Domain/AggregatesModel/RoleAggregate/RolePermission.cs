@@ -1,6 +1,8 @@
 ﻿namespace NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate
 {
-    public class RolePermission
+    public partial record RolePermissionId : IInt64StronglyTypedId;
+
+    public class RolePermission : Entity<RolePermissionId>
     {
         protected RolePermission()
         {

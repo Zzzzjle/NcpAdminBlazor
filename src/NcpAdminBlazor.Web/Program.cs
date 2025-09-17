@@ -26,7 +26,7 @@ using Refit;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.WithClientIp()
-    .WriteTo.Console(new JsonFormatter())
+    .WriteTo.Console(/*new JsonFormatter()*/)
     .CreateLogger();
 try
 {
@@ -229,7 +229,8 @@ try
     app.MapStaticAssets();
     app.MapRazorComponents<App>()
         .AddInteractiveWebAssemblyRenderMode()
-        .AddAdditionalAssemblies(typeof(NcpAdminBlazor.Client.Client._Imports).Assembly);
+        .AddAdditionalAssemblies(typeof(NcpAdminBlazor.Client.Client._Imports).Assembly)
+        .AllowAnonymous();
 
     app.MapControllers();
     app.UseFastEndpoints();

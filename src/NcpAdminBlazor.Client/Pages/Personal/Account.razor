@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using NcpAdminBlazor.Client.Client.Models
+@using NcpAdminBlazor.Shared.Models
 @inject HttpClient HttpClient
 @inject ISnackbar Snackbar
 
@@ -184,7 +185,7 @@
     private UpdateModel model = new UpdateModel();
 
 
-    private UserDetails? userDetails = new UserDetails();
+    private UserInfoResponse? userDetails = new UserInfoResponse();
     protected async override Task OnInitializedAsync()
     {
 
@@ -195,7 +196,7 @@
 
         Console.WriteLine("we got the name " + name);
 
-        userDetails = await HttpClient.GetFromJsonAsync<UserDetails>($"api/account/userdetails/{name}");
+        userDetails = await HttpClient.GetFromJsonAsync<UserInfoResponse>($"api/account/userdetails/{name}");
 
         //var test =  await HttpClient.GetAsync($"api/account/userdetails/{name}");
         // var read = await test.Content.ReadFromJsonAsync<UserDetails>();
@@ -227,7 +228,6 @@
             LastName = userDetails?.LastName,
             JobTitle = userDetails?.JobTitle,
             Email = userDetails?.Email
-
         };
 
         var json = System.Text.Json.JsonSerializer.Serialize(model);
