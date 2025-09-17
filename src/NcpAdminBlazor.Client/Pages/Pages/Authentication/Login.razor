@@ -1,17 +1,11 @@
-﻿@*@page "/"*@
-@page "/pages/authentication/login"
+﻿@page "/pages/authentication/login"
 @layout LoginLayout
 @inject Providers.TokenAuthenticationStateProvider TokenAuthenticationStateProvider
 @inject HttpClient HttpClient
-
 @inject NavigationManager NavigationManager
-
-
 @using System.ComponentModel.DataAnnotations
 @using NcpAdminBlazor.Client.Client.Layout
 @using NcpAdminBlazor.Client.Client.Models
-
-
 
 <br /><br /><br />
 @if (_showErrorAlert)
@@ -43,44 +37,6 @@
 
 </MudForm>
 
-
-
-
-@*<div style="max-width: 400px;">
-        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
-            <DataAnnotationsValidator />
-            <MudCard>
-                <MudCardContent>
-                    <MudTextField Label="Email" HelperText="Email"
-                                  @bind-Value="model.Email" For="@(() => model.Email)" />
-                    <MudTextField Label="Password" Class="mt-3"
-                                  @bind-Value="model.Password" For="@(() => model.Password)" />
-
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
-                </MudCardActions>
-            </MudCard>
-            <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
-                Fill out the form correctly to see the success message.
-            </MudText>
-
-            <MudExpansionPanels>
-                <MudExpansionPanel Text="Show Validation Summary">
-                    @if (success)
-                    {
-                        <MudText Color="Color.Success">Success</MudText>
-                    }
-                    else
-                    {
-                        <MudText Color="@Color.Error">
-                            <ValidationSummary />
-                        </MudText>
-                    }
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-        </EditForm>
-    </div>*@
 
 @code {
     private bool _showCallAlert;
@@ -176,9 +132,7 @@
     {
         //success = true;
         //StateHasChanged();
-
-
-
+        
         var response = await HttpClient.PostAsJsonAsync("api/account/login", _model);
         var loginResult = await response.Content.ReadFromJsonAsync<LoginResult>();
         if (loginResult is { Successful: true })

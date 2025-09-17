@@ -16,6 +16,12 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.9" />
     <PackageReference Include="MudBlazor" Version="8.*" />
     <PackageReference Include="MudBlazor.ThemeManager" Version="3.0.0" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="NcpAdminBlazor.Client\obj\NcpAdminBlazor.Client.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="NcpAdminBlazor.Client\obj\project.assets.json" />
   </ItemGroup>
 
 </Project>
