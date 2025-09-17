@@ -14,7 +14,7 @@ public class DesignTimeApplicationDbContextFactory: IDesignTimeDbContextFactory<
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             // change connectionstring if you want to run command “dotnet ef database update”
-            options.UseMySql("Server=any;User ID=any;Password=any;Database=any",
+            options.UseMySql("Server=localhost;User ID=root;Password=123456;Database=demo;SslMode=none;",
                 new MySqlServerVersion(new Version(8, 0, 34)),
                 b =>
                 {
