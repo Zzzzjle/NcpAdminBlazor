@@ -32,10 +32,6 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
         RuleFor(x => x.Phone)
             .NotEmpty().WithMessage("手机号不能为空")
             .Matches(@"^1[3-9]\d{9}$").WithMessage("手机号格式不正确");
-            
-        RuleFor(x => x.RealName)
-            .NotEmpty().WithMessage("真实姓名不能为空")
-            .MaximumLength(50).WithMessage("真实姓名不能超过50个字符");
     }
 }
 

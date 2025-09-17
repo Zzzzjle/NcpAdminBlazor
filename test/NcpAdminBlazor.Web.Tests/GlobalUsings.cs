@@ -1,7 +1,8 @@
 global using Xunit;
-global using NcpAdminBlazor.Web.Tests.Extensions;
+global using Shouldly;
+global using FastEndpoints;
+global using FastEndpoints.Testing;
 global using Microsoft.Extensions.DependencyInjection;
-global using Microsoft.Extensions.DependencyInjection.Extensions;
-global using NetCorePal.Extensions.NewtonsoftJson;
-global using Microsoft.Extensions.Configuration;
-global using Microsoft.Extensions.Logging;
+global using NcpAdminBlazor.Shared.Models;
+global using NcpAdminBlazor.Web.Endpoints.UserEndpoints;
+global using NetCorePal.Extensions.Dto;

@@ -2,9 +2,9 @@
   <PropertyGroup>
     <NetCorePalVersion>2.9.3</NetCorePalVersion>
     <FastEndpointsVersion>7.0.1</FastEndpointsVersion>
-    <FrameworkVersion>9.0.0</FrameworkVersion>
-    <ExtensionsVersion>9.0.0</ExtensionsVersion>
-    <EntityFrameworkVersion>9.0.0</EntityFrameworkVersion>
+    <FrameworkVersion>9.0.7</FrameworkVersion>
+    <ExtensionsVersion>9.0.7</ExtensionsVersion>
+    <EntityFrameworkVersion>9.0.7</EntityFrameworkVersion>
     <TestcontainersVersion>4.1.0</TestcontainersVersion>
   </PropertyGroup>
 </Project>
