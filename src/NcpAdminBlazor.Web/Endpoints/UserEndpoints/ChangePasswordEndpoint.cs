@@ -1,8 +1,7 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Authorization;
-using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
+using NcpAdminBlazor.Shared.EndpointsDtos.UserEndpoints;
 using NcpAdminBlazor.Web.Application.Commands;
-using NcpAdminBlazor.Shared.Models;
 
 namespace NcpAdminBlazor.Web.Endpoints.UserEndpoints;
 
@@ -13,8 +12,7 @@ public class ChangePasswordEndpoint(IMediator mediator) : Endpoint<ChangePasswor
 {
     public override async Task HandleAsync(ChangePasswordRequest req, CancellationToken ct)
     {
-        var userId = new ApplicationUserId(long.Parse(req.UserId));
-        var command = new ChangePasswordCommand(userId, req.OldPassword, req.NewPassword);
+        var command = new ChangePasswordCommand(req.UserId, req.OldPassword, req.NewPassword);
         await mediator.Send(command, ct);
         
         await Send.NoContentAsync(ct);

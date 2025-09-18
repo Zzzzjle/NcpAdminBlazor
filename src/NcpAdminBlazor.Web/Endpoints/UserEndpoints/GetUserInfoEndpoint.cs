@@ -1,8 +1,9 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Authorization;
 using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
+using NcpAdminBlazor.Shared.EndpointsDtos.UserEndpoints;
 using NcpAdminBlazor.Web.Application.Queries;
-using NcpAdminBlazor.Shared.Models;
+using UserRoleDto = NcpAdminBlazor.Shared.EndpointsDtos.UserEndpoints.UserRoleDto;
 
 namespace NcpAdminBlazor.Web.Endpoints.UserEndpoints;
 
@@ -30,7 +31,7 @@ public class GetUserInfoEndpoint(IMediator mediator) : Endpoint<GetUserInfoReque
             JobTitle = string.Empty,
             Status = userInfo.Status,
             CreatedAt = userInfo.CreatedAt,
-            Roles = userInfo.Roles.Select(r => new NcpAdminBlazor.Shared.Models.UserRoleDto 
+            Roles = userInfo.Roles.Select(r => new UserRoleDto 
             { 
                 RoleName = r.RoleName, 
                 RoleId = r.RoleId 

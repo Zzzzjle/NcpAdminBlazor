@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using NcpAdminBlazor.Infrastructure;
 
 namespace NcpAdminBlazor.Web.Tests.Fixtures;
@@ -9,23 +10,15 @@ public class WebAppFixture : AppFixture<Program>
 
     protected override void ConfigureServices(IServiceCollection services)
     {
-        // 服务配置完成后再处理数据库初始化
+        
     }
-
-    private bool _databaseInitialized = false;
-
+    
     protected override async ValueTask SetupAsync()
     {
         await _containers.CreateVisualHostAsync("/");
-        
-        if (!_databaseInitialized)
-        {
-            // 确保数据库已创建和迁移
-            using var scope = Services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            await dbContext.Database.EnsureCreatedAsync();
-            _databaseInitialized = true;
-        }
+        using var scope = Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await dbContext.Database.MigrateAsync();
     }
 
     protected override void ConfigureApp(IWebHostBuilder builder)

@@ -1,10 +1,11 @@
-﻿@page "/pages/authentication/login"
+﻿@page "/account/login"
 @layout LoginLayout
-@inject IUserService UserService
-@inject NavigationManager NavigationManager
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Components.Authorization
+@using NcpAdminBlazor.Client.Client.Apis
 @using NcpAdminBlazor.Client.Client.Layout
-@using NcpAdminBlazor.Client.Client.Services
-@using NcpAdminBlazor.Shared.Models
+@using NcpAdminBlazor.Client.Client.Providers
+@using NcpAdminBlazor.Shared.EndpointsDtos.UserEndpoints
 
 @if (_showErrorAlert)
 {
@@ -46,10 +47,16 @@
 
 
 @code {
+    [Inject] IUserApi UserApi { get; set; } = null!;
+    [Inject] NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] ILocalStorageService LocalStorage { get; set; } = null!;
+    [Inject] AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
     private bool _showErrorAlert;
     private string _errorMessage = string.Empty;
+    private const string PageUrl = "/account/login";
+    [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
     private bool _isBusy;
-    private LoginRequest _model = new();
+    private readonly LoginRequest _model = new();
     private bool _rememberMe;
     private bool _success;
     private string[] _errors = [];
@@ -69,14 +76,19 @@
 
         try
         {
-            var result = await UserService.LoginAsync(_model);
-            if (result.Successful)
+            var result = await UserApi.LoginAsync(_model);
+            if (result.Success)
             {
+                // 通知认证状态更改
+                await (AuthStateProvider as TokenAuthenticationStateProvider 
+                       ?? throw new InvalidOperationException("Authentication provider is not properly configured"))
+                    .Login(result.Data.Token);    
+                
                 NavigationManager.NavigateTo("/personal/dashboard");
             }
             else
             {
-                _errorMessage = result.Error;
+                _errorMessage = result.Message;
                 _showErrorAlert = true;
             }
         }
@@ -108,14 +120,14 @@
 
         try
         {
-            var result = await UserService.LoginAsync(guestModel);
-            if (result.Successful)
+            var result = await UserApi.LoginAsync(guestModel);
+            if (result.Success)
             {
                 NavigationManager.NavigateTo("/personal/dashboard");
             }
             else
             {
-                _errorMessage = result.Error;
+                _errorMessage = result.Message;
                 _showErrorAlert = true;
             }
         }
@@ -154,4 +166,6 @@
             _showErrorAlert = false;
         }
     }
+    
+    
 }

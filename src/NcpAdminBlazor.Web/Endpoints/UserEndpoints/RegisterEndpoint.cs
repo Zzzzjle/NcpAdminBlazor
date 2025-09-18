@@ -1,7 +1,7 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Authorization;
+using NcpAdminBlazor.Shared.EndpointsDtos.UserEndpoints;
 using NcpAdminBlazor.Web.Application.Commands;
-using NcpAdminBlazor.Shared.Models;
 
 namespace NcpAdminBlazor.Web.Endpoints.UserEndpoints;
 
@@ -15,7 +15,7 @@ public class RegisterEndpoint(IMediator mediator) : Endpoint<RegisterRequest, Re
         var command = new RegisterUserCommand(req.Name, req.Email, req.Password, req.Phone, req.RealName);
         var userId = await mediator.Send(command, ct);
         
-        var response = new RegisterResponse { UserId = userId.ToString() };
+        var response = new RegisterResponse (userId);
         await Send.OkAsync(response.AsResponseData(), ct);
     }
 }

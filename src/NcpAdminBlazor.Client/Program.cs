@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using NcpAdminBlazor.Client.Client.Apis;
 using NcpAdminBlazor.Client.Client.Providers;
-using NcpAdminBlazor.Client.Client.Services;
 using Refit;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -21,6 +20,5 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<TokenAuthenticationStateProvider>();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, TokenAuthenticationStateProvider>();
-builder.Services.AddScoped<IUserService, UserService>();
 
 await builder.Build().RunAsync();

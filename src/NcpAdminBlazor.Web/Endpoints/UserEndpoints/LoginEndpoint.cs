@@ -1,10 +1,9 @@
 using System.Security.Claims;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authorization;
-using NetCorePal.Extensions.Dto;
+using NcpAdminBlazor.Shared.EndpointsDtos.UserEndpoints;
 using NetCorePal.Extensions.Jwt;
 using NcpAdminBlazor.Web.Application.Commands;
-using NcpAdminBlazor.Shared.Models;
 
 namespace NcpAdminBlazor.Web.Endpoints.UserEndpoints;
 
@@ -26,19 +25,13 @@ public class LoginEndpoint(IMediator mediator, IJwtProvider jwtProvider) : Endpo
             new("email", loginResult.Email),
             new("realName", loginResult.RealName)
         };
-        
+        claims.AddRange(loginResult.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
         // 添加角色声明
-        foreach (var role in loginResult.Roles)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, role));
-        }
-        
+
         // 添加权限声明
-        foreach (var permission in loginResult.Permissions)
-        {
-            claims.Add(new Claim("permission", permission));
-        }
-        
+        claims.AddRange(loginResult.Permissions.Select(permission => new Claim("permission", permission)));
+
         var jwt = await jwtProvider.GenerateJwtToken(
             new JwtData("netcorepal", "netcorepal",
                 claims,
