@@ -1,7 +1,6 @@
 using System.Reflection;
 using System.Text.Json;
 using FastEndpoints;
-using FastEndpoints.ClientGen;
 using FastEndpoints.ClientGen.Kiota;
 using FastEndpoints.Security;
 using FastEndpoints.Swagger;
@@ -24,7 +23,6 @@ using NcpAdminBlazor.Web.AspNetCore.ApiKey;
 using NcpAdminBlazor.Web.AspNetCore.Permission;
 using NcpAdminBlazor.Web.Clients;
 using NcpAdminBlazor.Web.Components;
-using NcpAdminBlazor.Web.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Prometheus;
@@ -121,9 +119,8 @@ try
     #region Controller
 
     builder.Services.AddControllers().AddNetCorePalSystemTextJson();
-    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen(c => c.AddEntityIdSchemaMap()); //强类型id swagger schema 映射
+    // builder.Services.AddSwaggerGen(c => c.AddEntityIdSchemaMap()); //强类型id swagger schema 映射
     builder.Services.SwaggerDocument(o =>
     {
         o.DocumentSettings = s => s.DocumentName = "v1"; //must match doc name below
@@ -264,11 +261,6 @@ try
 
     app.UseKnownExceptionHandler();
     // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
 
     app.UseStaticFiles();
     app.UseHttpsRedirection();
@@ -285,6 +277,11 @@ try
 
     app.MapControllers();
     app.UseFastEndpoints();
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwaggerGen(); //add this
+    }
+
 
     #region SignalR
 

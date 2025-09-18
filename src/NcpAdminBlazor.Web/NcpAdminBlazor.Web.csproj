@@ -17,7 +17,6 @@
     <PackageReference Include="FastEndpoints.ClientGen.Kiota" Version="$(FastEndpointsVersion)" />
     <PackageReference Include="FastEndpoints.Security" Version="$(FastEndpointsVersion)" />
     <PackageReference Include="FastEndpoints.Swagger" Version="$(FastEndpointsVersion)" />
-    <PackageReference Include="FastEndpoints.Swagger.Swashbuckle" Version="2.3.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.17" />
     <PackageReference Include="Hangfire.Redis.StackExchange" Version="1.9.4" />
@@ -51,7 +50,6 @@
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Serilog.Enrichers.ClientInfo" Version="2.1.2" />
     <PackageReference Include="StackExchange.Redis" Version="2.8.41" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.*" />
   </ItemGroup>
 
@@ -77,7 +75,9 @@
 
   <Target Name="ClientGen" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">
       <Exec WorkingDirectory="$(RunWorkingDirectory)"
-            Command="$(RunCommand) --generateclients true"/>
+            Command="$(RunCommand) --generateclients true"
+            EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"
+      />
   </Target>
 
 </Project>
