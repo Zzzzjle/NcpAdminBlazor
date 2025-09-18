@@ -7,8 +7,8 @@ internal class ApplicationUserCreatedDomainEventHandler(ILogger<ApplicationUserC
 {
     public Task Handle(ApplicationUserCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        logger.LogInformation("User created: UserId={UserId}, Name={Name}, Email={Email}", 
-            notification.User.Id, notification.User.Name, notification.User.Email);
+        logger.LogInformation("User created: UserId={UserId}, Username={Username}, Email={Email}", 
+            notification.User.Id, notification.User.Username, notification.User.Email);
         
         // 这里可以添加其他业务逻辑，比如发送欢迎邮件
         

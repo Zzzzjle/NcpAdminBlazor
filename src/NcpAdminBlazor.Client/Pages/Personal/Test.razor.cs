@@ -1,8 +1,8 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components;
-using NcpAdminBlazor.Client.Client.Models;
+using NcpAdminBlazor.Client.Models;
 
-namespace NcpAdminBlazor.Client.Client.Pages.Personal
+namespace NcpAdminBlazor.Client.Pages.Personal
 {
     public class TestBase : ComponentBase
     {

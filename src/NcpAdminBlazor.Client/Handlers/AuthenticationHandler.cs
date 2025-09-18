@@ -1,7 +1,7 @@
 using System.Net.Http.Headers;
 using Blazored.LocalStorage;
 
-namespace NcpAdminBlazor.Client.Client.Handlers
+namespace NcpAdminBlazor.Client.Handlers
 {
     public class AuthenticationHandler(ILocalStorageService localStorage) : DelegatingHandler
     {

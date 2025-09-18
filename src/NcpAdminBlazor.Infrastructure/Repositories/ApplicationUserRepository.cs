@@ -46,7 +46,7 @@ public class ApplicationUserRepository(ApplicationDbContext context) : Repositor
         return await context.ApplicationUsers
             .Include(u => u.Roles)
             .Include(u => u.Permissions)
-            .FirstOrDefaultAsync(x => x.Name == name && !x.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Username == name && !x.IsDeleted, cancellationToken);
     }
     
     public async Task<ApplicationUser?> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default)

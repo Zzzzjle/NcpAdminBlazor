@@ -1,6 +1,6 @@
 ﻿using MudBlazor;
 
-namespace NcpAdminBlazor.Client.Client.Theme
+namespace NcpAdminBlazor.Client.Theme
 {
     public class MudBlazorAdminDashboard : MudTheme
     {

@@ -43,13 +43,13 @@ public class GetUserListQueryHandler(ApplicationDbContext context)
         var query = context.ApplicationUsers
             .Include(u => u.Roles)
             .Where(u => !u.IsDeleted)
-            .WhereIf(!string.IsNullOrEmpty(request.Name), u => u.Name.Contains(request.Name!))
+            .WhereIf(!string.IsNullOrEmpty(request.Name), u => u.Username.Contains(request.Name!))
             .WhereIf(!string.IsNullOrEmpty(request.Email), u => u.Email.Contains(request.Email!))
             .WhereIf(request.Status.HasValue, u => u.Status == request.Status!.Value)
             .OrderBy(u => u.CreatedAt)
             .Select(u => new UserListItemDto(
                 u.Id.ToString(),
-                u.Name,
+                u.Username,
                 u.Email,
                 u.Phone,
                 u.RealName,

@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
     <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
-    <RootNamespace>NcpAdminBlazor.Client.Client</RootNamespace>
+    <RootNamespace>NcpAdminBlazor.Client</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

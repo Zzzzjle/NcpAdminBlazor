@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
-@using NcpAdminBlazor.Client.Client.Layout
-@using NcpAdminBlazor.Client.Client.Pages.Pages.Authentication
+@using NcpAdminBlazor.Client.Layout
+@using NcpAdminBlazor.Client.Pages.Pages.Authentication
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" >

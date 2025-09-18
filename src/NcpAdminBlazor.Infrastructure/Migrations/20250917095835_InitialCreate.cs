@@ -179,7 +179,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_application_users_Name",
                 table: "application_users",
-                column: "Name",
+                column: "Username",
                 unique: true,
                 filter: "IsDeleted = 0");
 
@@ -199,7 +199,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_roles_Name",
                 table: "roles",
-                column: "Name",
+                column: "Username",
                 unique: true);
         }
 

@@ -1,0 +1,42 @@
+using FastEndpoints;
+
+namespace NcpAdminBlazor.Web.Endpoints.Users;
+
+
+sealed class DeleteUserEndpoint : Endpoint<DeleteUserRequest, ResponseData>
+{
+    public override void Configure()
+    {
+        Delete("/api/user/{userId}/delete");
+        Description(x => x.WithTags("User")); // 路由分组
+        Permissions("user.delete");
+    }
+
+    public override async Task HandleAsync(DeleteUserRequest r, CancellationToken c)
+    {
+        await Send.OkAsync(true.AsResponseData(), c);
+    }
+}
+
+sealed class DeleteUserRequest
+{
+
+    [RouteParam] public long UserId { get; set; }
+}
+
+sealed class DeleteUserValidator : Validator<DeleteUserRequest>
+{
+    public DeleteUserValidator()
+    {
+
+    }
+}
+
+sealed class DeleteUserSummary : Summary<DeleteUserEndpoint, DeleteUserRequest>
+{
+    public DeleteUserSummary()
+    {
+        Summary = "删除用户";
+        Description = "";
+    }
+}

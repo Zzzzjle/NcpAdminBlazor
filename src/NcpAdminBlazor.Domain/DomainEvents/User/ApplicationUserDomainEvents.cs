@@ -9,3 +9,5 @@ public record ApplicationUserLoginDomainEvent(ApplicationUser User) : IDomainEve
 public record ApplicationUserPasswordChangedDomainEvent(ApplicationUser User) : IDomainEvent;
 
 public record ApplicationUserDeletedDomainEvent(ApplicationUser User) : IDomainEvent;
+
+public record ApplicationUserRefreshTokenUpdatedDomainEvent(ApplicationUser User) : IDomainEvent;

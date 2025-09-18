@@ -1,7 +1,7 @@
 ﻿
 using MudBlazor;
 
-namespace NcpAdminBlazor.Client.Client.Models
+namespace NcpAdminBlazor.Client.Models
 {
     public class ChatUser
     {

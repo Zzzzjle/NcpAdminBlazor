@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Text.Json;
 
-namespace NcpAdminBlazor.Client.Client.Extensions
+namespace NcpAdminBlazor.Client.Extensions
 {
     public static class StringExtensions
     {

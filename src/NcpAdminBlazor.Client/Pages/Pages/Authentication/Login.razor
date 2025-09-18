@@ -2,10 +2,7 @@
 @layout LoginLayout
 @using Blazored.LocalStorage
 @using Microsoft.AspNetCore.Components.Authorization
-@using NcpAdminBlazor.Client.Client.Apis
-@using NcpAdminBlazor.Client.Client.Layout
-@using NcpAdminBlazor.Client.Client.Providers
-@using NcpAdminBlazor.Shared.EndpointsDtos.UserEndpoints
+@using NcpAdminBlazor.Client.Providers
 
 @if (_showErrorAlert)
 {
@@ -47,7 +44,7 @@
 
 
 @code {
-    [Inject] IUserApi UserApi { get; set; } = null!;
+    // [Inject] IUserApi UserApi { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
     [Inject] ILocalStorageService LocalStorage { get; set; } = null!;
     [Inject] AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
@@ -56,7 +53,7 @@
     private const string PageUrl = "/account/login";
     [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
     private bool _isBusy;
-    private readonly LoginRequest _model = new();
+    private readonly InputModel _model = new();
     private bool _rememberMe;
     private bool _success;
     private string[] _errors = [];
@@ -73,37 +70,37 @@
         _isBusy = true;
         _showErrorAlert = false;
         StateHasChanged();
-
-        try
-        {
-            var result = await UserApi.LoginAsync(_model);
-            if (result.Success)
-            {
-                // 通知认证状态更改
-                await (AuthStateProvider as TokenAuthenticationStateProvider 
-                       ?? throw new InvalidOperationException("Authentication provider is not properly configured"))
-                    .Login(result.Data.Token);    
-                
-                NavigationManager.NavigateTo("/personal/dashboard");
-            }
-            else
-            {
-                _errorMessage = result.Message;
-                _showErrorAlert = true;
-            }
-        }
-        catch (Exception ex)
-        {
-            _errorMessage = ex.Message;
-            _showErrorAlert = true;
-        }
-        finally
-        {
-            _isBusy = false;
-            StateHasChanged();
-        }
+    
+        // try
+        // {
+        //     var result = await UserApi.LoginAsync(_model);
+        //     if (result.Success)
+        //     {
+        //         // 通知认证状态更改
+        //         await (AuthStateProvider as TokenAuthenticationStateProvider 
+        //                ?? throw new InvalidOperationException("Authentication provider is not properly configured"))
+        //             .Login(result.Data.Token);    
+        //         
+        //         NavigationManager.NavigateTo("/personal/dashboard");
+        //     }
+        //     else
+        //     {
+        //         _errorMessage = result.Message;
+        //         _showErrorAlert = true;
+        //     }
+        // }
+        // catch (Exception ex)
+        // {
+        //     _errorMessage = ex.Message;
+        //     _showErrorAlert = true;
+        // }
+        // finally
+        // {
+        //     _isBusy = false;
+        //     StateHasChanged();
+        // }
     }
-
+    
     private async Task HandleGuest()
     {
         if (_isBusy) return;
@@ -111,38 +108,38 @@
         _isBusy = true;
         _showErrorAlert = false;
         StateHasChanged();
-
-        var guestModel = new LoginRequest
-        {
-            LoginName = "guest@example.com",
-            Password = "123456"
-        };
-
-        try
-        {
-            var result = await UserApi.LoginAsync(guestModel);
-            if (result.Success)
-            {
-                NavigationManager.NavigateTo("/personal/dashboard");
-            }
-            else
-            {
-                _errorMessage = result.Message;
-                _showErrorAlert = true;
-            }
-        }
-        catch (Exception ex)
-        {
-            _errorMessage = ex.Message;
-            _showErrorAlert = true;
-        }
-        finally
-        {
-            _isBusy = false;
-            StateHasChanged();
-        }
+    
+        // var guestModel = new LoginRequest
+        // {
+        //     LoginName = "guest@example.com",
+        //     Password = "123456"
+        // };
+        //
+        // try
+        // {
+        //     var result = await UserApi.LoginAsync(guestModel);
+        //     if (result.Success)
+        //     {
+        //         NavigationManager.NavigateTo("/personal/dashboard");
+        //     }
+        //     else
+        //     {
+        //         _errorMessage = result.Message;
+        //         _showErrorAlert = true;
+        //     }
+        // }
+        // catch (Exception ex)
+        // {
+        //     _errorMessage = ex.Message;
+        //     _showErrorAlert = true;
+        // }
+        // finally
+        // {
+        //     _isBusy = false;
+        //     StateHasChanged();
+        // }
     }
-
+    
     void TogglePasswordVisibility()
     {
         if (_passwordVisibility)
@@ -158,7 +155,7 @@
             _passwordInput = InputType.Text;
         }
     }
-
+    
     private void CloseMe(bool value)
     {
         if (value)
@@ -167,5 +164,9 @@
         }
     }
     
-    
+    class InputModel
+    {
+        public string LoginName { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }   
 }

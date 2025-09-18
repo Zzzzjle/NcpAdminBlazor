@@ -1,7 +1,7 @@
 ﻿@page "/"
 @page "/personal/dashboard"
 @using Microsoft.AspNetCore.Authorization
-@using NcpAdminBlazor.Client.Client.Models
+@using NcpAdminBlazor.Client.Models
 @inject HttpClient HttpClient
 @attribute [Authorize]
 
@@ -68,7 +68,7 @@
                 <MudSimpleTable Elevation="0" Hover="true">
                     <thead>
                     <tr>
-                        <th>Name</th>
+                        <th>Username</th>
                         <th>Priority</th>
                         <th>Earnings</th>
                     </tr>

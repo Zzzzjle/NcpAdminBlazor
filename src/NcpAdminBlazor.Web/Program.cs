@@ -1,32 +1,41 @@
-using NetCorePal.Extensions.Primitives;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Prometheus;
 using System.Reflection;
 using System.Text.Json;
-using Microsoft.AspNetCore.DataProtection;
-using StackExchange.Redis;
-using FluentValidation.AspNetCore;
-using FluentValidation;
-using NcpAdminBlazor.Web.Application.Queries;
-using NcpAdminBlazor.Web.Application.IntegrationEventHandlers;
-using NcpAdminBlazor.Web.Clients;
-using NcpAdminBlazor.Web.Extensions;
 using FastEndpoints;
-using Serilog;
-using Serilog.Formatting.Json;
+using FastEndpoints.ClientGen;
+using FastEndpoints.ClientGen.Kiota;
+using FastEndpoints.Security;
+using FastEndpoints.Swagger;
+using FluentValidation.AspNetCore;
 using Hangfire;
 using Hangfire.Redis.StackExchange;
+using Kiota.Builder;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using MudBlazor.Services;
+using NcpAdminBlazor.Web.Application.IntegrationEventHandlers;
+using NcpAdminBlazor.Web.Application.Queries;
+using NcpAdminBlazor.Web.AspNetCore;
+using NcpAdminBlazor.Web.AspNetCore.ApiKey;
+using NcpAdminBlazor.Web.AspNetCore.Permission;
+using NcpAdminBlazor.Web.Clients;
 using NcpAdminBlazor.Web.Components;
+using NcpAdminBlazor.Web.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Prometheus;
 using Refit;
+using Serilog;
+using StackExchange.Redis;
+using SystemClock = NetCorePal.Extensions.Primitives.SystemClock;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.WithClientIp()
-    .WriteTo.Console(/*new JsonFormatter()*/)
+    .WriteTo.Console( /*new JsonFormatter()*/)
     .CreateLogger();
 try
 {
@@ -59,15 +68,53 @@ try
     builder.Services.AddDataProtection()
         .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
 
-    builder.Services.AddAuthentication().AddJwtBearer(options =>
-    {
-        options.RequireHttpsMetadata = false;
-        options.TokenValidationParameters.ValidAudience = "netcorepal";
-        options.TokenValidationParameters.ValidateAudience = true;
-        options.TokenValidationParameters.ValidIssuer = "netcorepal";
-        options.TokenValidationParameters.ValidateIssuer = true;
-    });
-    builder.Services.AddNetCorePalJwt().AddRedisStore();
+    // builder.Services.AddAuthentication().AddJwtBearer(options =>
+    // {
+    //     options.RequireHttpsMetadata = false;
+    //     options.TokenValidationParameters.ValidAudience = "netcorepal";
+    //     options.TokenValidationParameters.ValidateAudience = true;
+    //     options.TokenValidationParameters.ValidIssuer = "netcorepal";
+    //     options.TokenValidationParameters.ValidateIssuer = true;
+    // });
+    // builder.Services.AddNetCorePalJwt().AddRedisStore();
+
+    builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+    builder.Services.AddTransient<UserPermissionService>(); // 获取用户权限
+    builder.Services.AddTransient<IClaimsTransformation, UserPermissionHydrator>(); // 用户权限验证
+
+    builder.Services
+        // 添加Jwt身份认证方案
+        .AddAuthenticationJwtBearer(o => o.SigningKey = builder.Configuration["Auth:Jwt:TokenSigningKey"])
+        .AddAuthentication(o =>
+        {
+            o.DefaultAuthenticateScheme = "Jwt_Or_ApiKey";
+            o.DefaultChallengeScheme = "Jwt_Or_ApiKey";
+        })
+        // 添加 ApiKey 身份认证方案
+        .AddScheme<AuthenticationSchemeOptions, ApikeyAuth>(ApikeyAuth.SchemeName, null)
+        // 综合认证方案（使用jwt或apikey任意一个方案请求endpoint）
+        // https://fast-endpoints.com/docs/security#combined-authentication-scheme
+        .AddPolicyScheme("Jwt_Or_ApiKey", "Jwt_Or_ApiKey", o =>
+        {
+            o.ForwardDefaultSelector = ctx =>
+            {
+                if ((ctx.Request.Headers.TryGetValue(ApikeyAuth.HeaderName, out var apikeyHeader) &&
+                     !string.IsNullOrWhiteSpace(apikeyHeader)) ||
+                    (ctx.Request.Query.TryGetValue(ApikeyAuth.HeaderName, out apikeyHeader) &&
+                     !string.IsNullOrWhiteSpace(apikeyHeader)))
+                {
+                    return ApikeyAuth.SchemeName;
+                }
+
+                if (ctx.Request.Headers.TryGetValue(HeaderNames.Authorization, out var authHeader) &&
+                    authHeader.FirstOrDefault()?.StartsWith("Bearer ") is true)
+                {
+                    return JwtBearerDefaults.AuthenticationScheme;
+                }
+
+                return ApikeyAuth.SchemeName;
+            };
+        });
 
     #endregion
 
@@ -77,6 +124,10 @@ try
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(c => c.AddEntityIdSchemaMap()); //强类型id swagger schema 映射
+    builder.Services.SwaggerDocument(o =>
+    {
+        o.DocumentSettings = s => s.DocumentName = "v1"; //must match doc name below
+    });
 
     #endregion
 
@@ -131,10 +182,10 @@ try
     builder.Services.AddRedisLocks();
     builder.Services.AddContext().AddEnvContext().AddCapContextProcessor();
     builder.Services.AddNetCorePalServiceDiscoveryClient();
-    builder.Services.AddIntegrationEvents(typeof(Program))
+    builder.Services.AddIntegrationEvents(typeof(NcpAdminBlazor.Web.Program))
         .UseCap<ApplicationDbContext>(b =>
         {
-            b.RegisterServicesFromAssemblies(typeof(Program));
+            b.RegisterServicesFromAssemblies(typeof(NcpAdminBlazor.Web.Program));
             b.AddContextIntegrationFilters();
             b.UseMySql();
         });
@@ -223,13 +274,13 @@ try
     app.UseHttpsRedirection();
     app.UseRouting();
     app.UseAuthorization();
-    
+
     app.UseAntiforgery();
 
     app.MapStaticAssets();
     app.MapRazorComponents<App>()
         .AddInteractiveWebAssemblyRenderMode()
-        .AddAdditionalAssemblies(typeof(NcpAdminBlazor.Client.Client._Imports).Assembly)
+        .AddAdditionalAssemblies(typeof(NcpAdminBlazor.Client._Imports).Assembly)
         .AllowAnonymous();
 
     app.MapControllers();
@@ -245,6 +296,17 @@ try
     app.MapHealthChecks("/health");
     app.MapMetrics("/metrics"); // 通过   /metrics  访问指标
     app.UseHangfireDashboard();
+
+    await app.GenerateApiClientsAndExitAsync(c =>
+    {
+        c.SwaggerDocumentName = "v1"; //must match doc name above
+        c.Language = GenerationLanguage.CSharp;
+        c.OutputPath = "../NcpAdminBlazor.Client/HttpClient";
+        c.ClientNamespaceName = "NcpAdminBlazor.Client";
+        c.ClientClassName = "ApiClient";
+        // c.CreateZipArchive = true; //if you'd like a zip file as well
+    });
+
     await app.RunAsync();
 }
 catch (Exception ex)
@@ -257,7 +319,10 @@ finally
 }
 
 #pragma warning disable S1118
-public partial class Program
-#pragma warning restore S1118
+namespace NcpAdminBlazor.Web
 {
+    public partial class Program
+#pragma warning restore S1118
+    {
+    }
 }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace NcpAdminBlazor.Client.Client.Models
+namespace NcpAdminBlazor.Client.Models
 {
     public class LoginModel
     {

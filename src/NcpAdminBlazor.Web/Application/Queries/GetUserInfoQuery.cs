@@ -41,7 +41,7 @@ public class GetUserInfoQueryHandler(ApplicationDbContext context)
             .Where(u => u.Id == request.UserId && !u.IsDeleted)
             .Select(u => new UserInfoDto(
                 u.Id,
-                u.Name,
+                u.Username,
                 u.Email,
                 u.Phone,
                 u.RealName,

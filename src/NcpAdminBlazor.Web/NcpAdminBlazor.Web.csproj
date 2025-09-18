@@ -14,6 +14,8 @@
     <PackageReference Include="DotNetCore.CAP.Dashboard" Version="8.3.2" />
     <PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="8.3.2" />
     <PackageReference Include="FastEndpoints" Version="$(FastEndpointsVersion)" />
+    <PackageReference Include="FastEndpoints.ClientGen.Kiota" Version="$(FastEndpointsVersion)" />
+    <PackageReference Include="FastEndpoints.Security" Version="$(FastEndpointsVersion)" />
     <PackageReference Include="FastEndpoints.Swagger" Version="$(FastEndpointsVersion)" />
     <PackageReference Include="FastEndpoints.Swagger.Swashbuckle" Version="2.3.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
@@ -72,5 +74,10 @@
     <AdditionalFiles Include="Components\Pages\Error.razor" />
     <AdditionalFiles Include="Components\_Imports.razor" />
   </ItemGroup>
+
+  <Target Name="ClientGen" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">
+      <Exec WorkingDirectory="$(RunWorkingDirectory)"
+            Command="$(RunCommand) --generateclients true"/>
+  </Target>
 
 </Project>

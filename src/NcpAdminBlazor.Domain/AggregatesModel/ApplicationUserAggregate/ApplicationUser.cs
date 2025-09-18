@@ -1,5 +1,6 @@
 ﻿using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using NcpAdminBlazor.Domain.DomainEvents.User;
+
 // ReSharper disable VirtualMemberCallInConstructor
 
 namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
@@ -12,13 +13,17 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
         {
         }
 
-        public string Name { get; private set; } = string.Empty;
+        public string Username { get; private set; } = string.Empty;
         public string Phone { get; private set; } = string.Empty;
         public string PasswordHash { get; private set; } = string.Empty;
         public string PasswordSalt { get; private set; } = string.Empty;
 
         public string RealName { get; private set; } = string.Empty;
         public string Email { get; private set; } = string.Empty;
+
+        public DateTimeOffset RefreshExpiry { get; private set; } = DateTimeOffset.MinValue;
+
+        public string RefreshToken { get; private set; } = string.Empty;
 
         /// <summary>
         /// 0:已禁用  1:已启用
@@ -29,35 +34,17 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
         public virtual ICollection<ApplicationUserRole> Roles { get; } = [];
 
         public virtual ICollection<ApplicationUserPermission> Permissions { get; } = [];
-        public bool IsDeleted { get; private set; }
-        public DateTimeOffset? DeletedAt { get; private set; }
 
-        public ApplicationUser(string name, string phone, string passwordHash,
-            string passwordSalt,
-            IEnumerable<ApplicationUserRole> roles,
-            IEnumerable<ApplicationUserPermission> permissions,
-            string realName,
-            int status, 
-            string email)
+        public Deleted IsDeleted { get; private set; } = false;
+        public DeletedTime DeletedAt { get; private set; } = new(DateTimeOffset.MinValue);
+
+        public ApplicationUser(string username, string passwordHash,
+            string passwordSalt)
         {
             CreatedAt = DateTimeOffset.Now;
-            Name = name;
-            Phone = phone;
+            Username = username;
             PasswordHash = passwordHash;
             PasswordSalt = passwordSalt;
-            RealName = realName;
-            Status = status;
-            Email = email;
-            foreach (var adminUserRole in roles)
-            {
-                Roles.Add(adminUserRole);
-            }
-
-            foreach (var adminUserPermission in permissions)
-            {
-                Permissions.Add(adminUserPermission);
-            }
-            
             // 发布用户创建领域事件
             AddDomainEvent(new ApplicationUserCreatedDomainEvent(this));
         }
@@ -145,7 +132,7 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
                 Permissions.Add(newSpecificPermissionMap[permissionCode]);
             }
         }
-        
+
         /// <summary>
         ///     修改密码
         /// </summary>
@@ -157,7 +144,7 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
             PasswordHash = newPasswordHash;
             AddDomainEvent(new ApplicationUserPasswordChangedDomainEvent(this));
         }
-        
+
         /// <summary>
         /// 修改密码（包含盐值更新）
         /// </summary>
@@ -171,7 +158,7 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
             PasswordSalt = newPasswordSalt;
             AddDomainEvent(new ApplicationUserPasswordChangedDomainEvent(this));
         }
-        
+
         /// <summary>
         /// 验证用户登录
         /// </summary>
@@ -181,22 +168,33 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
         {
             if (IsDeleted) throw new KnownException("用户已被删除，无法登录");
             if (Status != 1) throw new KnownException("用户已被禁用，无法登录");
-            
+
             var loginSuccess = PasswordHash == passwordHash;
             if (loginSuccess)
             {
                 AddDomainEvent(new ApplicationUserLoginDomainEvent(this));
             }
+
             return loginSuccess;
         }
-        
+
         public void Delete()
         {
             if (IsDeleted) throw new KnownException("用户已经被删除！");
             IsDeleted = true;
-            DeletedAt = DateTimeOffset.Now;
             AddDomainEvent(new ApplicationUserDeletedDomainEvent(this));
         }
 
+        /// <summary>
+        /// 设置/更新刷新令牌
+        /// </summary>
+        /// <param name="refreshToken">刷新令牌</param>
+        /// <param name="refreshExpiry">刷新令牌到期时间</param>
+        public void SetRefreshToken(string refreshToken, DateTimeOffset refreshExpiry)
+        {
+            RefreshToken = refreshToken;
+            RefreshExpiry = refreshExpiry;
+            AddDomainEvent(new ApplicationUserRefreshTokenUpdatedDomainEvent(this));
+        }
     }
 }

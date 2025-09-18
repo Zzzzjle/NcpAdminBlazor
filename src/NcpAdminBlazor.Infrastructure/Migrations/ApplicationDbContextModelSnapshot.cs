@@ -41,7 +41,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
@@ -75,7 +75,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("IsDeleted = 0");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("Username")
                         .IsUnique()
                         .HasFilter("IsDeleted = 0");
 
@@ -156,7 +156,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                     b.Property<int>("Count")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
@@ -189,7 +189,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
@@ -199,7 +199,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("Username")
                         .IsUnique();
 
                     b.ToTable("roles", (string)null);

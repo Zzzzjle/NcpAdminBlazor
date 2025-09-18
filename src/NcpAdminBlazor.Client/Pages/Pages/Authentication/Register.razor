@@ -1,8 +1,5 @@
 ﻿@using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
-@using NcpAdminBlazor.Client.Client.Apis
-@using NcpAdminBlazor.Client.Client.Layout
-@using NcpAdminBlazor.Shared.EndpointsDtos.UserEndpoints
 @page "/pages/authentication/register"
 @layout LoginLayout
 
@@ -22,9 +19,9 @@
     <MudText Typo="Typo.h4" GutterBottom="true">用户注册</MudText>
     <MudText>已有账户？ <MudLink Href="/pages/authentication/login">立即登录</MudLink></MudText>
 
-    <MudTextField T="string" @bind-Value="_model.Name" Required="true" RequiredError="用户名不能为空!" Label="用户名" Variant="Variant.Outlined" Class="mt-4"></MudTextField>
-    <MudTextField T="string" @bind-Value="_model.Email" Required="true" RequiredError="邮箱不能为空!" Label="邮箱地址" Validation="@(new EmailAddressAttribute() {ErrorMessage = "邮箱地址格式不正确"})" Variant="Variant.Outlined" Class="mt-4"></MudTextField>
-    <MudTextField T="string" @bind-Value="_model.Phone" Required="true" RequiredError="手机号不能为空!" Label="手机号" Variant="Variant.Outlined" Class="mt-4"></MudTextField>
+    <MudTextField T="string" @bind-Value="_model.Username" Required="true" RequiredError="用户名不能为空!" Label="用户名" Variant="Variant.Outlined" Class="mt-4"></MudTextField>
+    @* <MudTextField T="string" @bind-Value="_model.Email" Required="true" RequiredError="邮箱不能为空!" Label="邮箱地址" Validation="@(new EmailAddressAttribute() {ErrorMessage = "邮箱地址格式不正确"})" Variant="Variant.Outlined" Class="mt-4"></MudTextField> *@
+    @* <MudTextField T="string" @bind-Value="_model.Phone" Required="true" RequiredError="手机号不能为空!" Label="手机号" Variant="Variant.Outlined" Class="mt-4"></MudTextField> *@
 
     <MudTextField T="string" Label="密码" @bind-Value="_model.Password" Variant="Variant.Outlined" @ref="_pwField1"
                   InputType="InputType.Password"
@@ -51,13 +48,13 @@
 </MudForm>
 
 @code {
-    [Inject] IUserApi UserApi { get; set; } = null!;
+    // [Inject] IUserApi UserApi { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
     private bool _success;
     private bool _isBusy;
     private bool _showErrorAlert;
     private string _errorMessage = string.Empty;
-    private readonly RegisterRequest _model = new();
+    private readonly InputModel _model = new();
 
     string[] _errors = [];
     MudForm _form = new();
@@ -92,43 +89,49 @@
         _isBusy = true;
         _showErrorAlert = false;
 
-        try
-        {
-            await _form.Validate();
-            
-            if (!_form.IsValid)
-            {
-                _isBusy = false;
-                return;
-            }
-
-            var result = await UserApi.RegisterAsync(_model);
-
-            if (result.Success)
-            {
-                NavigationManager.NavigateTo("/pages/authentication/login");
-            }
-            else
-            {
-                _showErrorAlert = true;
-                _errorMessage = result.Message;
-            }
-        }
-        catch (Exception)
-        {
-            _showErrorAlert = true;
-            _errorMessage = "注册过程中发生错误，请重试";
-        }
-        finally
-        {
-            _isBusy = false;
-        }
+        // try
+        // {
+        //     await _form.Validate();
+        //     
+        //     if (!_form.IsValid)
+        //     {
+        //         _isBusy = false;
+        //         return;
+        //     }
+        //
+        //     var result = await UserApi.RegisterAsync(_model);
+        //
+        //     if (result.Success)
+        //     {
+        //         NavigationManager.NavigateTo("/pages/authentication/login");
+        //     }
+        //     else
+        //     {
+        //         _showErrorAlert = true;
+        //         _errorMessage = result.Message;
+        //     }
+        // }
+        // catch (Exception)
+        // {
+        //     _showErrorAlert = true;
+        //     _errorMessage = "注册过程中发生错误，请重试";
+        // }
+        // finally
+        // {
+        //     _isBusy = false;
+        // }
     }
 
     private void CloseMe(bool value)
     {
         if (!value) return;
         _showErrorAlert = false;
+    }
+
+    class InputModel
+    {
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 }
 

@@ -2,9 +2,9 @@
 using System.Security.Claims;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
-using NcpAdminBlazor.Client.Client.Extensions;
+using NcpAdminBlazor.Client.Extensions;
 
-namespace NcpAdminBlazor.Client.Client.Providers
+namespace NcpAdminBlazor.Client.Providers
 {
     public class TokenAuthenticationStateProvider(HttpClient httpClient, ILocalStorageService localStorage)
         : AuthenticationStateProvider

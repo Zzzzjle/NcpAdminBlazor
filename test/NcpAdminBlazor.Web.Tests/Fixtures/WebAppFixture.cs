@@ -28,7 +28,7 @@ public class WebAppFixture : AppFixture<Program>
         builder.UseSetting("ConnectionStrings:MySql",
             _containers.MySqlContainer.GetConnectionString());
         builder.UseSetting("RabbitMQ:Port", _containers.RabbitMqContainer.GetMappedPublicPort(5672).ToString());
-        builder.UseSetting("RabbitMQ:UserName", "guest");
+        builder.UseSetting("RabbitMQ:Username", "guest");
         builder.UseSetting("RabbitMQ:Password", "guest");
         builder.UseSetting("RabbitMQ:VirtualHost", "/");
         builder.UseSetting("RabbitMQ:HostName", _containers.RabbitMqContainer.Hostname);

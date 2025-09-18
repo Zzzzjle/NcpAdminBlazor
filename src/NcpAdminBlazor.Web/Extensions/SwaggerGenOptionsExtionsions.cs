@@ -1,7 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
-using NetCorePal.Extensions.Domain;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Reflection;
+﻿using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.OpenApi;
 
 namespace NcpAdminBlazor.Web.Extensions
 {
@@ -17,7 +15,7 @@ namespace NcpAdminBlazor.Web.Extensions
                     if (type.IsClass && Array.Exists(type.GetInterfaces(), p => p == typeof(IEntityId)))
                     {
                         swaggerGenOptions.MapType(type,
-                            () => new OpenApiSchema { Type = typeof(string).Name.ToLower() });
+                            () => new OpenApiSchema { Type = JsonSchemaType.String });
                     }
                 }
             }
