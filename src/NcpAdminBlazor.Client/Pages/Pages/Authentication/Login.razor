@@ -2,6 +2,7 @@
 @layout LoginLayout
 @using Blazored.LocalStorage
 @using Microsoft.AspNetCore.Components.Authorization
+@using NcpAdminBlazor.Client.Models
 @using NcpAdminBlazor.Client.Providers
 
 @if (_showErrorAlert)
@@ -44,7 +45,7 @@
 
 
 @code {
-    // [Inject] IUserApi UserApi { get; set; } = null!;
+    [Inject] ApiClient ApiClient { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
     [Inject] ILocalStorageService LocalStorage { get; set; } = null!;
     [Inject] AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
@@ -71,34 +72,38 @@
         _showErrorAlert = false;
         StateHasChanged();
     
-        // try
-        // {
-        //     var result = await UserApi.LoginAsync(_model);
-        //     if (result.Success)
-        //     {
-        //         // 通知认证状态更改
-        //         await (AuthStateProvider as TokenAuthenticationStateProvider 
-        //                ?? throw new InvalidOperationException("Authentication provider is not properly configured"))
-        //             .Login(result.Data.Token);    
-        //         
-        //         NavigationManager.NavigateTo("/personal/dashboard");
-        //     }
-        //     else
-        //     {
-        //         _errorMessage = result.Message;
-        //         _showErrorAlert = true;
-        //     }
-        // }
-        // catch (Exception ex)
-        // {
-        //     _errorMessage = ex.Message;
-        //     _showErrorAlert = true;
-        // }
-        // finally
-        // {
-        //     _isBusy = false;
-        //     StateHasChanged();
-        // }
+        try
+        {
+            var result = await ApiClient.Api.User.Login.PostAsync(new NcpAdminBlazorWebEndpointsUsersLoginRequest
+            {
+                Username = _model.LoginName,
+                Password = _model.Password
+            });
+            // if (result.Success)
+            // {
+            //     // 通知认证状态更改
+            //     await (AuthStateProvider as TokenAuthenticationStateProvider 
+            //            ?? throw new InvalidOperationException("Authentication provider is not properly configured"))
+            //         .Login(result.Data.Token);    
+            //     
+            //     NavigationManager.NavigateTo("/personal/dashboard");
+            // }
+            // else
+            // {
+            //     _errorMessage = result.Message;
+            //     _showErrorAlert = true;
+            // }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+            _showErrorAlert = true;
+        }
+        finally
+        {
+            _isBusy = false;
+            StateHasChanged();
+        }
     }
     
     private async Task HandleGuest()
