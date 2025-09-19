@@ -9,8 +9,4 @@
     <ItemGroup>
         <PackageReference Include="NetCorePal.Extensions.Dto" Version="$(NetCorePalVersion)" />
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\NcpAdminBlazor.Domain\NcpAdminBlazor.Domain.csproj" />
-    </ItemGroup>
 </Project>

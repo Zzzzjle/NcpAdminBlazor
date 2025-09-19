@@ -15,6 +15,10 @@
     <PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="8.3.2" />
     <PackageReference Include="FastEndpoints" Version="$(FastEndpointsVersion)" />
     <PackageReference Include="FastEndpoints.ClientGen.Kiota" Version="$(FastEndpointsVersion)" />
+    <PackageReference Include="FastEndpoints.Generator" Version="7.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="FastEndpoints.Security" Version="$(FastEndpointsVersion)" />
     <PackageReference Include="FastEndpoints.Swagger" Version="$(FastEndpointsVersion)" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
@@ -58,13 +62,6 @@
     <ProjectReference Include="..\NcpAdminBlazor.Domain\NcpAdminBlazor.Domain.csproj" />
     <ProjectReference Include="..\NcpAdminBlazor.Infrastructure\NcpAdminBlazor.Infrastructure.csproj" />
     <ProjectReference Include="..\NcpAdminBlazor.Shared\NcpAdminBlazor.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="SonarAnalyzer.CSharp" Version="10.3.0.106239">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
