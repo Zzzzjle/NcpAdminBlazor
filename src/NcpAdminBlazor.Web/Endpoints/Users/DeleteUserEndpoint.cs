@@ -1,7 +1,7 @@
 using FastEndpoints;
+using NcpAdminBlazor.Shared.Auth;
 
 namespace NcpAdminBlazor.Web.Endpoints.Users;
-
 
 sealed class DeleteUserEndpoint : Endpoint<DeleteUserRequest, ResponseData>
 {
@@ -9,7 +9,7 @@ sealed class DeleteUserEndpoint : Endpoint<DeleteUserRequest, ResponseData>
     {
         Delete("/api/user/{userId}/delete");
         Description(x => x.WithTags("User")); // 路由分组
-        Permissions("user.delete");
+        Permissions(AppPermissions.Keys.System_Users_Delete); // 需要的权限
     }
 
     public override async Task HandleAsync(DeleteUserRequest r, CancellationToken c)
@@ -20,7 +20,6 @@ sealed class DeleteUserEndpoint : Endpoint<DeleteUserRequest, ResponseData>
 
 sealed class DeleteUserRequest
 {
-
     [RouteParam] public long UserId { get; set; }
 }
 
@@ -28,7 +27,6 @@ sealed class DeleteUserValidator : Validator<DeleteUserRequest>
 {
     public DeleteUserValidator()
     {
-
     }
 }
 
