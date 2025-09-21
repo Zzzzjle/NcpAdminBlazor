@@ -19,10 +19,12 @@ sealed class UserInfoEndpoint(IMediator mediator) : Endpoint<UserInfoRequest, Re
 
 sealed class UserInfoRequest
 {
-    [RouteParam]
-    public long UserId { get; set; }
-    
-    public UserInfoRequest(){}
+    [RouteParam] public long UserId { get; set; }
+
+    public UserInfoRequest()
+    {
+    }
+
     public UserInfoRequest(long userId) => UserId = userId;
 }
 

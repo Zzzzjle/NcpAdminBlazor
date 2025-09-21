@@ -37,8 +37,7 @@ public class LoginEndpoint(IMediator mediator)
                     new Claim(ClaimTypes.Name, req.Username)
                 ]);
             },
-            map: tr => tr.AsResponseData(),
-            request: req
+            map: tr => tr.AsResponseData()
         );
         await Send.OkAsync(envelope, ct);
     }
