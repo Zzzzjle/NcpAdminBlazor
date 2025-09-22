@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Testcontainers.MySql;
 using Testcontainers.RabbitMq;
 using Testcontainers.Redis;
+using System.Net.Http.Headers;
 
 namespace NcpAdminBlazor.Web.Tests.Fixtures;
 
@@ -18,6 +20,7 @@ public class WebAppFixture : AppFixture<Program>
     private int _listeningPort;
 
     public HttpClient DefaultClient { get; private set; } = null!;
+    public HttpClient AuthenticatedClient { get; private set; } = null!;
 
     public WebAppFixture()
     {
@@ -62,12 +65,26 @@ public class WebAppFixture : AppFixture<Program>
         builder.UseEnvironment("Development");
     }
 
+    protected override void ConfigureServices(IServiceCollection services)
+    {
+        // 添加伪造认证方案
+        services.AddAuthentication(TestAuthConstants.SchemeName)
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                TestAuthConstants.SchemeName, options => { });
+    }
+
     protected override ValueTask SetupAsync()
     {
-        DefaultClient = CreateClient(c => c.BaseAddress = new Uri($"http://localhost:{_listeningPort}"));
-        return base.SetupAsync();
+        var clientOptions = new ClientOptions { BaseAddress = new Uri($"http://localhost:{_listeningPort}") };
+        DefaultClient = CreateClient(clientOptions);
+        AuthenticatedClient = CreateClient(
+            c =>
+            {
+                c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TestAuthConstants.SchemeName);
+            }, clientOptions);
+        return ValueTask.CompletedTask;
     }
-    
+
     protected override ValueTask TearDownAsync()
     {
         //await _container.DisposeAsync();
