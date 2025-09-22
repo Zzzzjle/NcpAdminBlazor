@@ -18,7 +18,7 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
             .MaximumLength(50)
             .WithMessage("用户名不能超过50个字符")
             .MustAsync(async (name, cancellation) =>
-                await mediator.Send(new CheckUserExistsByUsernameQuery(name), cancellation))
+                !await mediator.Send(new CheckUserExistsByUsernameQuery(name), cancellation))
             .WithMessage("用户名已存在");
 
         RuleFor(x => x.Password)

@@ -13,8 +13,7 @@ public sealed class RegisterUserEndpoint(IMediator mediator)
     {
         Post("/api/user/create"); // api路由
         Description(x => x.WithTags("User")); // 路由分组
-        // AllowAnonymous(); // 匿名访问，不调用则需要身份认证后才能访问
-        Permissions("user.create"); // 权限验证，拥有user.create权限的用户才能访问
+        AllowAnonymous(); // 匿名访问，不调用则需要身份认证后才能访问
     }
 
     // 业务逻辑代码

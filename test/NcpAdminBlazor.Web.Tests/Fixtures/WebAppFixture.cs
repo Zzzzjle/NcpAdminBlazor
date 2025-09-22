@@ -36,7 +36,7 @@ public class WebAppFixture : AppFixture<Program>
         _mySqlContainer = new MySqlBuilder()
             .WithUsername("root").WithPassword("123456")
             .WithEnvironment("TZ", "Asia/Shanghai")
-            .WithDatabase("mysql").Build();
+            .WithDatabase("test").Build();
         await Task.WhenAll(_redisContainer.StartAsync(),
             _rabbitMqContainer.StartAsync(),
             _mySqlContainer.StartAsync());
@@ -55,7 +55,8 @@ public class WebAppFixture : AppFixture<Program>
                 ["RabbitMQ:Port"] = _rabbitMqContainer.GetMappedPublicPort(5672).ToString(),
                 ["RabbitMQ:Username"] = "guest",
                 ["RabbitMQ:Password"] = "guest",
-                ["RabbitMQ:VirtualHost"] = "/"
+                ["RabbitMQ:VirtualHost"] = "/",
+                ["Auth:ApiKey"] = "test-api-key"
             });
         });
 
@@ -80,6 +81,9 @@ public class WebAppFixture : AppFixture<Program>
         AuthenticatedClient = CreateClient(
             c =>
             {
+                // 测试认证：通过 ApiKey 方案携带固定密钥
+                c.DefaultRequestHeaders.Add("x-api-key", "test-api-key");
+                // 保留测试自定义方案头（若将来策略切换可回退使用）
                 c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TestAuthConstants.SchemeName);
             }, clientOptions);
         return ValueTask.CompletedTask;

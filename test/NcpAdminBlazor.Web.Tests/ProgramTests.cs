@@ -2,7 +2,7 @@ using NcpAdminBlazor.Web.Tests.Fixtures;
 
 namespace NcpAdminBlazor.Web.Tests
 {
-    [Collection("web")]
+    [Collection(WebAppTestCollection.Name)]
     public class ProgramTests(WebAppFixture app) : TestBase<WebAppFixture>
     {
         [Fact]
