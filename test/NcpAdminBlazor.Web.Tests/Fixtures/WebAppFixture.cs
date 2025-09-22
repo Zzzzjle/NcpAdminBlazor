@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Testcontainers.MySql;
 using Testcontainers.RabbitMq;
 using Testcontainers.Redis;
@@ -36,21 +35,13 @@ public class WebAppFixture : AppFixture<Program>
 
     protected override void ConfigureApp(IWebHostBuilder builder)
     {
-        builder.ConfigureAppConfiguration(cfg =>
-        {
-            cfg.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:Redis"] = _redisContainer.GetConnectionString() + ",defaultDatabase=0",
-                ["ConnectionStrings:MySql"] = _mySqlContainer.GetConnectionString(),
-                ["RabbitMQ:HostName"] = _rabbitMqContainer.Hostname,
-                ["RabbitMQ:Port"] = _rabbitMqContainer.GetMappedPublicPort(5672).ToString(),
-                ["RabbitMQ:Username"] = "guest",
-                ["RabbitMQ:Password"] = "guest",
-                ["RabbitMQ:VirtualHost"] = "/",
-                ["Auth:ApiKey"] = "test-api-key"
-            });
-        });
-        
+        builder.UseSetting("ConnectionStrings:Redis", _redisContainer.GetConnectionString());
+        builder.UseSetting("ConnectionStrings:MySql", _mySqlContainer.GetConnectionString());
+        builder.UseSetting("RabbitMQ:Port", _rabbitMqContainer.GetMappedPublicPort(5672).ToString());
+        builder.UseSetting("RabbitMQ:UserName", "guest");
+        builder.UseSetting("RabbitMQ:Password", "guest");
+        builder.UseSetting("RabbitMQ:VirtualHost", "/");
+        builder.UseSetting("RabbitMQ:HostName", _rabbitMqContainer.Hostname);
         builder.UseEnvironment("Development");
     }
 
@@ -68,9 +59,6 @@ public class WebAppFixture : AppFixture<Program>
         AuthenticatedClient = CreateClient(
             c =>
             {
-                // 测试认证：通过 ApiKey 方案携带固定密钥
-                c.DefaultRequestHeaders.Add("x-api-key", "test-api-key");
-                // 保留测试自定义方案头（若将来策略切换可回退使用）
                 c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TestAuthConstants.SchemeName);
             });
         return ValueTask.CompletedTask;
