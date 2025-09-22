@@ -66,17 +66,8 @@ try
     builder.Services.AddDataProtection()
         .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
 
-    // builder.Services.AddAuthentication().AddJwtBearer(options =>
-    // {
-    //     options.RequireHttpsMetadata = false;
-    //     options.TokenValidationParameters.ValidAudience = "netcorepal";
-    //     options.TokenValidationParameters.ValidateAudience = true;
-    //     options.TokenValidationParameters.ValidIssuer = "netcorepal";
-    //     options.TokenValidationParameters.ValidateIssuer = true;
-    // });
-    // builder.Services.AddNetCorePalJwt().AddRedisStore();
-
     builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+    builder.Services.AddTransient<UserTokenService>();
     builder.Services.AddTransient<UserPermissionService>(); // 获取用户权限
     builder.Services.AddTransient<IClaimsTransformation, UserPermissionHydrator>(); // 用户权限验证
 

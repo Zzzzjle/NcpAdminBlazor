@@ -25,9 +25,7 @@ internal class ApplicationUserEntityTypeConfiguration : IEntityTypeConfiguration
         builder.Property(t => t.DeletedAt);
 
         // 索引配置
-        builder.HasIndex(t => t.Username).IsUnique().HasFilter("IsDeleted = 0");
-        builder.HasIndex(t => t.Email).IsUnique().HasFilter("IsDeleted = 0");
-        builder.HasIndex(t => t.Phone).IsUnique().HasFilter("IsDeleted = 0");
+        builder.HasIndex(t => t.Username).IsUnique();
 
         // 配置与角色的关系
         builder.HasMany(u => u.Roles)

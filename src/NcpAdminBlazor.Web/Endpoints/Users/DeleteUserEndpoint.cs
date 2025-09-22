@@ -3,7 +3,7 @@ using NcpAdminBlazor.Shared.Auth;
 
 namespace NcpAdminBlazor.Web.Endpoints.Users;
 
-sealed class DeleteUserEndpoint : Endpoint<DeleteUserRequest, ResponseData>
+public sealed class DeleteUserEndpoint : Endpoint<DeleteUserRequest, ResponseData>
 {
     public override void Configure()
     {
@@ -18,19 +18,19 @@ sealed class DeleteUserEndpoint : Endpoint<DeleteUserRequest, ResponseData>
     }
 }
 
-sealed class DeleteUserRequest
+public sealed class DeleteUserRequest
 {
     [RouteParam] public long UserId { get; set; }
 }
 
-sealed class DeleteUserValidator : Validator<DeleteUserRequest>
+public sealed class DeleteUserValidator : Validator<DeleteUserRequest>
 {
     public DeleteUserValidator()
     {
     }
 }
 
-sealed class DeleteUserSummary : Summary<DeleteUserEndpoint, DeleteUserRequest>
+public sealed class DeleteUserSummary : Summary<DeleteUserEndpoint, DeleteUserRequest>
 {
     public DeleteUserSummary()
     {

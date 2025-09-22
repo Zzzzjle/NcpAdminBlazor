@@ -2,6 +2,7 @@ using System.Security.Claims;
 using FastEndpoints;
 using FastEndpoints.Security;
 using NcpAdminBlazor.Web.Application.Commands;
+using NcpAdminBlazor.Web.AspNetCore;
 
 namespace NcpAdminBlazor.Web.Endpoints.Users;
 

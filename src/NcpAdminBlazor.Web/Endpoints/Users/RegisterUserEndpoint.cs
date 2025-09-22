@@ -44,7 +44,7 @@ public sealed record RegisterUserRequest(string UserName);
 public sealed record RegisterUserResponse(ApplicationUserId UserId);
 
 // webapi请求对象验证器
-sealed class CreateUserValidator : Validator<RegisterUserRequest>
+internal sealed class CreateUserValidator : Validator<RegisterUserRequest>
 {
     public CreateUserValidator()
     {
@@ -53,7 +53,7 @@ sealed class CreateUserValidator : Validator<RegisterUserRequest>
 }
 
 // webapi描述内容
-sealed class CreateUserSummary : Summary<RegisterUserEndpoint, RegisterUserRequest>
+internal sealed class CreateUserSummary : Summary<RegisterUserEndpoint, RegisterUserRequest>
 {
     public CreateUserSummary()
     {

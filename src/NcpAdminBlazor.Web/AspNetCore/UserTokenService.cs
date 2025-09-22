@@ -5,7 +5,7 @@ using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
 using NcpAdminBlazor.Web.Application.Commands;
 using NcpAdminBlazor.Web.Application.Queries;
 
-namespace NcpAdminBlazor.Web.Endpoints.Users;
+namespace NcpAdminBlazor.Web.AspNetCore;
 
 // accessToken管理
 // https://fast-endpoints.com/docs/security#jwt-refresh-tokens

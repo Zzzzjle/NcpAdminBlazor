@@ -1,5 +1,6 @@
 using FastEndpoints;
 using FastEndpoints.Security;
+using NcpAdminBlazor.Web.AspNetCore;
 
 namespace NcpAdminBlazor.Web.Endpoints.Users;
 
