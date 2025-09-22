@@ -14,7 +14,7 @@
     <MudText Typo="Typo.h4" GutterBottom="true" Class="mt-4">Sign In</MudText>
 
     <MudText>Don't have an account?
-        <MudLink Href="/pages/authentication/register">Sign Up</MudLink>
+        <MudLink Href="@Register.PageUrl">Sign Up</MudLink>
     </MudText>
 
     <MudTextField T="string" @bind-Value="@_model.LoginName" Required="true" Label="Username"

@@ -1,40 +1,42 @@
 ﻿@using System.Text.RegularExpressions
-@using System.ComponentModel.DataAnnotations
-@page "/pages/authentication/register"
+@page "/account/register"
 @layout LoginLayout
 
-<br />
-<br />
-<br />
+<br/>
+<br/>
+<br/>
 @if (_showErrorAlert)
 {
-    <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(true))">
-            <span>@_errorMessage</span><br />
+    <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true"
+              CloseIconClicked="(() => CloseMe(true))">
+        <span>@_errorMessage</span><br/>
     </MudAlert>
 }
-
 
 <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
 
     <MudText Typo="Typo.h4" GutterBottom="true">用户注册</MudText>
-    <MudText>已有账户？ <MudLink Href="/pages/authentication/login">立即登录</MudLink></MudText>
+    <MudText>已有账户？
+        <MudLink Href="/pages/authentication/login">立即登录</MudLink>
+    </MudText>
 
-    <MudTextField T="string" @bind-Value="_model.Username" Required="true" RequiredError="用户名不能为空!" Label="用户名" Variant="Variant.Outlined" Class="mt-4"></MudTextField>
-    @* <MudTextField T="string" @bind-Value="_model.Email" Required="true" RequiredError="邮箱不能为空!" Label="邮箱地址" Validation="@(new EmailAddressAttribute() {ErrorMessage = "邮箱地址格式不正确"})" Variant="Variant.Outlined" Class="mt-4"></MudTextField> *@
-    @* <MudTextField T="string" @bind-Value="_model.Phone" Required="true" RequiredError="手机号不能为空!" Label="手机号" Variant="Variant.Outlined" Class="mt-4"></MudTextField> *@
+    <MudTextField T="string" @bind-Value="_model.Username" Required="true" RequiredError="用户名不能为空!"
+                  Label="用户名" Variant="Variant.Outlined" Class="mt-4"></MudTextField>
 
     <MudTextField T="string" Label="密码" @bind-Value="_model.Password" Variant="Variant.Outlined" @ref="_pwField1"
                   InputType="InputType.Password"
                   Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))" Required="true"
-                  RequiredError="密码不能为空!" Class="mt-4" />
+                  RequiredError="密码不能为空!" Class="mt-4"/>
     <MudTextField T="string"
                   Label="确认密码" Variant="Variant.Outlined" InputType="InputType.Password"
-                  Validation="@(new Func<string, string>(PasswordMatch))" Class="mt-4" />
+                  Validation="@(new Func<string, string>(PasswordMatch))" Class="mt-4"/>
 
 
-    @*<MudCheckBox T="bool" @bind-Checked="@AgreeToTerms" Label="I agree to the terms and privacy" Color="Color.Primary" Class="ml-n1 my-3"></MudCheckBox>*@
+    <MudCheckBox T="bool" @bind-Checked="@AgreeToTerms" Label="I agree to the terms and privacy" Color="Color.Primary"
+                 Class="ml-n1 my-3"></MudCheckBox>
 
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success || _isBusy)" OnClick="() => HandleSubmit()" Size="Size.Large" FullWidth="true" Class="mt-4">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success || _isBusy)"
+               OnClick="@HandleSubmit" Size="Size.Large" FullWidth="true" Class="mt-4">
         @if (_isBusy)
         {
             <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
@@ -48,8 +50,11 @@
 </MudForm>
 
 @code {
-    // [Inject] IUserApi UserApi { get; set; } = null!;
+    public const string PageUrl = "/account/register";
+    [Inject] ApiClient ApiClient { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
+    private bool AgreeToTerms { get; set; }
+
     private bool _success;
     private bool _isBusy;
     private bool _showErrorAlert;
@@ -62,13 +67,14 @@
     MudTextField<string> _pwField1 = new();
 
 
-    private IEnumerable<string> PasswordStrength(string pw)
+    private static IEnumerable<string> PasswordStrength(string pw)
     {
         if (string.IsNullOrWhiteSpace(pw))
         {
             yield return "密码不能为空!";
             yield break;
         }
+
         if (pw.Length < 8)
             yield return "密码长度至少8位";
         if (!Regex.IsMatch(pw, @"[A-Z]"))
@@ -89,37 +95,37 @@
         _isBusy = true;
         _showErrorAlert = false;
 
-        // try
-        // {
-        //     await _form.Validate();
-        //     
-        //     if (!_form.IsValid)
-        //     {
-        //         _isBusy = false;
-        //         return;
-        //     }
-        //
-        //     var result = await UserApi.RegisterAsync(_model);
-        //
-        //     if (result.Success)
-        //     {
-        //         NavigationManager.NavigateTo("/pages/authentication/login");
-        //     }
-        //     else
-        //     {
-        //         _showErrorAlert = true;
-        //         _errorMessage = result.Message;
-        //     }
-        // }
-        // catch (Exception)
-        // {
-        //     _showErrorAlert = true;
-        //     _errorMessage = "注册过程中发生错误，请重试";
-        // }
-        // finally
-        // {
-        //     _isBusy = false;
-        // }
+        try
+        {
+            await _form.Validate();
+
+            if (!_form.IsValid)
+            {
+                _isBusy = false;
+                return;
+            }
+
+            var result = await ApiClient.Api.User.Create.PostAsync(new());
+
+            if (result is { Success: true })
+            {
+                NavigationManager.NavigateTo(Login.PageUrl);
+            }
+            else
+            {
+                _showErrorAlert = true;
+                _errorMessage = result?.Message ?? "注册失败，请稍后重试";
+            }
+        }
+        catch (Exception)
+        {
+            _showErrorAlert = true;
+            _errorMessage = "注册过程中发生错误，请重试";
+        }
+        finally
+        {
+            _isBusy = false;
+        }
     }
 
     private void CloseMe(bool value)
@@ -133,5 +139,6 @@
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
     }
+
 }
 
