@@ -4,18 +4,12 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.Development.json" />
-    <None Remove="appsettings.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="AspNet.Security.OAuth.Feishu" Version="9.0.0" />
-    <PackageReference Include="AspNet.Security.OAuth.Weixin" Version="9.0.0" />
     <PackageReference Include="FastEndpoints.Testing" Version="7.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(FrameworkVersion)" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0" />
