@@ -5,18 +5,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
-    <IsPackable>false</IsPackable>
-    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="FastEndpoints.Testing" Version="7.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(FrameworkVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="NetCorePal.Extensions.NewtonsoftJson" Version="$(NetCorePalVersion)" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
-    <PackageReference Include="Refit.Newtonsoft.Json" Version="8.0.0" />
     <PackageReference Include="Shouldly" Version="4.3.0" />
     <PackageReference Include="Testcontainers" Version="$(TestcontainersVersion)" />
     <PackageReference Include="Testcontainers.MySql" Version="$(TestcontainersVersion)" />
@@ -35,7 +29,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\NcpAdminBlazor.Web\NcpAdminBlazor.Web.csproj" />
-    <ProjectReference Include="..\..\src\NcpAdminBlazor.Shared\NcpAdminBlazor.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

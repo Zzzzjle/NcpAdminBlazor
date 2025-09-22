@@ -14,18 +14,10 @@ public class WebAppFixture : AppFixture<Program>
     private RedisContainer _redisContainer = null!;
     private RabbitMqContainer _rabbitMqContainer = null!;
     private MySqlContainer _mySqlContainer = null!;
-    private static int _index;
-    private static int _portIndex = 8080;
-    private readonly int _instanceIndex;
-    private int _listeningPort;
 
     public HttpClient DefaultClient { get; private set; } = null!;
     public HttpClient AuthenticatedClient { get; private set; } = null!;
-
-    public WebAppFixture()
-    {
-        _instanceIndex = _index++;
-    }
+    
 
     protected override async ValueTask PreSetupAsync()
     {
@@ -40,7 +32,6 @@ public class WebAppFixture : AppFixture<Program>
         await Task.WhenAll(_redisContainer.StartAsync(),
             _rabbitMqContainer.StartAsync(),
             _mySqlContainer.StartAsync());
-        await CreateVisualHostAsync("v" + _instanceIndex);
     }
 
     protected override void ConfigureApp(IWebHostBuilder builder)
@@ -59,10 +50,7 @@ public class WebAppFixture : AppFixture<Program>
                 ["Auth:ApiKey"] = "test-api-key"
             });
         });
-
-        _listeningPort = _portIndex++;
-        var url = $"http://*:{_listeningPort}";
-        builder.UseSetting(WebHostDefaults.ServerUrlsKey, url);
+        
         builder.UseEnvironment("Development");
     }
 
@@ -76,8 +64,7 @@ public class WebAppFixture : AppFixture<Program>
 
     protected override ValueTask SetupAsync()
     {
-        var clientOptions = new ClientOptions { BaseAddress = new Uri($"http://localhost:{_listeningPort}") };
-        DefaultClient = CreateClient(clientOptions);
+        DefaultClient = CreateClient();
         AuthenticatedClient = CreateClient(
             c =>
             {
@@ -85,7 +72,7 @@ public class WebAppFixture : AppFixture<Program>
                 c.DefaultRequestHeaders.Add("x-api-key", "test-api-key");
                 // 保留测试自定义方案头（若将来策略切换可回退使用）
                 c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TestAuthConstants.SchemeName);
-            }, clientOptions);
+            });
         return ValueTask.CompletedTask;
     }
 
@@ -96,13 +83,5 @@ public class WebAppFixture : AppFixture<Program>
         //      this is especially true if this AppFixture is used by many test-classes with WAF caching enabled.
         //      so, in general - containers don't need to be explicitly disposed, unless you disable WAF caching.
         return base.TearDownAsync();
-    }
-
-    private async Task CreateVisualHostAsync(string visualHost)
-    {
-        await _rabbitMqContainer.ExecAsync(["rabbitmqctl", "add_vhost", visualHost]);
-        await _rabbitMqContainer.ExecAsync([
-            "rabbitmqctl", "set_permissions", "-p", visualHost, "guest", ".*", ".*", ".*"
-        ]);
     }
 }
