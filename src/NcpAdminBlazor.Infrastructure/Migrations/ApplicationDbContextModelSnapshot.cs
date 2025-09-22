@@ -30,7 +30,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTimeOffset?>("DeletedAt")
+                    b.Property<DateTimeOffset>("DeletedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
@@ -40,11 +40,6 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -66,8 +61,21 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<DateTimeOffset>("RefreshExpiry")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
@@ -75,11 +83,11 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("IsDeleted = 0");
 
-                    b.HasIndex("Username")
+                    b.HasIndex("Phone")
                         .IsUnique()
                         .HasFilter("IsDeleted = 0");
 
-                    b.HasIndex("Phone")
+                    b.HasIndex("Username")
                         .IsUnique()
                         .HasFilter("IsDeleted = 0");
 
@@ -156,7 +164,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                     b.Property<int>("Count")
                         .HasColumnType("int");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
@@ -189,7 +197,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
@@ -199,7 +207,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Username")
+                    b.HasIndex("Name")
                         .IsUnique();
 
                     b.ToTable("roles", (string)null);

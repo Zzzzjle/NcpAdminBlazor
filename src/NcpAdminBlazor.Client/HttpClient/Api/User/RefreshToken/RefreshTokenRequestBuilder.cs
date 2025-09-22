@@ -33,29 +33,23 @@ namespace NcpAdminBlazor.Client.Api.User.RefreshToken
         public RefreshTokenRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/api/user/refresh-token", rawUrl)
         {
         }
-        /// <summary>
-        /// 刷新令牌
-        /// </summary>
-        /// <returns>A <see cref="global::NcpAdminBlazor.Client.Models.FastEndpointsSecurityTokenResponse"/></returns>
+        /// <returns>A <see cref="global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfTokenResponse"/></returns>
         /// <param name="body">base dto for access/refresh token renewal requests</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::NcpAdminBlazor.Client.Models.FastEndpointsSecurityTokenResponse?> PostAsync(global::NcpAdminBlazor.Client.Models.FastEndpointsSecurityTokenRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfTokenResponse?> PostAsync(global::NcpAdminBlazor.Client.Models.FastEndpointsSecurityTokenRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::NcpAdminBlazor.Client.Models.FastEndpointsSecurityTokenResponse> PostAsync(global::NcpAdminBlazor.Client.Models.FastEndpointsSecurityTokenRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfTokenResponse> PostAsync(global::NcpAdminBlazor.Client.Models.FastEndpointsSecurityTokenRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             _ = body ?? throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::NcpAdminBlazor.Client.Models.FastEndpointsSecurityTokenResponse>(requestInfo, global::NcpAdminBlazor.Client.Models.FastEndpointsSecurityTokenResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfTokenResponse>(requestInfo, global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfTokenResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
-        /// <summary>
-        /// 刷新令牌
-        /// </summary>
         /// <returns>A <see cref="RequestInformation"/></returns>
         /// <param name="body">base dto for access/refresh token renewal requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>

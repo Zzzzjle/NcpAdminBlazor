@@ -12,7 +12,7 @@ using NcpAdminBlazor.Infrastructure;
 namespace NcpAdminBlazor.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250917095835_InitialCreate")]
+    [Migration("20250921152454_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -33,7 +33,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTimeOffset?>("DeletedAt")
+                    b.Property<DateTimeOffset>("DeletedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
@@ -43,11 +43,6 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -69,8 +64,21 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<DateTimeOffset>("RefreshExpiry")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
@@ -78,11 +86,11 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("IsDeleted = 0");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("Phone")
                         .IsUnique()
                         .HasFilter("IsDeleted = 0");
 
-                    b.HasIndex("Phone")
+                    b.HasIndex("Username")
                         .IsUnique()
                         .HasFilter("IsDeleted = 0");
 

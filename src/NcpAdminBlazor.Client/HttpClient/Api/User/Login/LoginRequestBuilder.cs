@@ -36,22 +36,22 @@ namespace NcpAdminBlazor.Client.Api.User.Login
         /// <summary>
         /// Description text goes here...
         /// </summary>
-        /// <returns>A <see cref="global::NcpAdminBlazor.Client.Models.FastEndpointsSecurityTokenResponse"/></returns>
+        /// <returns>A <see cref="global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfTokenResponse"/></returns>
         /// <param name="body">登录请求体</param>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::NcpAdminBlazor.Client.Models.FastEndpointsSecurityTokenResponse?> PostAsync(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersLoginRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfTokenResponse?> PostAsync(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersLoginRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::NcpAdminBlazor.Client.Models.FastEndpointsSecurityTokenResponse> PostAsync(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersLoginRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfTokenResponse> PostAsync(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersLoginRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             _ = body ?? throw new ArgumentNullException(nameof(body));
             var requestInfo = ToPostRequestInformation(body, requestConfiguration);
-            return await RequestAdapter.SendAsync<global::NcpAdminBlazor.Client.Models.FastEndpointsSecurityTokenResponse>(requestInfo, global::NcpAdminBlazor.Client.Models.FastEndpointsSecurityTokenResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfTokenResponse>(requestInfo, global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfTokenResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
         /// Description text goes here...

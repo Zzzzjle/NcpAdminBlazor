@@ -89,41 +89,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FastEndpointsSecurityTokenResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/user/refresh-token": {
-      "post": {
-        "tags": [
-          "Api"
-        ],
-        "summary": "刷新令牌",
-        "operationId": "NcpAdminBlazorWebEndpointsUsersUserTokenService",
-        "requestBody": {
-          "x-name": "TokenRequest",
-          "description": "",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FastEndpointsSecurityTokenRequest"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FastEndpointsSecurityTokenResponse"
+                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseDataOfTokenResponse"
                 }
               }
             }
@@ -153,6 +119,40 @@
             "JWTBearerAuth": []
           }
         ]
+      }
+    },
+    "/api/user/refresh-token": {
+      "post": {
+        "tags": [
+          "User",
+          "Api"
+        ],
+        "operationId": "NcpAdminBlazorWebEndpointsUsersRefreshEndpoint",
+        "requestBody": {
+          "x-name": "TokenRequest",
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FastEndpointsSecurityTokenRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseDataOfTokenResponse"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/user/create": {
@@ -339,6 +339,27 @@
             }
           }
         }
+      },
+      "NetCorePalExtensionsDtoResponseDataOfTokenResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseData"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "data": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/FastEndpointsSecurityTokenResponse"
+                  }
+                ]
+              }
+            }
+          }
+        ]
       },
       "FastEndpointsSecurityTokenResponse": {
         "allOf": [

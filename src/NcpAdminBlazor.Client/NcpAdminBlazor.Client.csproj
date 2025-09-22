@@ -6,7 +6,6 @@
     <Nullable>enable</Nullable>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
     <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
-    <RootNamespace>NcpAdminBlazor.Client</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,16 +16,10 @@
     <PackageReference Include="Microsoft.Kiota.Bundle" Version="1.19.1" />
     <PackageReference Include="MudBlazor" Version="8.*" />
     <PackageReference Include="MudBlazor.ThemeManager" Version="3.0.0" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NcpAdminBlazor.Shared\NcpAdminBlazor.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="NcpAdminBlazor.Client\obj\NcpAdminBlazor.Client.csproj.nuget.dgspec.json" />
-    <_ContentIncludedByDefault Remove="NcpAdminBlazor.Client\obj\project.assets.json" />
   </ItemGroup>
 
 </Project>

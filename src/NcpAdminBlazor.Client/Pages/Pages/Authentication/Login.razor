@@ -1,33 +1,40 @@
 ﻿@page "/account/login"
 @layout LoginLayout
-@using Blazored.LocalStorage
 @using Microsoft.AspNetCore.Components.Authorization
 @using NcpAdminBlazor.Client.Models
 @using NcpAdminBlazor.Client.Providers
 
 @if (_showErrorAlert)
 {
-    <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(true))" >@_errorMessage</MudAlert>
+    <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true"
+              CloseIconClicked="@(() => CloseMe(true))">@_errorMessage</MudAlert>
 }
 
-<MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
+<MudForm @bind-IsValid="@_success" @bind-Errors="@_errors">
     <MudText Typo="Typo.h4" GutterBottom="true" Class="mt-4">Sign In</MudText>
 
-    <MudText>Don't have an account? <MudLink Href="/pages/authentication/register">Sign Up</MudLink></MudText>
+    <MudText>Don't have an account?
+        <MudLink Href="/pages/authentication/register">Sign Up</MudLink>
+    </MudText>
 
-    <MudTextField T="string" @bind-Value="@_model.LoginName" Required="true" Label="用户名/邮箱/手机号" Variant="Variant.Outlined" Class="my-6"></MudTextField>
+    <MudTextField T="string" @bind-Value="@_model.LoginName" Required="true" Label="Username"
+                  Variant="Variant.Outlined" Class="my-6"></MudTextField>
 
-    <MudTextField @bind-Value="@_model.Password" Label="密码" Required="true" Variant="Variant.Outlined" InputType="@_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+    <MudTextField @bind-Value="@_model.Password" Label="Password" Required="true" Variant="Variant.Outlined"
+                  InputType="@_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon"
+                  OnAdornmentClick="TogglePasswordVisibility"/>
 
     <div Class="d-flex justify-space-between align-center">
-        <MudCheckBox T="bool" Label="记住我" @bind-Checked="_rememberMe" Color="Color.Primary" Class="ml-n1 my-3"></MudCheckBox>
-        <MudSpacer />
-        <br />
-        <br />
-        <MudLink Href="/pages/authentication/forgot-password">忘记密码?</MudLink>
+        <MudCheckBox T="bool" Label="remember me" @bind-Checked="_rememberMe" Color="Color.Primary"
+                     Class="ml-n1 my-3"></MudCheckBox>
+        <MudSpacer/>
+        <br/>
+        <br/>
+        <MudLink Href="/pages/authentication/forgot-password">forget password?</MudLink>
     </div>
 
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success || _isBusy)" Size="Size.Large" FullWidth="true" OnClick="HandleSubmit">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success || _isBusy)" Size="Size.Large"
+               FullWidth="true" OnClick="@HandleSubmit">
         @if (_isBusy)
         {
             <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
@@ -39,26 +46,26 @@
         }
     </MudButton>
 
-    <MudButton Variant="Variant.Outlined" Color="Color.Primary" Disabled="_isBusy" Size="Size.Large" FullWidth="true" OnClick="HandleGuest" Class="mt-4">游客登录</MudButton>
+    <MudButton Variant="Variant.Outlined" Color="Color.Primary" Disabled="_isBusy" Size="Size.Large" FullWidth="true"
+               OnClick="@HandleGuest" Class="mt-4">游客登录
+    </MudButton>
 
 </MudForm>
 
 
 @code {
+    public const string PageUrl = "/account/login";
     [Inject] ApiClient ApiClient { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
-    [Inject] ILocalStorageService LocalStorage { get; set; } = null!;
     [Inject] AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
     private bool _showErrorAlert;
     private string _errorMessage = string.Empty;
-    private const string PageUrl = "/account/login";
     [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
     private bool _isBusy;
     private readonly InputModel _model = new();
     private bool _rememberMe;
     private bool _success;
     private string[] _errors = [];
-    private MudForm _form = new();
 
     bool _passwordVisibility;
     InputType _passwordInput = InputType.Password;
@@ -67,11 +74,11 @@
     private async Task HandleSubmit()
     {
         if (_isBusy) return;
-        
+
         _isBusy = true;
         _showErrorAlert = false;
         StateHasChanged();
-    
+
         try
         {
             var result = await ApiClient.Api.User.Login.PostAsync(new NcpAdminBlazorWebEndpointsUsersLoginRequest
@@ -79,20 +86,20 @@
                 Username = _model.LoginName,
                 Password = _model.Password
             });
-            // if (result.Success)
-            // {
-            //     // 通知认证状态更改
-            //     await (AuthStateProvider as TokenAuthenticationStateProvider 
-            //            ?? throw new InvalidOperationException("Authentication provider is not properly configured"))
-            //         .Login(result.Data.Token);    
-            //     
-            //     NavigationManager.NavigateTo("/personal/dashboard");
-            // }
-            // else
-            // {
-            //     _errorMessage = result.Message;
-            //     _showErrorAlert = true;
-            // }
+            if (result is { Success: true, Data.AccessToken: not null })
+            {
+                // 通知认证状态更改
+                await (AuthStateProvider as TokenAuthenticationStateProvider
+                       ?? throw new InvalidOperationException("Authentication provider is not properly configured"))
+                    .Login(result.Data.AccessToken);
+
+                NavigationManager.NavigateTo("/personal/dashboard");
+            }
+            else
+            {
+                _errorMessage = result?.Message ?? "登录失败，请稍后重试";
+                _showErrorAlert = true;
+            }
         }
         catch (Exception ex)
         {
@@ -105,46 +112,20 @@
             StateHasChanged();
         }
     }
-    
-    private async Task HandleGuest()
+
+    private Task HandleGuest()
     {
-        if (_isBusy) return;
-        
+        if (_isBusy) return Task.CompletedTask;
+
         _isBusy = true;
         _showErrorAlert = false;
         StateHasChanged();
-    
-        // var guestModel = new LoginRequest
-        // {
-        //     LoginName = "guest@example.com",
-        //     Password = "123456"
-        // };
-        //
-        // try
-        // {
-        //     var result = await UserApi.LoginAsync(guestModel);
-        //     if (result.Success)
-        //     {
-        //         NavigationManager.NavigateTo("/personal/dashboard");
-        //     }
-        //     else
-        //     {
-        //         _errorMessage = result.Message;
-        //         _showErrorAlert = true;
-        //     }
-        // }
-        // catch (Exception ex)
-        // {
-        //     _errorMessage = ex.Message;
-        //     _showErrorAlert = true;
-        // }
-        // finally
-        // {
-        //     _isBusy = false;
-        //     StateHasChanged();
-        // }
+        _errorMessage = "暂未开放游客登录功能，请注册后登录";
+        _isBusy = false;
+        StateHasChanged();
+        return Task.CompletedTask;
     }
-    
+
     void TogglePasswordVisibility()
     {
         if (_passwordVisibility)
@@ -160,7 +141,7 @@
             _passwordInput = InputType.Text;
         }
     }
-    
+
     private void CloseMe(bool value)
     {
         if (value)
@@ -168,10 +149,11 @@
             _showErrorAlert = false;
         }
     }
-    
+
     class InputModel
     {
         public string LoginName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-    }   
+    }
+
 }

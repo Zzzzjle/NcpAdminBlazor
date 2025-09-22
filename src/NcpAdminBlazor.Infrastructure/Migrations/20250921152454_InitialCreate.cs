@@ -19,7 +19,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false),
-                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    Username = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Phone = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -31,10 +31,13 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Email = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    RefreshExpiry = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false),
+                    RefreshToken = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Status = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    DeletedAt = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true)
+                    DeletedAt = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -177,16 +180,16 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                 filter: "IsDeleted = 0");
 
             migrationBuilder.CreateIndex(
-                name: "IX_application_users_Name",
+                name: "IX_application_users_Phone",
                 table: "application_users",
-                column: "Username",
+                column: "Phone",
                 unique: true,
                 filter: "IsDeleted = 0");
 
             migrationBuilder.CreateIndex(
-                name: "IX_application_users_Phone",
+                name: "IX_application_users_Username",
                 table: "application_users",
-                column: "Phone",
+                column: "Username",
                 unique: true,
                 filter: "IsDeleted = 0");
 
@@ -199,7 +202,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_roles_Name",
                 table: "roles",
-                column: "Username",
+                column: "Name",
                 unique: true);
         }
 

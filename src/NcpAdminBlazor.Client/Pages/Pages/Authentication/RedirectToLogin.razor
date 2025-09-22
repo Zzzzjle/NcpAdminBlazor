@@ -1,13 +1,11 @@
 ﻿<h3>RedirectToLogin</h3>
 
 @code {
-    [Inject]
-    public NavigationManager NavigationManager{ get; set; } = null!;
+    [Inject] public NavigationManager NavigationManager { get; set; } = null!;
 
     protected override void OnInitialized()
     {
-        NavigationManager.NavigateTo("pages/authentication/login");
-        // NavigationManager. NavigateTo(
-        // $"authentication/login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}");
+        NavigationManager.NavigateTo(Login.PageUrl + "?returnUrl=" + Uri.EscapeDataString(NavigationManager.Uri));
     }
+
 }
