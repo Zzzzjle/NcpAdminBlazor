@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@using NcpAdminBlazor.Client.Pages.Pages.Authentication
 @using NcpAdminBlazor.Client.Providers
-@using NcpAdminBlazor.Client.Theme
+
 @inherits LayoutComponentBase
 @inject TokenAuthenticationStateProvider TokenAuthenticationStateProvider
 @inject NavigationManager NavigationManager
@@ -12,7 +13,7 @@
         <MudDialogProvider/>
         <MudSnackbarProvider/>
         <MudLayout>
-            <MudAppBar Elevation="_themeManager.AppBarElevation">
+            <MudAppBar Elevation="1">
                 <MudHidden Breakpoint="Breakpoint.SmAndDown">
                     <MudIcon Icon="@Icons.Custom.Brands.MudBlazor" Size="Size.Large"/>
                 </MudHidden>
@@ -28,20 +29,18 @@
                 </MudHidden>
                 <MudSpacer/>
                 <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
-                <MudMenu Icon="@Icons.Material.Outlined.Translate" Color="Color.Inherit" Direction="Direction.Bottom"
-                         OffsetY="true" Dense="true">
+                <MudMenu Icon="@Icons.Material.Outlined.Translate" Color="Color.Inherit" Dense="true">
                     <MudMenuItem>English</MudMenuItem>
                     <MudMenuItem>Swedish</MudMenuItem>
                     <MudMenuItem>Old Norse</MudMenuItem>
                 </MudMenu>
-                <MudMenu Icon="@Icons.Material.Outlined.Widgets" Color="Color.Inherit" Direction="Direction.Bottom"
-                         OffsetY="true" Dense="true">
+                <MudMenu Icon="@Icons.Material.Outlined.Widgets" Color="Color.Inherit" Dense="true">
                     <MudMenuItem Link="https://mudblazor.com/">MudBlazor</MudMenuItem>
                     <MudMenuItem Link="https://github.com/Garderoben/MudBlazor.Templates">Source Code</MudMenuItem>
                 </MudMenu>
-                <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
+                <MudMenu Dense="true" Class="mt-1 ml-4">
                     <ActivatorContent>
-                        <MudAvatar Image="images/avatar_jonny.jpg"/>
+                        <MudAvatar/>
                     </ActivatorContent>
                     <ChildContent>
                         <PersonCard Class="mt-n2"/>
@@ -53,13 +52,13 @@
                     </ChildContent>
                 </MudMenu>
             </MudAppBar>
-            <MudDrawer @bind-Open="_drawerOpen" Elevation="_themeManager.DrawerElevation"
-                       ClipMode="_themeManager.DrawerClipMode">
+            <MudDrawer @bind-Open="_drawerOpen" Elevation="2"
+                       ClipMode="DrawerClipMode.Always">
                 <NavMenu/>
             </MudDrawer>
             <MudMainContent>
                 <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                    <MudToolBar DisableGutters="true">
+                    <MudToolBar Gutters="false">
                         <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit"
                                        OnClick="@((e) => DrawerToggle())" Class="ml-3"/>
                         <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
@@ -76,19 +75,12 @@
                     @Body
                 </MudContainer>
             </MudMainContent>
-            <MudThemeManagerButton OnClick="@((e) => OpenThemeManager(true))"/>
-            <MudThemeManager Open="ThemeManagerOpen" OpenChanged="OpenThemeManager" Theme="_themeManager"
-                             ThemeChanged="UpdateTheme"/>
         </MudLayout>
     </Authorized>
     <NotAuthorized>
         @Body
     </NotAuthorized>
 </AuthorizeView>
-
-
-
-
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -99,7 +91,7 @@
 @code {
     private bool _drawerOpen = true;
     private bool _isDarkMode = true;
-    private MudTheme? _theme = null;
+    private MudTheme? _theme;
 
     protected override void OnInitialized()
     {
@@ -168,33 +160,14 @@
         false => Icons.Material.Outlined.DarkMode,
     };
 
-    private ThemeManagerTheme _themeManager = new ThemeManagerTheme
-    {
-        Theme = new MudBlazorAdminDashboard(),
-        DrawerClipMode = DrawerClipMode.Always,
-        FontFamily = "Montserrat",
-        DefaultBorderRadius = 6,
-        AppBarElevation = 1,
-        DrawerElevation = 1
-    };
 
     public bool ThemeManagerOpen;
 
-    void OpenThemeManager(bool value)
-    {
-        ThemeManagerOpen = value;
-    }
-
-    void UpdateTheme(ThemeManagerTheme value)
-    {
-        _themeManager = value;
-        StateHasChanged();
-    }
 
     async Task Logout()
     {
         await TokenAuthenticationStateProvider.Logout();
-        NavigationManager.NavigateTo("pages/authentication/login");
+        NavigationManager.NavigateTo(Login.PageUrl);
     }
 
     private readonly List<BreadcrumbItem> _items =
