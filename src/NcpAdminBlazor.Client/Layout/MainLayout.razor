@@ -1,8 +1,8 @@
-﻿@using NcpAdminBlazor.Client.States
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
+@using NcpAdminBlazor.Client.Stores
 @implements IDisposable
 
-<MudThemeProvider Theme="@_theme" IsDarkMode="LayoutState.IsDarkMode"/>
+<MudThemeProvider Theme="@_theme" IsDarkMode="LayoutStore.IsDarkMode"/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
@@ -16,13 +16,13 @@
 </div>
 
 @code {
-    [Inject] LayoutState LayoutState { get; set; } = null!;
+    [Inject] LayoutStore LayoutStore { get; set; } = null!;
     private MudTheme? _theme;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        LayoutState.OnDarkModeChanged += OnDarkModeToggled;
+        LayoutStore.OnDarkModeChanged += OnDarkModeToggled;
         _theme = new MudTheme
         {
             PaletteLight = _lightPalette,
@@ -33,7 +33,7 @@
 
     public void Dispose()
     {
-        LayoutState.OnDarkModeChanged -= OnDarkModeToggled;
+        LayoutStore.OnDarkModeChanged -= OnDarkModeToggled;
     }
 
     private void OnDarkModeToggled(bool isDarkMode)

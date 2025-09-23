@@ -1,6 +1,6 @@
 @using NcpAdminBlazor.Client.Pages.Pages.Authentication
 @using NcpAdminBlazor.Client.Providers
-@using NcpAdminBlazor.Client.States
+@using NcpAdminBlazor.Client.Stores
 
 @layout MainLayout
 @inherits LayoutComponentBase
@@ -58,8 +58,8 @@
 @code {
     [Inject] TokenAuthenticationStateProvider TokenAuthenticationStateProvider { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
-    [Inject] BreadcrumbState BreadcrumbService { get; set; } = null!;
-    [Inject] LayoutState LayoutState { get; set; } = null!;
+    [Inject] BreadcrumbStore BreadcrumbService { get; set; } = null!;
+    [Inject] LayoutStore LayoutStore { get; set; } = null!;
     private bool _drawerOpen = true;
     private List<BreadcrumbItem> _breadcrumbItems = [];
 
@@ -87,10 +87,10 @@
 
     private void DarkModeToggle()
     {
-        LayoutState.IsDarkMode = !LayoutState.IsDarkMode;
+        LayoutStore.IsDarkMode = !LayoutStore.IsDarkMode;
     }
 
-    private string DarkLightModeButtonIcon => LayoutState.IsDarkMode switch
+    private string DarkLightModeButtonIcon => LayoutStore.IsDarkMode switch
     {
         true => Icons.Material.Rounded.AutoMode,
         false => Icons.Material.Outlined.DarkMode,

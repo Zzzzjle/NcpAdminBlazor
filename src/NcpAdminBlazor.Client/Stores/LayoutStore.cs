@@ -1,6 +1,6 @@
-namespace NcpAdminBlazor.Client.States;
+namespace NcpAdminBlazor.Client.Stores;
 
-public class LayoutState
+public class LayoutStore
 {
     public bool IsDarkMode
     {
