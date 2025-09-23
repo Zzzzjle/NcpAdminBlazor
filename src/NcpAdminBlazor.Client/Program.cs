@@ -7,6 +7,7 @@ using Microsoft.Kiota.Http.HttpClientLibrary;
 using MudBlazor.Services;
 using NcpAdminBlazor.Client;
 using NcpAdminBlazor.Client.Providers;
+using NcpAdminBlazor.Client.States;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -31,5 +32,8 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<TokenAuthenticationStateProvider>();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, TokenAuthenticationStateProvider>();
+
+builder.Services.AddScoped<LayoutState>();
+builder.Services.AddScoped<BreadcrumbState>();
 
 await builder.Build().RunAsync();

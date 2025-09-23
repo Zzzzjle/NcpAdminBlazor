@@ -1,0 +1,105 @@
+@using NcpAdminBlazor.Client.Pages.Pages.Authentication
+@using NcpAdminBlazor.Client.Providers
+@using NcpAdminBlazor.Client.States
+
+@layout MainLayout
+@inherits LayoutComponentBase
+@implements IDisposable
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" OnClick="@DrawerToggle"/>
+        <MudBreadcrumbs Items="_breadcrumbItems"></MudBreadcrumbs>
+        <MudSpacer/>
+        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
+        <MudMenu Icon="@Icons.Material.Outlined.Translate" Color="Color.Inherit" Dense="true">
+            <MudMenuItem>English</MudMenuItem>
+            <MudMenuItem>Swedish</MudMenuItem>
+            <MudMenuItem>Old Norse</MudMenuItem>
+        </MudMenu>
+        <MudMenu Icon="@Icons.Material.Outlined.Widgets" Color="Color.Inherit" Dense="true">
+            <MudMenuItem Href="https://mudblazor.com/">MudBlazor</MudMenuItem>
+            <MudMenuItem Href="https://github.com/Garderoben/MudBlazor.Templates">Source Code</MudMenuItem>
+        </MudMenu>
+        <MudMenu Class="ml-4">
+            <ActivatorContent>
+                <MudAvatar/>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem Icon="@Icons.Material.Outlined.Person"
+                             Href="/personal/account">
+                    Account
+                </MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Outlined.Logout"
+                             OnClick="@Logout"
+                             Href="@Login.PageUri">
+                    Logout
+                </MudMenuItem>
+
+            </ChildContent>
+        </MudMenu>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
+        <MudDrawerHeader>
+            <NavLink ActiveClass="d-flex align-center me-4" href="/">
+                <MudIcon Icon="@Icons.Custom.Brands.MudBlazor" Size="Size.Large" Class="mr-2"/>
+                <MudText Typo="Typo.h5">Application</MudText>
+            </NavLink>
+        </MudDrawerHeader>
+        <NavMenu/>
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.False">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    [Inject] TokenAuthenticationStateProvider TokenAuthenticationStateProvider { get; set; } = null!;
+    [Inject] NavigationManager NavigationManager { get; set; } = null!;
+    [Inject] BreadcrumbState BreadcrumbService { get; set; } = null!;
+    [Inject] LayoutState LayoutState { get; set; } = null!;
+    private bool _drawerOpen = true;
+    private List<BreadcrumbItem> _breadcrumbItems = [];
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        BreadcrumbService.OnBreadcrumbsChanged += UpdateBreadcrumbs;
+    }
+
+    private void UpdateBreadcrumbs(List<BreadcrumbItem> items)
+    {
+        _breadcrumbItems = items;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        BreadcrumbService.OnBreadcrumbsChanged -= UpdateBreadcrumbs;
+    }
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void DarkModeToggle()
+    {
+        LayoutState.IsDarkMode = !LayoutState.IsDarkMode;
+    }
+
+    private string DarkLightModeButtonIcon => LayoutState.IsDarkMode switch
+    {
+        true => Icons.Material.Rounded.AutoMode,
+        false => Icons.Material.Outlined.DarkMode,
+    };
+
+    async Task Logout()
+    {
+        await TokenAuthenticationStateProvider.Logout();
+        NavigationManager.NavigateTo(Login.PageUri);
+    }
+
+}
