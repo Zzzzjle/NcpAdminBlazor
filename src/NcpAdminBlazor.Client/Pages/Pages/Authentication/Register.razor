@@ -1,5 +1,5 @@
-﻿@using System.Text.RegularExpressions
-@page "/account/register"
+﻿@page "/account/register"
+@using NcpAdminBlazor.Client.Models
 @layout LoginLayout
 
 <br/>
@@ -24,13 +24,11 @@
                   Label="用户名" Variant="Variant.Outlined" Class="mt-4"></MudTextField>
 
     <MudTextField T="string" Label="密码" @bind-Value="_model.Password" Variant="Variant.Outlined" @ref="_pwField1"
-                  InputType="InputType.Password"
-                  Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))" Required="true"
+                  InputType="InputType.Password" Required="true"
                   RequiredError="密码不能为空!" Class="mt-4"/>
     <MudTextField T="string"
                   Label="确认密码" Variant="Variant.Outlined" InputType="InputType.Password"
                   Validation="@(new Func<string, string>(PasswordMatch))" Class="mt-4"/>
-
 
     <MudCheckBox T="bool" @bind-Checked="@AgreeToTerms" Label="I agree to the terms and privacy" Color="Color.Primary"
                  Class="ml-n1 my-3"></MudCheckBox>
@@ -66,25 +64,6 @@
 
     MudTextField<string> _pwField1 = new();
 
-
-    private static IEnumerable<string> PasswordStrength(string pw)
-    {
-        if (string.IsNullOrWhiteSpace(pw))
-        {
-            yield return "密码不能为空!";
-            yield break;
-        }
-
-        if (pw.Length < 8)
-            yield return "密码长度至少8位";
-        if (!Regex.IsMatch(pw, @"[A-Z]"))
-            yield return "密码必须包含至少一个大写字母";
-        if (!Regex.IsMatch(pw, @"[a-z]"))
-            yield return "密码必须包含至少一个小写字母";
-        if (!Regex.IsMatch(pw, @"[0-9]"))
-            yield return "密码必须包含至少一个数字";
-    }
-
     private string PasswordMatch(string arg)
     {
         return _pwField1.Value != arg ? "两次密码输入不一致" : string.Empty;
@@ -105,7 +84,11 @@
                 return;
             }
 
-            var result = await ApiClient.Api.User.Create.PostAsync(new());
+            var result = await ApiClient.Api.User.Create.PostAsync(new NcpAdminBlazorWebEndpointsUsersRegisterUserRequest
+            {
+                Username = _model.Username,
+                Password = _model.Password
+            });
 
             if (result is { Success: true })
             {

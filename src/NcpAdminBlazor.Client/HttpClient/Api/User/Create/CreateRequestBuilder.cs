@@ -34,7 +34,7 @@ namespace NcpAdminBlazor.Client.Api.User.Create
         {
         }
         /// <summary>
-        /// 用户密码由系统随机生成
+        /// 创建用户
         /// </summary>
         /// <returns>A <see cref="global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfRegisterUserResponse"/></returns>
         /// <param name="body">创建用户请求Payload</param>
@@ -59,7 +59,7 @@ namespace NcpAdminBlazor.Client.Api.User.Create
             return await RequestAdapter.SendAsync<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfRegisterUserResponse>(requestInfo, global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfRegisterUserResponse.CreateFromDiscriminatorValue, errorMapping, cancellationToken).ConfigureAwait(false);
         }
         /// <summary>
-        /// 用户密码由系统随机生成
+        /// 创建用户
         /// </summary>
         /// <returns>A <see cref="RequestInformation"/></returns>
         /// <param name="body">创建用户请求Payload</param>

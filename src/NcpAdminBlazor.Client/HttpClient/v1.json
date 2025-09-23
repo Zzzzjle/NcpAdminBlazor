@@ -162,7 +162,6 @@
           "Api"
         ],
         "summary": "创建用户",
-        "description": "用户密码由系统随机生成",
         "operationId": "NcpAdminBlazorWebEndpointsUsersRegisterUserEndpoint",
         "requestBody": {
           "x-name": "RegisterUserRequest",
@@ -171,18 +170,6 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsUsersRegisterUserRequest"
-              },
-              "examples": {
-                "创建用户示例1": {
-                  "value": {
-                    "userName": "admin"
-                  }
-                },
-                "创建用户示例2": {
-                  "value": {
-                    "userName": "admin22"
-                  }
-                }
               }
             }
           },
@@ -218,19 +205,8 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "JWTBearerAuth": []
-          }
-        ]
+        }
       }
     },
     "/api/user/{userId}/profile": {
@@ -444,17 +420,25 @@
       "NcpAdminBlazorWebEndpointsUsersRegisterUserRequest": {
         "type": "object",
         "description": "创建用户请求Payload",
+        "example": {
+          "username": "admin",
+          "password": "123"
+        },
         "additionalProperties": false,
         "required": [
-          "userName"
+          "username"
         ],
         "properties": {
-          "userName": {
+          "username": {
             "type": "string",
             "description": "用户名",
             "minLength": 1,
             "nullable": false,
             "example": "admin"
+          },
+          "password": {
+            "type": "string",
+            "example": "123"
           }
         }
       },

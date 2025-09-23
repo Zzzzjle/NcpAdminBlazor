@@ -6,7 +6,7 @@ namespace NcpAdminBlazor.Client.Pages.Personal
 {
     public class TestBase : ComponentBase
     {
-        protected List<Student> Students = new List<Student>();
+        protected List<Student> Students = new();
 
 
         [Inject]

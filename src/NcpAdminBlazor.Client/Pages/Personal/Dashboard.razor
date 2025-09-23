@@ -1,8 +1,7 @@
 ﻿@page "/"
 @page "/personal/dashboard"
 @using Microsoft.AspNetCore.Authorization
-@using NcpAdminBlazor.Client.Models
-@inject HttpClient HttpClient
+
 @attribute [Authorize]
 
 <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Dashboard</MudText>
@@ -74,7 +73,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach (var report in earningReports.OrderBy(x => x.Name))
+                    @foreach (var report in _earningReports.OrderBy(x => x.Name))
                     {
                         <tr>
                             <td>
@@ -132,7 +131,8 @@
                                 <MudText Typo="Typo.subtitle2">Incident in plant number 4</MudText>
                                 <MudText Typo="Typo.body2">Fire in reactor core</MudText>
                             </div>
-                            <MudChip T="string" Label="true" Color="Color.Info" Size="Size.Small" Class="ml-auto mud-elevation-25">
+                            <MudChip T="string" Label="true" Color="Color.Info" Size="Size.Small"
+                                     Class="ml-auto mud-elevation-25">
                                 Minor
                             </MudChip>
                         </div>
@@ -158,23 +158,20 @@
 </MudGrid>
 
 @code {
+    [Inject] ApiClient ApiClient { get; set; } = null!;
 
-
-    void Do()
-    {
-    }
 
     protected async override Task OnInitializedAsync()
     {
-        var respone = await HttpClient.GetFromJsonAsync<List<Student>>("api/students");
+        // var respone = await ApiClient.GetFromJsonAsync<List<Student>>("api/students");
     }
 
-    EarningReport[] earningReports = new EarningReport[]
-    {
-        new EarningReport { Name = "Lunees", Title = "Reactor Engineer", Avatar = "https://avatars2.githubusercontent.com/u/71094850?s=460&u=66c16f5bb7d27dc751f6759a82a3a070c8c7fe4b&v=4", Salary = "$0.99", Severity = Color.Success, SeverityTitle = "Low" },
-        new EarningReport { Name = "Mikes-gh", Title = "Developer", Avatar = "https://avatars.githubusercontent.com/u/16208742?s=120&v=4", Salary = "$19.12K", Severity = Color.Secondary, SeverityTitle = "Medium" },
-        new EarningReport { Name = "Garderoben", Title = "CSS Magician", Avatar = "https://avatars2.githubusercontent.com/u/10367109?s=460&amp;u=2abf95f9e01132e8e2915def42895ffe99c5d2c6&amp;v=4", Salary = "$1337", Severity = Color.Primary, SeverityTitle = "High" },
-    };
+    readonly EarningReport[] _earningReports =
+    [
+        new() { Name = "Lunees", Title = "Reactor Engineer", Avatar = "https://avatars2.githubusercontent.com/u/71094850?s=460&u=66c16f5bb7d27dc751f6759a82a3a070c8c7fe4b&v=4", Salary = "$0.99", Severity = Color.Success, SeverityTitle = "Low" },
+        new() { Name = "Mikes-gh", Title = "Developer", Avatar = "https://avatars.githubusercontent.com/u/16208742?s=120&v=4", Salary = "$19.12K", Severity = Color.Secondary, SeverityTitle = "Medium" },
+        new() { Name = "Garderoben", Title = "CSS Magician", Avatar = "https://avatars2.githubusercontent.com/u/10367109?s=460&amp;u=2abf95f9e01132e8e2915def42895ffe99c5d2c6&amp;v=4", Salary = "$1337", Severity = Color.Primary, SeverityTitle = "High" }
+    ];
 
 
     class EarningReport

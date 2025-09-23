@@ -93,7 +93,7 @@
                        ?? throw new InvalidOperationException("Authentication provider is not properly configured"))
                     .Login(result.Data.AccessToken);
 
-                NavigationManager.NavigateTo("/personal/dashboard");
+                NavigationManager.NavigateTo("/");
             }
             else
             {

@@ -13,13 +13,21 @@ namespace NcpAdminBlazor.Client.Models
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     public partial class NcpAdminBlazorWebEndpointsUsersRegisterUserRequest : IParsable
     {
+        /// <summary>The password property</summary>
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#nullable enable
+        public string? Password { get; set; }
+#nullable restore
+#else
+        public string Password { get; set; }
+#endif
         /// <summary>用户名</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public string? UserName { get; set; }
+        public string? Username { get; set; }
 #nullable restore
 #else
-        public string UserName { get; set; }
+        public string Username { get; set; }
 #endif
         /// <summary>
         /// Creates a new instance of the appropriate class based on discriminator value
@@ -39,7 +47,8 @@ namespace NcpAdminBlazor.Client.Models
         {
             return new Dictionary<string, Action<IParseNode>>
             {
-                { "userName", n => { UserName = n.GetStringValue(); } },
+                { "password", n => { Password = n.GetStringValue(); } },
+                { "username", n => { Username = n.GetStringValue(); } },
             };
         }
         /// <summary>
@@ -49,7 +58,8 @@ namespace NcpAdminBlazor.Client.Models
         public virtual void Serialize(ISerializationWriter writer)
         {
             _ = writer ?? throw new ArgumentNullException(nameof(writer));
-            writer.WriteStringValue("userName", UserName);
+            writer.WriteStringValue("password", Password);
+            writer.WriteStringValue("username", Username);
         }
     }
 }
