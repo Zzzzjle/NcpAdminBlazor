@@ -23,7 +23,6 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
 
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("密码不能为空")
-            .MinimumLength(6).WithMessage("密码长度不能少于6位")
             .MaximumLength(50).WithMessage("密码长度不能超过50位");
     }
 }

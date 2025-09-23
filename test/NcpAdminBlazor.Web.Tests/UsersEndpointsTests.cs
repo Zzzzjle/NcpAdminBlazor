@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using FastEndpoints.Security;
 using NcpAdminBlazor.Web.Endpoints.Users;
 using NcpAdminBlazor.Web.Tests.Fixtures;
@@ -6,79 +7,98 @@ using NcpAdminBlazor.Web.Tests.Fixtures;
 namespace NcpAdminBlazor.Web.Tests;
 
 [Collection(WebAppTestCollection.Name)]
-public class UsersEndpointsTests(WebAppFixture app) : TestBase<WebAppFixture>
+public class UsersEndpointsTests(WebAppFixture app, UsersEndpointsTests.UserState state)
+    : TestBase<WebAppFixture, UsersEndpointsTests.UserState>
 {
-    [Fact]
+    [Fact, Priority(1)]
     public async Task RegisterUser_ShouldReturn200_AndUserId()
     {
         // Act
         var (rsp, res) = await app.DefaultClient
             .POSTAsync<RegisterUserEndpoint, RegisterUserRequest, ResponseData<RegisterUserResponse>>(
-                new RegisterUserRequest($"user_{Guid.NewGuid():N}"));
+                new RegisterUserRequest(UserState.Username, UserState.Password));
         // Assert
         rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
         res.Data.UserId.Id.ShouldBeGreaterThan(0);
     }
 
-    [Fact]
+    [Fact, Priority(2)]
     public async Task Login_ShouldReturn_TokenEnvelope()
     {
-        // Arrange: 先注册一个可以登录的用户（端点内部使用固定密码 1231231）
-        var userName = $"user_{Guid.NewGuid():N}";
-        var (crsp, _) = await app.DefaultClient
-            .POSTAsync<RegisterUserEndpoint, RegisterUserRequest, ResponseData<RegisterUserResponse>>(
-                new RegisterUserRequest(userName));
-        crsp.StatusCode.ShouldBe(HttpStatusCode.OK);
-
         // Act: 登录
-        var (lrsp, lres) = await app.DefaultClient
+        var (rsp, res) = await app.DefaultClient
             .POSTAsync<LoginEndpoint, LoginRequest, ResponseData<TokenResponse>>(
-                new LoginRequest(userName, "1231231"));
+                new LoginRequest(UserState.Username, UserState.Password));
 
         // Assert
-        lrsp.StatusCode.ShouldBe(HttpStatusCode.OK);
-        lres.Success.ShouldBeTrue();
-        lres.Data.AccessToken.ShouldNotBeNullOrWhiteSpace();
-        lres.Data.RefreshToken.ShouldNotBeNullOrWhiteSpace();
+        rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        res.Success.ShouldBeTrue();
+        res.Data.UserId.ShouldNotBeNullOrEmpty();
+        res.Data.AccessToken.ShouldNotBeNullOrWhiteSpace();
+        res.Data.RefreshToken.ShouldNotBeNullOrWhiteSpace();
+        state.Token = res.Data;
     }
 
-    [Fact]
+    [Fact, Priority(3)]
     public async Task RefreshToken_ShouldIssue_NewAccessToken()
     {
-        // Arrange: 注册并登录，拿到 refreshToken
-        var userName = $"user_{Guid.NewGuid():N}";
-        var (crsp, _) = await app.DefaultClient
-            .POSTAsync<RegisterUserEndpoint, RegisterUserRequest, ResponseData<RegisterUserResponse>>(
-                new RegisterUserRequest(userName));
-        crsp.StatusCode.ShouldBe(HttpStatusCode.OK);
-
-        var (_, loginRes) = await app.DefaultClient
-            .POSTAsync<LoginEndpoint, LoginRequest, ResponseData<TokenResponse>>(
-                new LoginRequest(userName, "1231231"));
-
-        var token = loginRes.Data;
-
+        var token = state.Token ??
+                    throw new InvalidOperationException(
+                        "Token is null, ensure that Login_ShouldReturn_TokenEnvelope runs before this test.");
         // Act: 刷新令牌（端点允许匿名访问）
-        var (rrsp, rres) = await app.DefaultClient
+        var (rsp, res) = await app.DefaultClient
             .POSTAsync<RefreshEndpoint, TokenRequest, ResponseData<TokenResponse>>(
                 new TokenRequest { UserId = token.UserId, RefreshToken = token.RefreshToken });
 
         // Assert
-        rrsp.StatusCode.ShouldBe(HttpStatusCode.OK);
-        rres.Success.ShouldBeTrue();
-        rres.Data.AccessToken.ShouldNotBeNullOrWhiteSpace();
-        rres.Data.RefreshToken.ShouldNotBeNullOrWhiteSpace();
+        rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        res.Success.ShouldBeTrue();
+        res.Data.AccessToken.ShouldNotBeNullOrWhiteSpace();
+        res.Data.RefreshToken.ShouldNotBeNullOrWhiteSpace();
     }
 
-    [Fact]
+    [Fact, Priority(4)]
     public async Task Profile_ShouldReturn_CurrentUserPayload()
     {
-        // Act
-        var (rsp, res) = await app.AuthenticatedClient
-            .GETAsync<ProfileEndpoint, object>();
+        // Arrange
+        var token = state.Token?.AccessToken ?? throw new InvalidOperationException(
+            "Token is null, ensure that Login_ShouldReturn_TokenEnvelope runs before this test.");
 
-        // Assert
-        rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
-        res.ShouldNotBeNull();
+        app.DefaultClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        try
+        {
+            // Act
+            var (rsp, res) = await app.DefaultClient.GETAsync<ProfileEndpoint, object>();
+
+            // Assert
+            rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+            res.ShouldNotBeNull();
+        }
+        finally
+        {
+            app.DefaultClient.DefaultRequestHeaders.Authorization = null;
+        }
+    }
+
+    /// <summary>
+    /// use for sharing state between UserEndpointTests
+    /// </summary>
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public sealed class UserState : StateFixture
+    {
+        public const string Username = "tesUser_";
+        public const string Password = "Test@1234";
+
+        public TokenResponse? Token;
+
+        protected override async ValueTask SetupAsync()
+        {
+            await ValueTask.CompletedTask;
+        }
+
+        protected override async ValueTask TearDownAsync()
+        {
+            await ValueTask.CompletedTask;
+        }
     }
 }
