@@ -15,6 +15,7 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.9" />
     <PackageReference Include="Microsoft.Kiota.Bundle" Version="1.19.1" />
     <PackageReference Include="MudBlazor" Version="8.*" />
+    <PackageReference Include="PodNet.Blazor.TypedRoutes" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>

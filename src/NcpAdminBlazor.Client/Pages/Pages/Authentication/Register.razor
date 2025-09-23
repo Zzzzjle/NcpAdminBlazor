@@ -48,7 +48,6 @@
 </MudForm>
 
 @code {
-    public const string PageUrl = "/account/register";
     [Inject] ApiClient ApiClient { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
     private bool AgreeToTerms { get; set; }
@@ -92,7 +91,7 @@
 
             if (result is { Success: true })
             {
-                NavigationManager.NavigateTo(Login.PageUrl);
+                NavigationManager.NavigateTo(Login.PageUri);
             }
             else
             {

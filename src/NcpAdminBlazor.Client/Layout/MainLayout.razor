@@ -36,7 +36,7 @@
                         </MudMenuItem>
                         <MudMenuItem Icon="@Icons.Material.Outlined.Logout"
                                      OnClick="@Logout"
-                                     Href="@Login.PageUrl">
+                                     Href="@Login.PageUri">
                             Logout
                         </MudMenuItem>
 
@@ -148,7 +148,7 @@
     async Task Logout()
     {
         await TokenAuthenticationStateProvider.Logout();
-        NavigationManager.NavigateTo(Login.PageUrl);
+        NavigationManager.NavigateTo(Login.PageUri);
     }
 
     private readonly List<BreadcrumbItem> _items =

@@ -5,7 +5,7 @@
 
     protected override void OnInitialized()
     {
-        NavigationManager.NavigateTo(Login.PageUrl + "?returnUrl=" + Uri.EscapeDataString(NavigationManager.Uri));
+        NavigationManager.NavigateTo(Login.PageUri + "?returnUrl=" + Uri.EscapeDataString(NavigationManager.Uri));
     }
 
 }

@@ -14,7 +14,7 @@
     <MudText Typo="Typo.h4" GutterBottom="true" Class="mt-4">Sign In</MudText>
 
     <MudText>Don't have an account?
-        <MudLink Href="@Register.PageUrl">Sign Up</MudLink>
+        <MudLink Href="@Register.PageUri">Sign Up</MudLink>
     </MudText>
 
     <MudTextField T="string" @bind-Value="@_model.LoginName" Required="true" Label="Username"
@@ -54,7 +54,6 @@
 
 
 @code {
-    public const string PageUrl = "/account/login";
     [Inject] ApiClient ApiClient { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
     [Inject] AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
