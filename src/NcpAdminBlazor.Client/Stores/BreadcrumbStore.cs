@@ -11,6 +11,7 @@ public sealed class BreadcrumbStore : IDisposable
     private readonly NavigationManager _navigationManager;
     private readonly MenuProvider _menuProvider;
 
+    public IReadOnlyList<BreadcrumbItem> CurrentItems { get; private set; } = [];
     public event Action<List<BreadcrumbItem>>? OnBreadcrumbsChanged;
 
     public BreadcrumbStore(NavigationManager navigationManager, MenuProvider menuProvider)
@@ -44,13 +45,13 @@ public sealed class BreadcrumbStore : IDisposable
             // 核心步骤：通过 Parent 属性向上回溯，构建面包屑
             while (node != null)
             {
-                var isDisabled = node == currentMenuItem; // 只有当前页面是禁用的
                 breadcrumbItems.Insert(0,
-                    new BreadcrumbItem(node.Title, href: isDisabled ? null : node.Href, disabled: isDisabled));
+                    new BreadcrumbItem(node.Title, href: null, disabled: true, icon: node.Icon));
                 node = node.Parent;
             }
         }
 
+        CurrentItems = breadcrumbItems;
         OnBreadcrumbsChanged?.Invoke(breadcrumbItems);
     }
 

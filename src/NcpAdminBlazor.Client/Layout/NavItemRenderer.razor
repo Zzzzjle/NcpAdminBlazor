@@ -1,0 +1,23 @@
+@using NcpAdminBlazor.Client.Models
+@* This component decides whether to render a link or a group *@
+
+@if (Item.ChildItems != null && Item.ChildItems.Any())
+{
+    @* If there are children, render a group and then call this component again for each child. *@
+    <MudNavGroup Title="@Item.Title" Icon="@Item.Icon" Expanded="false">
+        @foreach (var childItem in Item.ChildItems)
+        {
+            <NavItemRenderer Item="childItem" />
+        }
+    </MudNavGroup>
+}
+else
+{
+    @* If there are no children, this is the end of the line (the "base case"). Just render a link. *@
+    <MudNavLink Href="@Item.Href" Icon="@Item.Icon">@Item.Title</MudNavLink>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public MenuItem Item { get; set; } = null!;
+}

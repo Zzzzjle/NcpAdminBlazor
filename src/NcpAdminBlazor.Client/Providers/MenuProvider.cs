@@ -1,5 +1,9 @@
 using MudBlazor;
 using NcpAdminBlazor.Client.Models;
+using NcpAdminBlazor.Client.Pages.Applications.Chat;
+using NcpAdminBlazor.Client.Pages.Applications.Email;
+using NcpAdminBlazor.Client.Pages.Pages.Utility;
+using NcpAdminBlazor.Client.Pages.Personal;
 
 namespace NcpAdminBlazor.Client.Providers;
 
@@ -14,17 +18,14 @@ public class MenuProvider
         var builder = new MenuBuilder();
 
         builder
-            .AddLink("首页", "/", Icons.Material.Filled.Home)
-            .AddGroup("系统设置", Icons.Material.Filled.Settings, settings =>
+            .AddGroup("概览", Icons.Material.Filled.Settings, settings =>
             {
-                // "settings" 这个 builder 在被创建时，内部已经持有了“系统设置”这个 MenuItem 作为父级
-                settings.AddLink("通用设置", "/settings/general"); // 这个链接的 Parent 会被自动设为“系统设置”
-                settings.AddLink("安全设置", "/settings/security"); // 同上
+                settings.AddLink("仪表盘", Dashboard.PageUri);
             })
-            .AddGroup("产品管理", Icons.Material.Filled.ShoppingBag, products =>
+            .AddGroup("App Examples", Icons.Material.Filled.ShoppingBag, products =>
             {
-                products.AddLink("产品列表", "/products");
-                products.AddLink("添加产品", "/products/add");
+                products.AddLink("Email", Email.PageUri,Icons.Material.Outlined.Email);
+                products.AddLink("Chat", Chat.PageUri, Icons.Material.Outlined.Forum);
             });
 
         _menuItems = builder.Items;

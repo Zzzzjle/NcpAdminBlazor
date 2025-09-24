@@ -58,7 +58,7 @@
 @code {
     [Inject] TokenAuthenticationStateProvider TokenAuthenticationStateProvider { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
-    [Inject] BreadcrumbStore BreadcrumbService { get; set; } = null!;
+    [Inject] BreadcrumbStore BreadcrumbStore { get; set; } = null!;
     [Inject] LayoutStore LayoutStore { get; set; } = null!;
     private bool _drawerOpen = true;
     private List<BreadcrumbItem> _breadcrumbItems = [];
@@ -66,7 +66,8 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        BreadcrumbService.OnBreadcrumbsChanged += UpdateBreadcrumbs;
+        BreadcrumbStore.OnBreadcrumbsChanged += UpdateBreadcrumbs;
+        _breadcrumbItems = BreadcrumbStore.CurrentItems.ToList();
     }
 
     private void UpdateBreadcrumbs(List<BreadcrumbItem> items)
@@ -77,7 +78,7 @@
 
     public void Dispose()
     {
-        BreadcrumbService.OnBreadcrumbsChanged -= UpdateBreadcrumbs;
+        BreadcrumbStore.OnBreadcrumbsChanged -= UpdateBreadcrumbs;
     }
 
     private void DrawerToggle()
