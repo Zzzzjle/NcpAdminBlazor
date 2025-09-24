@@ -1,4 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@using NcpAdminBlazor.Client.Pages.Pages.Authentication
 @using NcpAdminBlazor.Client.Stores
 @implements IDisposable
 
@@ -7,7 +9,24 @@
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 
-@Body
+@if (!RendererInfo.IsInteractive)
+{
+    <WasmLoading/>
+}
+else
+{
+    <AuthorizeView>
+        <Authorized>
+            @Body
+        </Authorized>
+        <Authorizing>
+            <Authing/>
+        </Authorizing>
+        <NotAuthorized>
+            <RedirectToLogin/>
+        </NotAuthorized>
+    </AuthorizeView>
+}
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.

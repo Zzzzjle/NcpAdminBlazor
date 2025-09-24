@@ -9,11 +9,11 @@
     <link href=@Assets["_content/MudBlazor/MudBlazor.min.css"] rel="stylesheet" />
     <ImportMap />
     <link rel="icon" type="image/ico" href="favicon.ico" />
-    <HeadOutlet @rendermode="@(new InteractiveWebAssemblyRenderMode(false))" />
+    <HeadOutlet @rendermode="InteractiveWebAssembly" />
 </head>
 
 <body>
-    <Routes @rendermode="@(new InteractiveWebAssemblyRenderMode(false))" />
+    <Routes @rendermode="InteractiveWebAssembly" />
     <script src="_framework/blazor.web.js"></script>
     <script src=@Assets["_content/MudBlazor/MudBlazor.min.js"]></script>
 </body>

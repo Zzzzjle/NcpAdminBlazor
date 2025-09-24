@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using MudBlazor.Services;
+using NcpAdminBlazor.Client.Stores;
 using NcpAdminBlazor.Web.Application.IntegrationEventHandlers;
 using NcpAdminBlazor.Web.Application.Queries;
 using NcpAdminBlazor.Web.AspNetCore;
@@ -238,6 +239,8 @@ try
     // Add services to the container.
     builder.Services.AddRazorComponents()
         .AddInteractiveWebAssemblyComponents();
+    
+    builder.Services.AddScoped<LayoutStore>();
 
     #endregion
 
