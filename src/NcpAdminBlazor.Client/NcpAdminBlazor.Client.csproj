@@ -22,4 +22,25 @@
     <ProjectReference Include="..\NcpAdminBlazor.Shared\NcpAdminBlazor.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Pages\Authentication\Authing.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Pages\Authentication\Forgot.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Pages\Authentication\Login.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Pages\Authentication\RedirectToLogin.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Pages\Authentication\Register.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Pages\Authentication\Reset.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Pages\Authentication\_Imports.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Pages\Authentication\Authing.razor" />
+    <AdditionalFiles Include="Pages\Authentication\Forgot.razor" />
+    <AdditionalFiles Include="Pages\Authentication\Login.razor" />
+    <AdditionalFiles Include="Pages\Authentication\RedirectToLogin.razor" />
+    <AdditionalFiles Include="Pages\Authentication\Register.razor" />
+    <AdditionalFiles Include="Pages\Authentication\Reset.razor" />
+    <AdditionalFiles Include="Pages\Authentication\_Imports.razor" />
+    <AdditionalFiles Include="Pages\Utility\Faq.razor" />
+  </ItemGroup>
+
 </Project>
