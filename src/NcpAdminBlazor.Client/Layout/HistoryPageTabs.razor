@@ -1,0 +1,105 @@
+@implements IDisposable
+@inject NavigationManager NavigationManager
+
+<div class="closable-button-container">
+    @foreach (var chip in _chips)
+    {
+        <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="@(() => OnChipClicked(chip))">
+            @chip.Title
+            <MudIconButton
+                OnClick="@(() => OnChipClosed(chip))"
+                Icon="@Icons.Material.Filled.Close"
+                Class="extra-small-icon-button"/>
+        </MudButton>
+    }
+</div>
+
+
+@code {
+
+    [CascadingParameter] private RouteData? RouteData { get; set; }
+
+    private readonly List<HistoryChipItem> _chips = [];
+    private string? _activeChipId;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (RouteData is null)
+        {
+            return;
+        }
+
+        var newRoute = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        if (string.IsNullOrEmpty(newRoute))
+        {
+            newRoute = "/";
+        }
+
+        // 设置当前激活的 Chip
+        _activeChipId = newRoute;
+
+        // 如果已存在，则不再添加
+        if (_chips.Any(c => c.Id == newRoute))
+        {
+            return;
+        }
+
+        // 创建新的 Chip
+        var newChip = new HistoryChipItem
+        {
+            Id = newRoute,
+            Title = GenerateTitleFromRoute(newRoute, RouteData.PageType),
+            IsCloseable = newRoute != "/" // 首页不可关闭
+        };
+
+        _chips.Add(newChip);
+    }
+
+    private void OnChipClicked(HistoryChipItem chip)
+    {
+        if (_activeChipId != chip.Id)
+        {
+            NavigationManager.NavigateTo(chip.Id);
+        }
+    }
+
+    private void OnChipClosed(HistoryChipItem chip)
+    {
+        var chipToRemove = _chips.FirstOrDefault(c => c.Id == chip.Id);
+        if (chipToRemove == null) return;
+
+        int closingIndex = _chips.IndexOf(chipToRemove);
+        bool wasActive = _activeChipId == chip.Id;
+
+        _chips.Remove(chipToRemove);
+
+        // 如果关闭的是当前激活的Chip，则需要导航到另一个页面
+        if (wasActive && _chips.Any())
+        {
+            // 导航到前一个（或新的第一个）
+            int newIndex = Math.Clamp(closingIndex - 1, 0, _chips.Count - 1);
+            NavigationManager.NavigateTo(_chips[newIndex].Id);
+        }
+    }
+
+    private string GenerateTitleFromRoute(string route, Type pageType)
+    {
+        if (route == "/") return "Home";
+        var title = pageType.Name;
+        return System.Text.RegularExpressions.Regex.Replace(title, "([A-Z])", " $1").Trim();
+    }
+
+    private class HistoryChipItem
+    {
+        public required string Id { get; set; } // The route
+        public required string Title { get; set; }
+        public bool IsCloseable { get; set; } = true;
+    }
+
+    public void Dispose()
+    {
+    }
+
+}

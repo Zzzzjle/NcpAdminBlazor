@@ -7,37 +7,44 @@
 @implements IDisposable
 
 <MudLayout>
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" OnClick="@DrawerToggle"/>
-        <MudBreadcrumbs Items="_breadcrumbItems"></MudBreadcrumbs>
-        <MudSpacer/>
-        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
-        <MudMenu Icon="@Icons.Material.Outlined.Translate" Color="Color.Inherit" Dense="true">
-            <MudMenuItem>English</MudMenuItem>
-            <MudMenuItem>Swedish</MudMenuItem>
-            <MudMenuItem>Old Norse</MudMenuItem>
-        </MudMenu>
-        <MudMenu Icon="@Icons.Material.Outlined.Widgets" Color="Color.Inherit" Dense="true">
-            <MudMenuItem Href="https://mudblazor.com/">MudBlazor</MudMenuItem>
-            <MudMenuItem Href="https://github.com/Garderoben/MudBlazor.Templates">Source Code</MudMenuItem>
-        </MudMenu>
-        <MudMenu Class="ml-4">
-            <ActivatorContent>
-                <MudAvatar/>
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Icon="@Icons.Material.Outlined.Person"
-                             Href="/personal/account">
-                    Account
-                </MudMenuItem>
-                <MudMenuItem Icon="@Icons.Material.Outlined.Logout"
-                             OnClick="@Logout"
-                             Href="@Login.PageUri">
-                    Logout
-                </MudMenuItem>
-
-            </ChildContent>
-        </MudMenu>
+    <MudAppBar Class="appbar" Elevation="1" Gutters="false">
+        <MudStack Justify="Justify.Center" Class="border-solid" style="width:100%" Spacing="0">
+            <MudStack Row Style="height: 48px" Spacing="0">
+                <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" OnClick="@DrawerToggle"/>
+                <MudBreadcrumbs Class="py-3 px-1" Items="_breadcrumbItems"></MudBreadcrumbs>
+                <MudSpacer/>
+                <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
+                <MudMenu Icon="@Icons.Material.Outlined.Translate" Color="Color.Inherit" Dense="true">
+                    <MudMenuItem>English</MudMenuItem>
+                    <MudMenuItem>Swedish</MudMenuItem>
+                    <MudMenuItem>Old Norse</MudMenuItem>
+                </MudMenu>
+                <MudMenu Icon="@Icons.Material.Outlined.Widgets" Color="Color.Inherit" Dense="true">
+                    <MudMenuItem Href="https://mudblazor.com/">MudBlazor</MudMenuItem>
+                    <MudMenuItem Href="https://github.com/Garderoben/MudBlazor.Templates">Source Code</MudMenuItem>
+                </MudMenu>
+                <MudMenu Class="ml-4">
+                    <ActivatorContent>
+                        <MudAvatar Size="Size.Small"/>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudMenuItem Icon="@Icons.Material.Outlined.Person"
+                                     Href="/personal/account">
+                            Account
+                        </MudMenuItem>
+                        <MudMenuItem Icon="@Icons.Material.Outlined.Logout"
+                                     OnClick="@Logout"
+                                     Href="@Login.PageUri">
+                            Logout
+                        </MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
+            </MudStack>
+            <MudDivider></MudDivider>
+            <MudStack Row Spacing="1">
+                <HistoryPageTabs></HistoryPageTabs>
+            </MudStack>
+        </MudStack>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
         <MudDrawerHeader>
@@ -48,14 +55,16 @@
         </MudDrawerHeader>
         <NavMenu/>
     </MudDrawer>
+
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.False">
+        <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
             @Body
         </MudContainer>
     </MudMainContent>
 </MudLayout>
 
 @code {
+    [CascadingParameter] private RouteData? RouteData { get; set; }
     [Inject] TokenAuthenticationStateProvider TokenAuthenticationStateProvider { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
     [Inject] BreadcrumbStore BreadcrumbStore { get; set; } = null!;

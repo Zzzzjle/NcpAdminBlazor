@@ -10,7 +10,7 @@ public class LayoutStore
             field = value;
             OnDarkModeChanged?.Invoke(field);
         }
-    } = true;
+    } = false;
 
     public event Action<bool>? OnDarkModeChanged;
 }

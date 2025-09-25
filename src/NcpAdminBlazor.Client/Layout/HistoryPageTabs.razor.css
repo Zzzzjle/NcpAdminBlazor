@@ -1,0 +1,12 @@
+/* 1. Target the custom class on the button itself */
+::deep .extra-small-icon-button {
+    /* Set a smaller, fixed width and height */
+    width: 18px;
+    height: 18px;
+}
+
+/* 2. Target the icon *inside* the button */
+::deep .extra-small-icon-button .mud-icon-root {
+    /* Reduce the icon's font size */
+    font-size: 14px;
+}
