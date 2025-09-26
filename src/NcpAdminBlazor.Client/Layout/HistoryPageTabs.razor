@@ -1,57 +1,81 @@
+@using NcpAdminBlazor.Client.Providers
+@using NcpAdminBlazor.Client.Models
 @implements IDisposable
 @inject NavigationManager NavigationManager
+@inject MenuProvider MenuProvider
 
-<div class="closable-button-container">
-    @foreach (var chip in _chips)
-    {
-        <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="@(() => OnChipClicked(chip))">
-            @chip.Title
-            <MudIconButton
-                OnClick="@(() => OnChipClosed(chip))"
-                Icon="@Icons.Material.Filled.Close"
-                Class="extra-small-icon-button"/>
-        </MudButton>
-    }
+<div class="closable-button-container pl-2">
+    <MudStack Row Spacing="1">
+        @foreach (var chip in _chips)
+        {
+            <MudButton
+                Variant="Variant.Text"
+                Color="@(_activeChipId == chip.Id ? Color.Primary : Color.Default)"
+                OnClick="@(() => OnChipClicked(chip))"
+                Ripple="false">
+                @chip.Title
+                @if (chip.IsCloseable)
+                {
+                    <MudIconButton
+                        OnClick="@(() => OnChipClosed(chip))"
+                        Icon="@Icons.Material.Filled.Close"
+                        Class="extra-small-icon-button"/>
+                }
+            </MudButton>
+        }
+    </MudStack>
 </div>
 
-
 @code {
-
-    [CascadingParameter] private RouteData? RouteData { get; set; }
-
-    private readonly List<HistoryChipItem> _chips = [];
+    // 使用 static 字段来在导航之间持久化标签列表
+    private static readonly List<HistoryChipItem> _chips = [];
+    
+    // 当前激活的标签ID，非静态，随组件实例更新
     private string? _activeChipId;
 
-    protected override void OnParametersSet()
+    protected override void OnInitialized()
     {
-        base.OnParametersSet();
+        // 订阅路由变化事件，这是最可靠的更新方式
+        NavigationManager.LocationChanged += OnLocationChanged;
+        
+        // 为当前页面初始化或更新标签
+        UpdateTabsForCurrentLocation();
+    }
 
-        if (RouteData is null)
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        // 路由变化时，更新标签并强制刷新UI
+        UpdateTabsForCurrentLocation();
+        StateHasChanged();
+    }
+
+    private void UpdateTabsForCurrentLocation()
+    {
+        var currentRoute = $"/{NavigationManager.ToBaseRelativePath(NavigationManager.Uri)}";
+        if (string.IsNullOrEmpty(currentRoute) || currentRoute == "/")
+        {
+            currentRoute = "/"; // 规范化首页路由
+        }
+
+        // 1. 设置当前激活的标签ID
+        _activeChipId = currentRoute;
+
+        // 2. 如果标签已存在，则无需任何操作
+        if (_chips.Any(c => c.Id == currentRoute))
         {
             return;
         }
 
-        var newRoute = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        if (string.IsNullOrEmpty(newRoute))
-        {
-            newRoute = "/";
-        }
+        // 3. 如果是新标签，则创建并添加
+        // 参考 BreadcrumbStore 的逻辑，从 MenuProvider 获取标题
+        var menuItem = FindMenuItemByHref(MenuProvider.MenuItems, currentRoute);
+        var title = menuItem?.Title ?? GenerateFallbackTitle(currentRoute);
 
-        // 设置当前激活的 Chip
-        _activeChipId = newRoute;
-
-        // 如果已存在，则不再添加
-        if (_chips.Any(c => c.Id == newRoute))
-        {
-            return;
-        }
-
-        // 创建新的 Chip
         var newChip = new HistoryChipItem
         {
-            Id = newRoute,
-            Title = GenerateTitleFromRoute(newRoute, RouteData.PageType),
-            IsCloseable = newRoute != "/" // 首页不可关闭
+            Id = currentRoute,
+            Title = title,
+            IsCloseable = currentRoute != "/" // 首页不可关闭
         };
 
         _chips.Add(newChip);
@@ -67,39 +91,59 @@
 
     private void OnChipClosed(HistoryChipItem chip)
     {
-        var chipToRemove = _chips.FirstOrDefault(c => c.Id == chip.Id);
-        if (chipToRemove == null) return;
+        // 从静态列表中移除
+        _chips.Remove(chip);
 
-        int closingIndex = _chips.IndexOf(chipToRemove);
-        bool wasActive = _activeChipId == chip.Id;
-
-        _chips.Remove(chipToRemove);
-
-        // 如果关闭的是当前激活的Chip，则需要导航到另一个页面
-        if (wasActive && _chips.Any())
+        // 如果关闭的是当前激活的标签，则导航到相邻的标签
+        if (_activeChipId == chip.Id && _chips.Any())
         {
-            // 导航到前一个（或新的第一个）
-            int newIndex = Math.Clamp(closingIndex - 1, 0, _chips.Count - 1);
-            NavigationManager.NavigateTo(_chips[newIndex].Id);
+            // 导航到最后一个标签页，体验更自然
+            NavigationManager.NavigateTo(_chips.Last().Id);
         }
     }
 
-    private string GenerateTitleFromRoute(string route, Type pageType)
+    // 从 MenuProvider 查找菜单项的核心逻辑
+    private static MenuItem? FindMenuItemByHref(IEnumerable<MenuItem> items, string href)
     {
-        if (route == "/") return "Home";
-        var title = pageType.Name;
-        return System.Text.RegularExpressions.Regex.Replace(title, "([A-Z])", " $1").Trim();
+        MenuItem? bestMatch = null;
+        foreach (var item in items)
+        {
+            if (item.Href != null && href.StartsWith(item.Href, StringComparison.OrdinalIgnoreCase) &&
+                (bestMatch == null || item.Href.Length > bestMatch.Href!.Length))
+            {
+                bestMatch = item;
+            }
+
+            if (item.ChildItems is null || item.ChildItems.Count == 0) continue;
+            var childMatch = FindMenuItemByHref(item.ChildItems, href);
+            if (childMatch != null && (bestMatch == null || childMatch.Href!.Length > bestMatch.Href!.Length))
+            {
+                bestMatch = childMatch;
+            }
+        }
+        return bestMatch;
     }
 
+    // 当无法从菜单中找到标题时的备用方法
+    private static string GenerateFallbackTitle(string route)
+    {
+        if (route == "/") return "首页";
+        var lastSegment = route.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s));
+        // 将 "PageName" 转换为 "Page Name"
+        return System.Text.RegularExpressions.Regex.Replace(lastSegment ?? "Page", "([A-Z])", " $1").Trim();
+    }
+    
+    // 必须实现 IDisposable 来取消订阅，防止内存泄漏
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+    // 数据模型 (建议将其移至一个共享的 Models 文件夹)
     private class HistoryChipItem
     {
-        public required string Id { get; set; } // The route
+        public required string Id { get; set; }
         public required string Title { get; set; }
         public bool IsCloseable { get; set; } = true;
     }
-
-    public void Dispose()
-    {
-    }
-
 }
