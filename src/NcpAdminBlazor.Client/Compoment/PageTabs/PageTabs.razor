@@ -27,27 +27,73 @@
 </div>
 
 @code {
-    // 使用 static 字段来在导航之间持久化标签列表
-    private static readonly List<HistoryChipItem> _chips = [];
-    
-    // 当前激活的标签ID，非静态，随组件实例更新
-    private string? _activeChipId;
+
+    /// <summary>
+    /// 定义一个公共事件，当标签页关闭时触发。
+    /// 其他持有本组件引用的组件可以订阅此事件。
+    /// </summary>
+    public event Action<string>? OnTabClosed;
+
 
     protected override void OnInitialized()
     {
-        // 订阅路由变化事件，这是最可靠的更新方式
         NavigationManager.LocationChanged += OnLocationChanged;
-        
-        // 为当前页面初始化或更新标签
-        UpdateTabsForCurrentLocation();
+        HandleLocationChange(NavigationManager.Uri);
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        // 路由变化时，更新标签并强制刷新UI
-        UpdateTabsForCurrentLocation();
-        StateHasChanged();
+        HandleLocationChange(e.Location);
+        InvokeAsync(StateHasChanged);
     }
+
+    private string GetCurrentRoute(string location)
+    {
+        var r = $"/{NavigationManager.ToBaseRelativePath(location)}";
+        return string.IsNullOrEmpty(r) || r == "/app/" ? "/" : r;
+    }
+
+    private void HandleLocationChange(string newLocation)
+    {
+        var currentRoute = GetCurrentRoute(newLocation);
+        _activeChipId = currentRoute;
+
+        if (!_chips.Any(c => c.Id == currentRoute))
+        {
+            var menuItem = FindMenuItemByHref(MenuProvider.MenuItems, currentRoute);
+            var title = menuItem?.Title ?? GenerateFallbackTitle(currentRoute);
+            _chips.Add(new HistoryChipItem { Id = currentRoute, Title = title, IsCloseable = currentRoute != "/" });
+        }
+    }
+
+    private void OnChipClicked(HistoryChipItem chip)
+    {
+        if (_activeChipId != chip.Id)
+        {
+            NavigationManager.NavigateTo(chip.Id);
+        }
+    }
+
+    private void OnChipClosed(MouseEventArgs e, HistoryChipItem chip)
+    {
+        var index = _chips.IndexOf(chip);
+        _chips.Remove(chip);
+
+        // 触发公共事件，通知任何正在监听的组件
+        OnTabClosed?.Invoke(chip.Id);
+
+        if (_activeChipId == chip.Id && _chips.Any())
+        {
+            var newIndex = Math.Max(0, index - 1);
+            NavigationManager.NavigateTo(_chips[newIndex].Id);
+        }
+    }
+
+    // 使用 static 字段来在导航之间持久化标签列表
+    private static readonly List<HistoryChipItem> _chips = [];
+
+    // 当前激活的标签ID，非静态，随组件实例更新
+    private string? _activeChipId;
 
     private void UpdateTabsForCurrentLocation()
     {
@@ -79,14 +125,6 @@
         };
 
         _chips.Add(newChip);
-    }
-
-    private void OnChipClicked(HistoryChipItem chip)
-    {
-        if (_activeChipId != chip.Id)
-        {
-            NavigationManager.NavigateTo(chip.Id);
-        }
     }
 
     private void OnChipClosed(HistoryChipItem chip)
@@ -121,6 +159,7 @@
                 bestMatch = childMatch;
             }
         }
+
         return bestMatch;
     }
 
@@ -132,7 +171,7 @@
         // 将 "PageName" 转换为 "Page Name"
         return System.Text.RegularExpressions.Regex.Replace(lastSegment ?? "Page", "([A-Z])", " $1").Trim();
     }
-    
+
     // 必须实现 IDisposable 来取消订阅，防止内存泄漏
     public void Dispose()
     {
@@ -146,4 +185,5 @@
         public required string Title { get; set; }
         public bool IsCloseable { get; set; } = true;
     }
+
 }

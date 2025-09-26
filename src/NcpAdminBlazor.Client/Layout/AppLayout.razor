@@ -1,3 +1,4 @@
+@using NcpAdminBlazor.Client.Compoment.PageTabs
 @using NcpAdminBlazor.Client.Pages.Authentication
 @using NcpAdminBlazor.Client.Providers
 @using NcpAdminBlazor.Client.Stores
@@ -41,7 +42,7 @@
                 </MudMenu>
             </MudStack>
             <MudDivider></MudDivider>
-                <HistoryPageTabs></HistoryPageTabs>
+            <PageTabs @ref="_pageTabs"></PageTabs>
         </MudStack>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
@@ -56,7 +57,9 @@
 
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
-            @Body
+            <PageContainer ParentTabsBar="_pageTabs">
+                @Body
+            </PageContainer>
         </MudContainer>
     </MudMainContent>
 </MudLayout>
@@ -67,6 +70,7 @@
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
     [Inject] BreadcrumbStore BreadcrumbStore { get; set; } = null!;
     [Inject] LayoutStore LayoutStore { get; set; } = null!;
+    private PageTabs _pageTabs = null!;
     private bool _drawerOpen = true;
     private List<BreadcrumbItem> _breadcrumbItems = [];
 
