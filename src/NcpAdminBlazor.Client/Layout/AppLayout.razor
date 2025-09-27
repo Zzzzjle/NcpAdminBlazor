@@ -1,4 +1,4 @@
-@using NcpAdminBlazor.Client.Compoment.PageTabs
+@using NcpAdminBlazor.Client.Component.PageTabs
 @using NcpAdminBlazor.Client.Pages.Authentication
 @using NcpAdminBlazor.Client.Providers
 @using NcpAdminBlazor.Client.Stores
@@ -57,7 +57,7 @@
 
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
-            <PageContainer ParentTabsBar="_pageTabs">
+            <PageContainer PageTabs="_pageTabs">
                 @Body
             </PageContainer>
         </MudContainer>

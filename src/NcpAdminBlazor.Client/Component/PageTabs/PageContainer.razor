@@ -1,0 +1,70 @@
+@implements IDisposable
+
+@foreach (var route in _openedRoutes)
+{
+    <div class="@(_activeRoute == route ? "" : "d-none")" @key="@($"{route}%")">
+        <ConditionalRender Value="@(route == GetCurrentRoute())">
+            @ChildContent
+        </ConditionalRender>
+    </div>
+}
+
+@code {
+    [Parameter] public required PageTabs? PageTabs { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Inject] NavigationManager NavigationManager { get; set; } = null!;
+
+    private readonly List<string> _openedRoutes = [];
+    private string? _activeRoute;
+    private bool _isSubscribed;
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+        var url = GetCurrentRoute();
+        _openedRoutes.Add(url);
+        _activeRoute = url;
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (_isSubscribed || PageTabs is null) return;
+        PageTabs.OnTabClosed += OnTabClosedByEvent;
+        _isSubscribed = true;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        _activeRoute = GetCurrentRoute(e.Location);
+        if (!_openedRoutes.Contains(_activeRoute))
+        {
+            _openedRoutes.Add(_activeRoute);
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnTabClosedByEvent(string closedRoute)
+    {
+        if (_openedRoutes.Contains(closedRoute))
+        {
+            _openedRoutes.Remove(closedRoute);
+        }
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+        if (PageTabs is not null && _isSubscribed)
+        {
+            PageTabs.OnTabClosed -= OnTabClosedByEvent;
+        }
+    }
+
+    private string GetCurrentRoute(string? location = null)
+    {
+        var u = location ?? NavigationManager.Uri;
+        return $"/{NavigationManager.ToBaseRelativePath(u)}";
+    }
+
+}

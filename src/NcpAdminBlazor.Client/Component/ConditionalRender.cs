@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 
-namespace NcpAdminBlazor.Client.Compoment;
+namespace NcpAdminBlazor.Client.Component;
 
 public class ConditionalRender : ComponentBase
 {

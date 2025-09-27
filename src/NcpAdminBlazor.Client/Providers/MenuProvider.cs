@@ -1,5 +1,6 @@
 using MudBlazor;
 using NcpAdminBlazor.Client.Models;
+using NcpAdminBlazor.Client.Pages;
 using NcpAdminBlazor.Client.Pages.Applications.Chat;
 using NcpAdminBlazor.Client.Pages.Applications.Email;
 using NcpAdminBlazor.Client.Pages.Applications.User;
@@ -18,8 +19,9 @@ public class MenuProvider
         var builder = new MenuBuilder();
 
         builder
+            .AddLink("首页", Home.PageUri, Icons.Material.Filled.Home)
             .AddGroup("概览", Icons.Material.Filled.Settings,
-                settings => { settings.AddLink("仪表盘", Dashboard.PageUri2()); })
+                settings => { settings.AddLink("仪表盘", Dashboard.PageUri); })
             .AddGroup("系统管理", Icons.Material.Filled.ManageAccounts, system =>
             {
                 system.AddLink("用户管理", UserList.PageUri, Icons.Material.Outlined.People);
