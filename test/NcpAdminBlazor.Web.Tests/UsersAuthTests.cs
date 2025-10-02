@@ -1,32 +1,35 @@
 using System.Net;
 using System.Net.Http.Headers;
 using FastEndpoints.Security;
+using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
+using NcpAdminBlazor.Web.Application.Queries;
 using NcpAdminBlazor.Web.Endpoints.Users;
 using NcpAdminBlazor.Web.Tests.Fixtures;
 
 namespace NcpAdminBlazor.Web.Tests;
 
 [Collection(WebAppTestCollection.Name)]
-public class UsersEndpointsTests(WebAppFixture app, UsersEndpointsTests.UserState state)
-    : TestBase<WebAppFixture, UsersEndpointsTests.UserState>
+public class UsersAuthTests(WebAppFixture app, UsersAuthTests.UserState state)
+    : TestBase<WebAppFixture, UsersAuthTests.UserState>
 {
     [Fact, Priority(1)]
     public async Task RegisterUser_ShouldReturn200_AndUserId()
     {
         // Act
-        var (rsp, res) = await app.DefaultClient
+        var (rsp, res) = await app.Client
             .POSTAsync<RegisterUserEndpoint, RegisterUserRequest, ResponseData<RegisterUserResponse>>(
                 new RegisterUserRequest(UserState.Username, UserState.Password));
         // Assert
         rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
         res.Data.UserId.Id.ShouldBeGreaterThan(0);
+        state.RegisteredUserId = res.Data.UserId;
     }
 
     [Fact, Priority(2)]
     public async Task Login_ShouldReturn_TokenEnvelope()
     {
         // Act: 登录
-        var (rsp, res) = await app.DefaultClient
+        var (rsp, res) = await app.Client
             .POSTAsync<LoginEndpoint, LoginRequest, ResponseData<TokenResponse>>(
                 new LoginRequest(UserState.Username, UserState.Password));
 
@@ -46,7 +49,7 @@ public class UsersEndpointsTests(WebAppFixture app, UsersEndpointsTests.UserStat
                     throw new InvalidOperationException(
                         "Token is null, ensure that Login_ShouldReturn_TokenEnvelope runs before this test.");
         // Act: 刷新令牌（端点允许匿名访问）
-        var (rsp, res) = await app.DefaultClient
+        var (rsp, res) = await app.Client
             .POSTAsync<RefreshEndpoint, TokenRequest, ResponseData<TokenResponse>>(
                 new TokenRequest { UserId = token.UserId, RefreshToken = token.RefreshToken });
 
@@ -56,7 +59,7 @@ public class UsersEndpointsTests(WebAppFixture app, UsersEndpointsTests.UserStat
         res.Data.AccessToken.ShouldNotBeNullOrWhiteSpace();
         res.Data.RefreshToken.ShouldNotBeNullOrWhiteSpace();
     }
-
+    
     [Fact, Priority(4)]
     public async Task Profile_ShouldReturn_CurrentUserPayload()
     {
@@ -64,24 +67,37 @@ public class UsersEndpointsTests(WebAppFixture app, UsersEndpointsTests.UserStat
         var token = state.Token?.AccessToken ?? throw new InvalidOperationException(
             "Token is null, ensure that Login_ShouldReturn_TokenEnvelope runs before this test.");
 
-        app.DefaultClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        try
-        {
-            // Act
-            var (rsp, res) = await app.DefaultClient.GETAsync<ProfileEndpoint, object>();
+        app.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            // Assert
-            rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
-            res.ShouldNotBeNull();
-        }
-        finally
-        {
-            app.DefaultClient.DefaultRequestHeaders.Authorization = null;
-        }
+        // Act
+        var (rsp, res) = await app.Client
+            .GETAsync<ProfileEndpoint, ResponseData<UserInfoDto>>();
+
+        // Assert
+        rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        res.Success.ShouldBeTrue();
+        res.Data.Name.ShouldBe(UserState.Username);
+    }
+    
+    [Fact, Priority(5)]
+    public async Task UserInfo_ShouldReturn_DetailedProfile()
+    {
+        var userId = state.RegisteredUserId ?? throw new InvalidOperationException("UserId not initialized");
+
+        // Act
+        var (rsp, res) = await app.Client
+            .GETAsync<UserInfoEndpoint, UserInfoRequest, ResponseData<UserInfoDto>>(
+                new UserInfoRequest { UserId = userId.Id });
+
+        // Assert
+        rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        res.Success.ShouldBeTrue();
+        res.Data.Id.ShouldBe(userId);
+        res.Data.Name.ShouldBe(UserState.Username);
     }
 
     /// <summary>
-    /// use for sharing state between UserEndpointTests
+    /// use for sharing state between UsersAuthTests
     /// </summary>
     // ReSharper disable once ClassNeverInstantiated.Global
     public sealed class UserState : StateFixture
@@ -90,6 +106,7 @@ public class UsersEndpointsTests(WebAppFixture app, UsersEndpointsTests.UserStat
         public const string Password = "Test@1234";
 
         public TokenResponse? Token;
+        public ApplicationUserId? RegisteredUserId;
 
         protected override async ValueTask SetupAsync()
         {

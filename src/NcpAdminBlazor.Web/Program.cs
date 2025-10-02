@@ -20,6 +20,7 @@ using NcpAdminBlazor.Client.Stores;
 using NcpAdminBlazor.Web.Application.IntegrationEventHandlers;
 using NcpAdminBlazor.Web.Application.Queries;
 using NcpAdminBlazor.Web.AspNetCore;
+using NcpAdminBlazor.Web.AspNetCore.Middlewares;
 using NcpAdminBlazor.Web.AspNetCore.ApiKey;
 using NcpAdminBlazor.Web.AspNetCore.Permission;
 using NcpAdminBlazor.Web.Clients;
@@ -259,7 +260,9 @@ try
     app.UseStaticFiles();
     app.UseHttpsRedirection();
     app.UseRouting();
+    app.UseAuthentication();
     app.UseAuthorization();
+    app.UseMiddleware<CurrentUserMiddleware>();
 
     app.UseAntiforgery();
 

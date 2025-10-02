@@ -15,7 +15,7 @@
     <PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="8.3.2" />
     <PackageReference Include="FastEndpoints" Version="$(FastEndpointsVersion)" />
     <PackageReference Include="FastEndpoints.ClientGen.Kiota" Version="$(FastEndpointsVersion)" />
-    <PackageReference Include="FastEndpoints.Generator" Version="7.0.1">
+    <PackageReference Include="FastEndpoints.Generator" Version="$(FastEndpointsVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -62,12 +62,6 @@
     <ProjectReference Include="..\NcpAdminBlazor.Domain\NcpAdminBlazor.Domain.csproj" />
     <ProjectReference Include="..\NcpAdminBlazor.Infrastructure\NcpAdminBlazor.Infrastructure.csproj" />
     <ProjectReference Include="..\NcpAdminBlazor.Shared\NcpAdminBlazor.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="Components\App.razor" />
-    <AdditionalFiles Include="Components\Pages\Error.razor" />
-    <AdditionalFiles Include="Components\_Imports.razor" />
   </ItemGroup>
 
   <Target Name="ClientGen" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">

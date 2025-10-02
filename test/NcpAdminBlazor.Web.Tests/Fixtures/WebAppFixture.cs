@@ -1,9 +1,7 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Testcontainers.MySql;
 using Testcontainers.RabbitMq;
 using Testcontainers.Redis;
-using System.Net.Http.Headers;
 
 namespace NcpAdminBlazor.Web.Tests.Fixtures;
 
@@ -13,10 +11,6 @@ public class WebAppFixture : AppFixture<Program>
     private RedisContainer _redisContainer = null!;
     private RabbitMqContainer _rabbitMqContainer = null!;
     private MySqlContainer _mySqlContainer = null!;
-
-    public HttpClient DefaultClient { get; private set; } = null!;
-    public HttpClient AuthenticatedClient { get; private set; } = null!;
-
 
     protected override async ValueTask PreSetupAsync()
     {
@@ -43,23 +37,5 @@ public class WebAppFixture : AppFixture<Program>
         a.UseSetting("RabbitMQ:VirtualHost", "/");
         a.UseSetting("RabbitMQ:HostName", _rabbitMqContainer.Hostname);
         a.UseEnvironment("Development");
-    }
-
-    protected override void ConfigureServices(IServiceCollection s)
-    {
-        // 添加伪造认证方案
-        s.AddAuthentication(TestAuthConstants.SchemeName)
-            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
-                TestAuthConstants.SchemeName, _ => { });
-    }
-
-    protected override ValueTask SetupAsync()
-    {
-        DefaultClient = CreateClient();
-        AuthenticatedClient = CreateClient(c =>
-        {
-            c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TestAuthConstants.SchemeName);
-        });
-        return ValueTask.CompletedTask;
     }
 }

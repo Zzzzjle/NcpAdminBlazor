@@ -34,28 +34,26 @@ namespace NcpAdminBlazor.Client.Api.User.Item.Profile
         {
         }
         /// <summary>
-        /// 用户信息
+        /// 根据用户ID获取详细资料，包括角色与权限
         /// </summary>
-        /// <returns>A <see cref="global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfUserInfoResponse"/></returns>
+        /// <returns>A <see cref="global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfUserInfoDto"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
-        /// <exception cref="global::NcpAdminBlazor.Client.Models.FastEndpointsErrorResponse">When receiving a 400 status code</exception>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfUserInfoResponse?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfUserInfoDto?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfUserInfoResponse> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfUserInfoDto> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            var errorMapping = new Dictionary<string, ParsableFactory<IParsable>>
-            {
-                { "400", global::NcpAdminBlazor.Client.Models.FastEndpointsErrorResponse.CreateFromDiscriminatorValue },
-            };
-            return await RequestAdapter.SendAsync<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfUserInfoResponse>(requestInfo, global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfUserInfoResponse.CreateFromDiscriminatorValue, errorMapping, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfUserInfoDto>(requestInfo, global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfUserInfoDto.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
+        /// <summary>
+        /// 根据用户ID获取详细资料，包括角色与权限
+        /// </summary>
         /// <returns>A <see cref="RequestInformation"/></returns>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER

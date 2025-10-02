@@ -21,7 +21,7 @@ sealed class UserPermissionHydrator(UserPermissionService userPermissionService)
         ArgumentNullException.ThrowIfNull(userId);
 
         // 从缓存读取所有权限代码加载到权限声明列表
-        var userPermissions = await userPermissionService.GetPermissionsForUser(userId);
+        var userPermissions = await userPermissionService.GetPermissionsForUserAsync(userId);
         if (userPermissions.Any())
             principal.AddIdentity(new(userPermissions.Select(p => new Claim("permissions", p))));
 
@@ -31,11 +31,19 @@ sealed class UserPermissionHydrator(UserPermissionService userPermissionService)
 
 sealed class UserPermissionService
 {
-    public Task<string[]> GetPermissionsForUser(string userId)
+    private readonly string[] _defaultPermissions =
+    [
+        "pms1",
+        "pms2",
+        "pms3",
+        "user.create",
+        "System.Users.Delete"
+    ];
 
+    public Task<string[]> GetPermissionsForUserAsync(string userId)
+    {
         // fetch the user's permissions from a db or cache here
-        => Task.FromResult(
-            userId == "123"
-                ? ["pms1", "pms2", "pms3","user.create"]
-                : Array.Empty<string>());
+        var permissions = userId == "123" ? _defaultPermissions : Array.Empty<string>();
+        return Task.FromResult(permissions);
+    }
 }

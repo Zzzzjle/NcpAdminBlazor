@@ -27,6 +27,7 @@ public sealed class RegisterUserEndpoint(IMediator mediator)
 /// 创建用户请求Payload
 /// </summary>
 /// <param name="Username">用户名</param>
+/// <param name="Password">密码</param>
 public sealed record RegisterUserRequest(string Username, string Password);
 
 /// <summary>
@@ -36,11 +37,14 @@ public sealed record RegisterUserRequest(string Username, string Password);
 public sealed record RegisterUserResponse(ApplicationUserId UserId);
 
 // webapi请求对象验证器
-internal sealed class CreateUserValidator : Validator<RegisterUserRequest>
+internal sealed class CreateUserValidator : AbstractValidator<RegisterUserRequest>
 {
     public CreateUserValidator()
     {
         RuleFor(x => x.Username).NotEmpty();
+        RuleFor(x => x.Password)
+            .NotEmpty()
+            .MinimumLength(6);
     }
 }
 

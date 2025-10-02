@@ -1,9 +1,11 @@
 using FastEndpoints;
+using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
+using NcpAdminBlazor.Web.Application.Queries;
 using NcpAdminBlazor.Web.AspNetCore;
 
 namespace NcpAdminBlazor.Web.Endpoints.Users;
 
-public class ProfileEndpoint(ICurrentUser currentUser) : EndpointWithoutRequest
+public class ProfileEndpoint(IMediator mediator, ICurrentUser currentUser) : EndpointWithoutRequest<ResponseData<UserInfoDto>>
 {
     public override void Configure()
     {
@@ -13,7 +15,9 @@ public class ProfileEndpoint(ICurrentUser currentUser) : EndpointWithoutRequest
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        await Send.OkAsync(currentUser, ct);
+        var userId = new ApplicationUserId(currentUser.UserId);
+        var dto = await mediator.Send(new GetUserInfoQuery(userId), ct);
+        await Send.OkAsync(dto.AsResponseData(), ct);
     }
 }
 
@@ -21,8 +25,8 @@ sealed class ProfileSummary : Summary<ProfileEndpoint>
 {
     public ProfileSummary()
     {
-        Summary = "用户信息";
-        Description = "Description text goes here...";
+        Summary = "获取当前用户信息";
+        Description = "返回当前登录用户的详细资料";
         
     }
 }

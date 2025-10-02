@@ -1,8 +1,10 @@
 using FastEndpoints;
+using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
+using NcpAdminBlazor.Web.Application.Queries;
 
 namespace NcpAdminBlazor.Web.Endpoints.Users;
 
-sealed class UserInfoEndpoint(IMediator mediator) : Endpoint<UserInfoRequest, ResponseData<UserInfoResponse>>
+public sealed class UserInfoEndpoint(IMediator mediator) : Endpoint<UserInfoRequest, ResponseData<UserInfoDto>>
 {
     public override void Configure()
     {
@@ -10,14 +12,15 @@ sealed class UserInfoEndpoint(IMediator mediator) : Endpoint<UserInfoRequest, Re
         Description(x => x.WithTags("User"));
     }
 
-    public override async Task HandleAsync(UserInfoRequest r, CancellationToken c)
+    public override async Task HandleAsync(UserInfoRequest r, CancellationToken ct)
     {
-        var res = new UserInfoResponse(r.UserId, "myName");
-        await Send.OkAsync(res.AsResponseData(), c);
+        var userId = new ApplicationUserId(r.UserId);
+        var dto = await mediator.Send(new GetUserInfoQuery(userId), ct);
+        await Send.OkAsync(dto.AsResponseData(), ct);
     }
 }
 
-sealed class UserInfoRequest
+public sealed class UserInfoRequest
 {
     [RouteParam] public long UserId { get; set; }
 
@@ -28,13 +31,12 @@ sealed class UserInfoRequest
     public UserInfoRequest(long userId) => UserId = userId;
 }
 
-sealed record UserInfoResponse(long UserId, string UserName);
-
-sealed class UserInfoValidator : Validator<UserInfoRequest>
+sealed class UserInfoValidator : AbstractValidator<UserInfoRequest>
 {
     public UserInfoValidator()
     {
-        // RuleFor(x => x.Property).NotEmpty();
+        RuleFor(x => x.UserId)
+            .GreaterThan(0);
     }
 }
 
@@ -42,7 +44,7 @@ sealed class UserInfoSummary : Summary<UserInfoEndpoint, UserInfoRequest>
 {
     public UserInfoSummary()
     {
-        Summary = "用户信息";
-        Description = "";
+        Summary = "获取指定用户信息";
+        Description = "根据用户ID获取详细资料，包括角色与权限";
     }
 }

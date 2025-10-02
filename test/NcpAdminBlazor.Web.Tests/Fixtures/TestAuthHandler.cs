@@ -3,6 +3,7 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NcpAdminBlazor.Shared.Auth;
 
 namespace NcpAdminBlazor.Web.Tests.Fixtures;
 
@@ -25,8 +26,11 @@ public class TestAuthHandler(
             new Claim(ClaimTypes.NameIdentifier, "123"),
             new Claim(ClaimTypes.Name, "Test User"),
             new Claim(ClaimTypes.Role, "Admin"),
-            // 添加测试所需的任何其他 Claim
         };
+        claims = claims
+            .Concat(AppPermissions
+                .GetAllPermissionKeys().Select(p => new Claim("permissions", p)))
+            .ToArray();
 
         var identity = new ClaimsIdentity(claims, "Test");
         var principal = new ClaimsPrincipal(identity);

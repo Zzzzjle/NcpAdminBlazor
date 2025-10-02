@@ -7,37 +7,36 @@ using System.IO;
 using System;
 namespace NcpAdminBlazor.Client.Models
 {
-    /// <summary>
-    /// 创建用户请求Payload
-    /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
-    public partial class NcpAdminBlazorWebEndpointsUsersRegisterUserRequest : IParsable
+    #pragma warning disable CS1591
+    public partial class NcpAdminBlazorWebApplicationQueriesUserRoleDto : IParsable
+    #pragma warning restore CS1591
     {
-        /// <summary>密码</summary>
+        /// <summary>The roleId property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public string? Password { get; set; }
+        public string? RoleId { get; set; }
 #nullable restore
 #else
-        public string Password { get; set; }
+        public string RoleId { get; set; }
 #endif
-        /// <summary>用户名</summary>
+        /// <summary>The roleName property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public string? Username { get; set; }
+        public string? RoleName { get; set; }
 #nullable restore
 #else
-        public string Username { get; set; }
+        public string RoleName { get; set; }
 #endif
         /// <summary>
         /// Creates a new instance of the appropriate class based on discriminator value
         /// </summary>
-        /// <returns>A <see cref="global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersRegisterUserRequest"/></returns>
+        /// <returns>A <see cref="global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUserRoleDto"/></returns>
         /// <param name="parseNode">The parse node to use to read the discriminator value and create the object</param>
-        public static global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersRegisterUserRequest CreateFromDiscriminatorValue(IParseNode parseNode)
+        public static global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUserRoleDto CreateFromDiscriminatorValue(IParseNode parseNode)
         {
             _ = parseNode ?? throw new ArgumentNullException(nameof(parseNode));
-            return new global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersRegisterUserRequest();
+            return new global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUserRoleDto();
         }
         /// <summary>
         /// The deserialization information for the current model
@@ -47,8 +46,8 @@ namespace NcpAdminBlazor.Client.Models
         {
             return new Dictionary<string, Action<IParseNode>>
             {
-                { "password", n => { Password = n.GetStringValue(); } },
-                { "username", n => { Username = n.GetStringValue(); } },
+                { "roleId", n => { RoleId = n.GetStringValue(); } },
+                { "roleName", n => { RoleName = n.GetStringValue(); } },
             };
         }
         /// <summary>
@@ -58,8 +57,8 @@ namespace NcpAdminBlazor.Client.Models
         public virtual void Serialize(ISerializationWriter writer)
         {
             _ = writer ?? throw new ArgumentNullException(nameof(writer));
-            writer.WriteStringValue("password", Password);
-            writer.WriteStringValue("username", Username);
+            writer.WriteStringValue("roleId", RoleId);
+            writer.WriteStringValue("roleName", RoleName);
         }
     }
 }

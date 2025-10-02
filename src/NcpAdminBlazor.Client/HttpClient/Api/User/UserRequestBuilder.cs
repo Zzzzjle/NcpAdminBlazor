@@ -4,6 +4,7 @@ using Microsoft.Kiota.Abstractions.Extensions;
 using Microsoft.Kiota.Abstractions;
 using NcpAdminBlazor.Client.Api.User.Create;
 using NcpAdminBlazor.Client.Api.User.Item;
+using NcpAdminBlazor.Client.Api.User.List;
 using NcpAdminBlazor.Client.Api.User.Login;
 using NcpAdminBlazor.Client.Api.User.Profile;
 using NcpAdminBlazor.Client.Api.User.RefreshToken;
@@ -23,6 +24,11 @@ namespace NcpAdminBlazor.Client.Api.User
         public global::NcpAdminBlazor.Client.Api.User.Create.CreateRequestBuilder Create
         {
             get => new global::NcpAdminBlazor.Client.Api.User.Create.CreateRequestBuilder(PathParameters, RequestAdapter);
+        }
+        /// <summary>The list property</summary>
+        public global::NcpAdminBlazor.Client.Api.User.List.ListRequestBuilder List
+        {
+            get => new global::NcpAdminBlazor.Client.Api.User.List.ListRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>The login property</summary>
         public global::NcpAdminBlazor.Client.Api.User.Login.LoginRequestBuilder Login
