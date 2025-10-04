@@ -6,6 +6,7 @@ using Microsoft.Kiota.Abstractions.Authentication;
 using Microsoft.Kiota.Http.HttpClientLibrary;
 using MudBlazor.Services;
 using NcpAdminBlazor.Client;
+using NcpAdminBlazor.Client.HttpClient.Auth;
 using NcpAdminBlazor.Client.Providers;
 using NcpAdminBlazor.Client.Stores;
 
@@ -13,18 +14,16 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.Services.AddMudServices();
 
-// 配置 HttpClient
+#region 配置 Kiota ApiClient
+
 builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
-// 配置 Kiota ApiClient
-builder.Services.AddScoped<IRequestAdapter>(sp =>
-{
-    var httpClient = sp.GetRequiredService<HttpClient>();
-    var authProvider = new AnonymousAuthenticationProvider(); // 或其他认证提供器
-    return new HttpClientRequestAdapter(authProvider, httpClient: httpClient);
-});
-
+builder.Services.AddScoped<IAccessTokenProvider, AccessTokenProvider>();
+builder.Services.AddScoped<IAuthenticationProvider, BaseBearerTokenAuthenticationProvider>();
+builder.Services.AddScoped<IRequestAdapter, HttpClientRequestAdapter>();
 builder.Services.AddScoped<ApiClient>();
+
+#endregion
+
 
 builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();

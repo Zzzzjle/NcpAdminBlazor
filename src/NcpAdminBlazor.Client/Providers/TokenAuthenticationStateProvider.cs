@@ -1,12 +1,11 @@
-﻿using System.Net.Http.Headers;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using NcpAdminBlazor.Client.Extensions;
 
 namespace NcpAdminBlazor.Client.Providers
 {
-    public class TokenAuthenticationStateProvider(HttpClient httpClient, ILocalStorageService localStorage)
+    public class TokenAuthenticationStateProvider(ILocalStorageService localStorage)
         : AuthenticationStateProvider
     {
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -16,16 +15,18 @@ namespace NcpAdminBlazor.Client.Providers
                 ? new ClaimsIdentity()
                 : new ClaimsIdentity(token.ParseClaimsFromJwt(), "jwt");
 
-            httpClient.DefaultRequestHeaders.Authorization = string.IsNullOrWhiteSpace(token)
-                ? null
-                : new AuthenticationHeaderValue("bearer", token);
-
             return new AuthenticationState(new ClaimsPrincipal(identity));
         }
 
-        public async Task Login(string token)
+        public async Task Login(string token,
+            string refreshToken,
+            DateTimeOffset? accessTokenExpiry,
+            DateTimeOffset? refreshTokenExpiry)
         {
             await localStorage.SetItemAsync("token", token);
+            await localStorage.SetItemAsync("refreshToken", refreshToken);
+            await localStorage.SetItemAsync("accessTokenExpiry", accessTokenExpiry);
+            await localStorage.SetItemAsync("refreshTokenExpiry", refreshTokenExpiry);
 
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
         }
@@ -33,9 +34,11 @@ namespace NcpAdminBlazor.Client.Providers
         public async Task Logout()
         {
             await localStorage.RemoveItemAsync("token");
+            await localStorage.RemoveItemAsync("refreshToken");
+            await localStorage.RemoveItemAsync("accessTokenExpiry");
+            await localStorage.RemoveItemAsync("refreshTokenExpiry");
 
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
         }
     }
-
 }

@@ -79,7 +79,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseDataOfTokenResponse"
+                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseDataOfMyTokenResponse"
                 }
               }
             }
@@ -144,7 +144,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseDataOfTokenResponse"
+                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseDataOfMyTokenResponse"
                 }
               }
             }
@@ -356,7 +356,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "NetCorePalExtensionsDtoResponseDataOfTokenResponse": {
+      "NetCorePalExtensionsDtoResponseDataOfMyTokenResponse": {
         "allOf": [
           {
             "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseData"
@@ -369,9 +369,30 @@
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/FastEndpointsSecurityTokenResponse"
+                    "$ref": "#/components/schemas/NcpAdminBlazorWebAspNetCoreMyTokenResponse"
                   }
                 ]
+              }
+            }
+          }
+        ]
+      },
+      "NcpAdminBlazorWebAspNetCoreMyTokenResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FastEndpointsSecurityTokenResponse"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "accessTokenExpiry": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "refreshTokenExpiry": {
+                "type": "string",
+                "format": "date-time"
               }
             }
           }

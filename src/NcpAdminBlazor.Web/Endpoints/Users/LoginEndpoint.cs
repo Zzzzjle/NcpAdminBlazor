@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Claims;
 using FastEndpoints;
 using FastEndpoints.Security;
@@ -14,7 +15,7 @@ namespace NcpAdminBlazor.Web.Endpoints.Users;
 public record LoginRequest(string Username, string Password);
 
 public class LoginEndpoint(IMediator mediator)
-    : Endpoint<LoginRequest, ResponseData<TokenResponse>>
+    : Endpoint<LoginRequest, ResponseData<MyTokenResponse>>
 {
     public override void Configure()
     {

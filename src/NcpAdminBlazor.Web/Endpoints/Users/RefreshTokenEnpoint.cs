@@ -4,7 +4,7 @@ using NcpAdminBlazor.Web.AspNetCore;
 
 namespace NcpAdminBlazor.Web.Endpoints.Users;
 
-public class RefreshEndpoint : Endpoint<TokenRequest, ResponseData<TokenResponse>>
+public class RefreshEndpoint : Endpoint<TokenRequest, ResponseData<MyTokenResponse>>
 {
     public override void Configure()
     {
@@ -16,7 +16,7 @@ public class RefreshEndpoint : Endpoint<TokenRequest, ResponseData<TokenResponse
     public override async Task HandleAsync(TokenRequest req, CancellationToken ct)
     {
         var svc = Resolve<UserTokenService>();
-        var envelope = await svc.CreateCustomToken<ResponseData<TokenResponse>>(
+        var envelope = await svc.CreateCustomToken<ResponseData<MyTokenResponse>>(
             userId: req.UserId,
             privileges: _ => { },
             map: tr => tr.AsResponseData(),

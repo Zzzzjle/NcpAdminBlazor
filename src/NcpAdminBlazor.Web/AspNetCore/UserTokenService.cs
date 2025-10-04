@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Claims;
 using FastEndpoints;
 using FastEndpoints.Security;
@@ -10,7 +11,7 @@ namespace NcpAdminBlazor.Web.AspNetCore;
 // accessToken管理
 // https://fast-endpoints.com/docs/security#jwt-refresh-tokens
 [DontRegister]
-public class UserTokenService : RefreshTokenService<TokenRequest, TokenResponse>
+public class UserTokenService : RefreshTokenService<TokenRequest, MyTokenResponse>
 {
     private readonly IMediator _mediator;
 
@@ -28,7 +29,7 @@ public class UserTokenService : RefreshTokenService<TokenRequest, TokenResponse>
     }
 
     // 保存当前用户刷新token
-    public override async Task PersistTokenAsync(TokenResponse rsp)
+    public override async Task PersistTokenAsync(MyTokenResponse rsp)
     {
         // 将刷新令牌持久化到用户聚合
         if (!ApplicationUserId.TryParse(rsp.UserId, out var userId))
@@ -80,4 +81,10 @@ public class UserTokenService : RefreshTokenService<TokenRequest, TokenResponse>
             new Claim(ClaimTypes.Name, username)
         ]);
     }
+}
+
+public class MyTokenResponse : TokenResponse
+{
+    public DateTimeOffset AccessTokenExpiry => AccessExpiry;
+    public DateTimeOffset RefreshTokenExpiry => RefreshExpiry;
 }

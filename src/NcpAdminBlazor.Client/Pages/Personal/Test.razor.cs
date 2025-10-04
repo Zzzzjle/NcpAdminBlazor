@@ -10,7 +10,7 @@ namespace NcpAdminBlazor.Client.Pages.Personal
 
 
         [Inject]
-        public HttpClient HttpClient { get; set; } = null!;
+        public System.Net.Http.HttpClient HttpClient { get; set; } = null!;
         protected async Task GetRecords()
         {
             Students = await HttpClient.GetFromJsonAsync<List<Student>>("/api/Students") ?? [];
