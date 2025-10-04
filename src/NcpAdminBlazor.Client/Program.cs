@@ -8,6 +8,7 @@ using MudBlazor.Services;
 using NcpAdminBlazor.Client;
 using NcpAdminBlazor.Client.HttpClient.Auth;
 using NcpAdminBlazor.Client.Providers;
+using NcpAdminBlazor.Client.Services;
 using NcpAdminBlazor.Client.Stores;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -21,6 +22,8 @@ builder.Services.AddScoped<IAccessTokenProvider, AccessTokenProvider>();
 builder.Services.AddScoped<IAuthenticationProvider, BaseBearerTokenAuthenticationProvider>();
 builder.Services.AddScoped<IRequestAdapter, HttpClientRequestAdapter>();
 builder.Services.AddScoped<ApiClient>();
+builder.Services.AddScoped<ITokenStorageService, TokenStorageService>();
+builder.Services.AddScoped<ITokenSessionService, TokenSessionService>();
 
 #endregion
 

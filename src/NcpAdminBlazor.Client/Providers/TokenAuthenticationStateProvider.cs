@@ -1,16 +1,17 @@
 ﻿using System.Security.Claims;
-using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using NcpAdminBlazor.Client.Extensions;
+using NcpAdminBlazor.Client.Services;
 
 namespace NcpAdminBlazor.Client.Providers
 {
-    public class TokenAuthenticationStateProvider(ILocalStorageService localStorage)
+    public class TokenAuthenticationStateProvider(ITokenStorageService tokenStorage)
         : AuthenticationStateProvider
     {
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var token = await localStorage.GetItemAsync<string>("token");
+            var snapshot = await tokenStorage.GetAsync();
+            var token = snapshot.AccessToken;
             var identity = string.IsNullOrWhiteSpace(token)
                 ? new ClaimsIdentity()
                 : new ClaimsIdentity(token.ParseClaimsFromJwt(), "jwt");
@@ -18,27 +19,7 @@ namespace NcpAdminBlazor.Client.Providers
             return new AuthenticationState(new ClaimsPrincipal(identity));
         }
 
-        public async Task Login(string token,
-            string refreshToken,
-            DateTimeOffset? accessTokenExpiry,
-            DateTimeOffset? refreshTokenExpiry)
-        {
-            await localStorage.SetItemAsync("token", token);
-            await localStorage.SetItemAsync("refreshToken", refreshToken);
-            await localStorage.SetItemAsync("accessTokenExpiry", accessTokenExpiry);
-            await localStorage.SetItemAsync("refreshTokenExpiry", refreshTokenExpiry);
-
+        public void RaiseAuthenticationStateChanged() =>
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-        }
-
-        public async Task Logout()
-        {
-            await localStorage.RemoveItemAsync("token");
-            await localStorage.RemoveItemAsync("refreshToken");
-            await localStorage.RemoveItemAsync("accessTokenExpiry");
-            await localStorage.RemoveItemAsync("refreshTokenExpiry");
-
-            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-        }
     }
 }

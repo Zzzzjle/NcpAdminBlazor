@@ -1,8 +1,7 @@
 ﻿@page "/account/login"
 @layout LoginLayout
-@using Microsoft.AspNetCore.Components.Authorization
 @using NcpAdminBlazor.Client.Models
-@using NcpAdminBlazor.Client.Providers
+@using NcpAdminBlazor.Client.Services
 
 @if (_showErrorAlert)
 {
@@ -56,7 +55,7 @@
 @code {
     [Inject] ApiClient ApiClient { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
-    [Inject] AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
+    [Inject] ITokenSessionService TokenSessionService { get; set; } = null!;
     private bool _showErrorAlert;
     private string _errorMessage = string.Empty;
     [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
@@ -89,12 +88,12 @@
             {
                 var data = result.Data;
                 // 通知认证状态更改
-                await (AuthStateProvider as TokenAuthenticationStateProvider
-                       ?? throw new InvalidOperationException("Authentication provider is not properly configured"))
-                    .Login(data.AccessToken,
-                        data.RefreshToken ?? string.Empty,
-                        data.AccessTokenExpiry,
-                        data.RefreshTokenExpiry);
+                await TokenSessionService.SignInAsync(
+                    data.AccessToken ?? string.Empty,
+                    data.RefreshToken ?? string.Empty,
+                    data.AccessTokenExpiry,
+                    data.RefreshTokenExpiry,
+                    data.UserId ?? string.Empty);
 
                 NavigationManager.NavigateTo("/");
             }

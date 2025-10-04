@@ -1,6 +1,7 @@
 @using NcpAdminBlazor.Client.Component.PageTabs
 @using NcpAdminBlazor.Client.Pages.Authentication
 @using NcpAdminBlazor.Client.Providers
+@using NcpAdminBlazor.Client.Services
 @using NcpAdminBlazor.Client.Stores
 
 @layout MainLayout
@@ -66,7 +67,7 @@
 
 @code {
     [CascadingParameter] private RouteData? RouteData { get; set; }
-    [Inject] TokenAuthenticationStateProvider TokenAuthenticationStateProvider { get; set; } = null!;
+    [Inject] ITokenSessionService TokenSessionService { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
     [Inject] BreadcrumbStore BreadcrumbStore { get; set; } = null!;
     [Inject] LayoutStore LayoutStore { get; set; } = null!;
@@ -110,8 +111,7 @@
 
     async Task Logout()
     {
-        await TokenAuthenticationStateProvider.Logout();
-        NavigationManager.NavigateTo(Login.PageUri);
+    await TokenSessionService.SignOutAsync();
     }
 
 }
