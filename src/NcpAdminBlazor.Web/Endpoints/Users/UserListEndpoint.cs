@@ -28,7 +28,7 @@ public sealed class UserListEndpoint(IMediator mediator)
     }
 }
 
-public sealed class GetUserListRequest
+public sealed class GetUserListRequest : IPageRequest
 {
     [QueryParam] public string? Username { get; set; }
     [QueryParam] public string? Email { get; set; }
@@ -36,6 +36,7 @@ public sealed class GetUserListRequest
     [QueryParam] public string? RealName { get; set; }
     [QueryParam] public int PageIndex { get; set; } = 1;
     [QueryParam] public int PageSize { get; set; } = 10;
+    [QueryParam] public bool CountTotal { get; set; } = true;
 }
 
 public sealed class GetUserListRequestValidator : AbstractValidator<GetUserListRequest>
