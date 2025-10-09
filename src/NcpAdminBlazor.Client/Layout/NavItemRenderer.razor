@@ -1,23 +1,62 @@
 @using NcpAdminBlazor.Client.Models
+@implements IDisposable
+
 @* This component decides whether to render a link or a group *@
 
 @if (Item.ChildItems != null && Item.ChildItems.Any())
 {
+    var isActive = IsGroupActive(Item.ChildItems);
     @* If there are children, render a group and then call this component again for each child. *@
-    <MudNavGroup Title="@Item.Title" Icon="@Item.Icon" Expanded="false">
-        @foreach (var childItem in Item.ChildItems)
-        {
-            <NavItemRenderer Item="childItem" />
-        }
+    <MudNavGroup Title="@Item.Title" Icon="@Item.Icon" IconColor="@(isActive ? Color.Primary : Color.Default)">
+        <TitleContent>
+            <span class="@(isActive ? "mud-primary-text" : "")">
+                @Item.Title
+            </span>
+        </TitleContent>
+        <ChildContent>
+            @foreach (var childItem in Item.ChildItems)
+            {
+                <NavItemRenderer Item="childItem"/>
+            }
+        </ChildContent>
     </MudNavGroup>
 }
 else
 {
     @* If there are no children, this is the end of the line (the "base case"). Just render a link. *@
-    <MudNavLink Href="@Item.Href" Icon="@Item.Icon">@Item.Title</MudNavLink>
+    <MudNavLink Href="@Item.Href" Icon="@Item.Icon" Match="NavLinkMatch.All">@Item.Title</MudNavLink>
 }
 
 @code {
-    [Parameter, EditorRequired]
-    public MenuItem Item { get; set; } = null!;
+    [Parameter, EditorRequired] public MenuItem Item { get; set; } = null!;
+    [Inject] NavigationManager NavigationManager { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private bool IsGroupActive(IEnumerable<MenuItem> childItems)
+    {
+        var currentUri = NavigationManager.Uri;
+
+        var groupRoutes = childItems
+            .Where(item => !string.IsNullOrEmpty(item.Href))
+            .Select(item => item.Href!)
+            .ToList();
+        var isActive = groupRoutes.Any(route => currentUri.Contains(route));
+
+        return isActive;
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
 }

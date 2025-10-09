@@ -20,15 +20,14 @@ public class MenuProvider
 
         builder
             .AddLink("首页", Home.PageUri, Icons.Material.Filled.Home)
-            .AddGroup("概览", Icons.Material.Filled.Settings,
-                settings => { settings.AddLink("仪表盘", Dashboard.PageUri); })
-            .AddGroup("系统管理", Icons.Material.Filled.ManageAccounts, system =>
+            .AddGroup("系统管理", Icons.Material.Filled.Settings, system =>
             {
                 system.AddLink("用户管理", UserList.PageUri, Icons.Material.Outlined.People);
                 // system.AddLink("角色管理", RoleList.PageUri, Icons.Material.Outlined.Security);
             })
             .AddGroup("App Examples", Icons.Material.Filled.ShoppingBag, products =>
             {
+                products.AddLink("仪表盘", Dashboard.PageUri);
                 products.AddLink("Email", Email.PageUri, Icons.Material.Outlined.Email);
                 products.AddLink("Chat", Chat.PageUri, Icons.Material.Outlined.Forum);
             });
