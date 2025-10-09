@@ -51,8 +51,10 @@ public class TokenStore(ILocalStorageService localStorage)
     {
         var accessToken = await localStorage.GetItemAsync<string>(TokenKey, cancellationToken);
         var refreshToken = await localStorage.GetItemAsync<string>(RefreshTokenKey, cancellationToken);
-        var accessTokenExpiry = await localStorage.GetItemAsync<DateTimeOffset?>(AccessTokenExpiryKey, cancellationToken);
-        var refreshTokenExpiry = await localStorage.GetItemAsync<DateTimeOffset?>(RefreshTokenExpiryKey, cancellationToken);
+        var accessTokenExpiry =
+            await localStorage.GetItemAsync<DateTimeOffset?>(AccessTokenExpiryKey, cancellationToken);
+        var refreshTokenExpiry =
+            await localStorage.GetItemAsync<DateTimeOffset?>(RefreshTokenExpiryKey, cancellationToken);
         var userId = await localStorage.GetItemAsync<string>(UserIdKey, cancellationToken);
 
         if (string.IsNullOrEmpty(accessToken) && string.IsNullOrEmpty(refreshToken) && string.IsNullOrEmpty(userId))
@@ -67,11 +69,11 @@ public class TokenStore(ILocalStorageService localStorage)
     {
         ArgumentNullException.ThrowIfNull(snapshot);
 
-    await localStorage.SetItemAsync(TokenKey, snapshot.AccessToken ?? string.Empty, cancellationToken);
-    await localStorage.SetItemAsync(RefreshTokenKey, snapshot.RefreshToken ?? string.Empty, cancellationToken);
-    await localStorage.SetItemAsync(AccessTokenExpiryKey, snapshot.AccessTokenExpiry, cancellationToken);
-    await localStorage.SetItemAsync(RefreshTokenExpiryKey, snapshot.RefreshTokenExpiry, cancellationToken);
-    await localStorage.SetItemAsync(UserIdKey, snapshot.UserId ?? string.Empty, cancellationToken);
+        await localStorage.SetItemAsync(TokenKey, snapshot.AccessToken ?? string.Empty, cancellationToken);
+        await localStorage.SetItemAsync(RefreshTokenKey, snapshot.RefreshToken ?? string.Empty, cancellationToken);
+        await localStorage.SetItemAsync(AccessTokenExpiryKey, snapshot.AccessTokenExpiry, cancellationToken);
+        await localStorage.SetItemAsync(RefreshTokenExpiryKey, snapshot.RefreshTokenExpiry, cancellationToken);
+        await localStorage.SetItemAsync(UserIdKey, snapshot.UserId ?? string.Empty, cancellationToken);
     }
 
     public async Task ClearAsync(CancellationToken cancellationToken = default)

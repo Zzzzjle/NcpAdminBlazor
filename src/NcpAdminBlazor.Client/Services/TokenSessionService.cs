@@ -1,17 +1,17 @@
-using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Kiota.Abstractions.Authentication;
+using Microsoft.Kiota.Http.HttpClientLibrary;
 using NcpAdminBlazor.Client.Models;
 using NcpAdminBlazor.Client.Providers;
 using NcpAdminBlazor.Client.Pages.Authentication;
 using NcpAdminBlazor.Client.Stores;
-using NetCorePal.Extensions.Dto;
+
 
 namespace NcpAdminBlazor.Client.Services;
 
 public interface ITokenSessionService
 {
-    Task<TokenStorageSnapshot> GetSnapshotAsync(CancellationToken cancellationToken = default);
-
     Task<string?> EnsureAccessTokenAsync(CancellationToken cancellationToken = default);
 
     Task SignInAsync(
@@ -30,14 +30,11 @@ public interface ITokenSessionService
 internal sealed class TokenSessionService(
     TokenStore storage,
     System.Net.Http.HttpClient httpClient,
-    TokenAuthenticationStateProvider stateProvider,
+    AuthenticationStateProvider stateProvider,
     NavigationManager navigation,
     ILogger<TokenSessionService> logger) : ITokenSessionService
 {
     private static readonly SemaphoreSlim RefreshSemaphore = new(1, 1);
-
-    public Task<TokenStorageSnapshot> GetSnapshotAsync(CancellationToken cancellationToken = default) =>
-        storage.GetAsync(cancellationToken);
 
     public async Task<string?> EnsureAccessTokenAsync(CancellationToken cancellationToken = default)
     {
@@ -67,7 +64,7 @@ internal sealed class TokenSessionService(
             refreshTokenExpiry,
             userId), cancellationToken);
 
-        stateProvider.RaiseAuthenticationStateChanged();
+        (stateProvider as TokenAuthenticationStateProvider)?.RaiseAuthenticationStateChanged();
     }
 
     public async Task SignOutAsync(bool redirectToLogin = true, CancellationToken cancellationToken = default)
@@ -78,7 +75,7 @@ internal sealed class TokenSessionService(
             navigation.NavigateTo(Login.PageUri);
         }
 
-        stateProvider.RaiseAuthenticationStateChanged();
+        (stateProvider as TokenAuthenticationStateProvider)?.RaiseAuthenticationStateChanged();
     }
 
     private async Task<string?> RefreshTokenAsync(CancellationToken cancellationToken)
@@ -110,25 +107,14 @@ internal sealed class TokenSessionService(
 
             try
             {
-                var request = new HttpRequestMessage(HttpMethod.Post, "api/auth/refresh-token")
+                var apiClient = new ApiClient(new HttpClientRequestAdapter(new AnonymousAuthenticationProvider(),
+                    httpClient: httpClient));
+                var result = await apiClient.Api.User.RefreshToken.PostAsync(new FastEndpointsSecurityTokenRequest
                 {
-                    Content = new FormUrlEncodedContent(new Dictionary<string, string?>
-                    {
-                        { "refreshToken", latestSnapshot.RefreshToken },
-                        { "userId", latestSnapshot.UserId }
-                    })
-                };
-                var response = await httpClient.SendAsync(request, cancellationToken);
-                if (!response.IsSuccessStatusCode)
-                {
-                    logger.LogWarning("刷新令牌请求失败，状态码: {StatusCode}，执行登出流程。", response.StatusCode);
-                    await SignOutAsync(cancellationToken: cancellationToken);
-                    return null;
-                }
+                    UserId = latestSnapshot.UserId,
+                    RefreshToken = latestSnapshot.RefreshToken,
+                }, cancellationToken: cancellationToken);
 
-                var result =
-                    await response.Content.ReadFromJsonAsync<ResponseData<NcpAdminBlazorWebAspNetCoreMyTokenResponse>>(
-                        cancellationToken: cancellationToken);
                 if (result is
                     {
                         Success: true, Data:
@@ -156,10 +142,6 @@ internal sealed class TokenSessionService(
                     await SignOutAsync(cancellationToken: cancellationToken);
                     return null;
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
             }
             catch (Exception ex)
             {
