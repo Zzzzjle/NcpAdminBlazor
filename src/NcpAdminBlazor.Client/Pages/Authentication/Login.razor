@@ -1,5 +1,6 @@
 ﻿@page "/account/login"
 @layout LoginLayout
+@using NcpAdminBlazor.Client.HttpClient.Auth
 @using NcpAdminBlazor.Client.Models
 @using NcpAdminBlazor.Client.Services
 
@@ -83,7 +84,7 @@
             {
                 Username = _model.LoginName,
                 Password = _model.Password
-            });
+            }, requestConfiguration => requestConfiguration.Options.Add(new AllowAnonymousRequestOption()));
             if (result is { Success: true, Data.AccessToken: not null })
             {
                 var data = result.Data;

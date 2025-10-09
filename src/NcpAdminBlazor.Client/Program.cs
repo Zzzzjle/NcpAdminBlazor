@@ -19,7 +19,12 @@ builder.Services.AddMudServices();
 
 builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<IAccessTokenProvider, AccessTokenProvider>();
-builder.Services.AddScoped<IAuthenticationProvider, BaseBearerTokenAuthenticationProvider>();
+builder.Services.AddScoped<IAuthenticationProvider>(sp =>
+{
+    var accessTokenProvider = sp.GetRequiredService<IAccessTokenProvider>();
+    var baseAuthProvider = new BaseBearerTokenAuthenticationProvider(accessTokenProvider);
+    return new BearerTokenAuthenticationProvider(baseAuthProvider);
+});
 builder.Services.AddScoped<IRequestAdapter, HttpClientRequestAdapter>();
 builder.Services.AddScoped<ApiClient>();
 
@@ -32,7 +37,6 @@ builder.Services.AddScoped<TokenAuthenticationStateProvider>();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, TokenAuthenticationStateProvider>();
 builder.Services.AddScoped<ITokenSessionService, TokenSessionService>();
-
 builder.Services.AddSingleton<MenuProvider>();
 builder.Services.AddScoped<LayoutStore>();
 builder.Services.AddScoped<BreadcrumbStore>();
