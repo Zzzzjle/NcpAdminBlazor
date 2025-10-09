@@ -1,6 +1,6 @@
 using Blazored.LocalStorage;
 
-namespace NcpAdminBlazor.Client.Services;
+namespace NcpAdminBlazor.Client.Stores;
 
 public sealed class TokenStorageSnapshot
 {
@@ -39,16 +39,7 @@ public sealed class TokenStorageSnapshot
         new(accessToken, refreshToken, accessTokenExpiry, refreshTokenExpiry, userId);
 }
 
-public interface ITokenStorageService
-{
-    Task<TokenStorageSnapshot> GetAsync(CancellationToken cancellationToken = default);
-
-    Task SaveAsync(TokenStorageSnapshot snapshot, CancellationToken cancellationToken = default);
-
-    Task ClearAsync(CancellationToken cancellationToken = default);
-}
-
-internal class TokenStorageService(ILocalStorageService localStorage) : ITokenStorageService
+public class TokenStore(ILocalStorageService localStorage)
 {
     private const string TokenKey = "token";
     private const string RefreshTokenKey = "refreshToken";

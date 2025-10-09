@@ -8,7 +8,7 @@
 @if (_showErrorAlert)
 {
     <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true"
-              CloseIconClicked="(() => CloseMe(true))">
+              CloseIconClicked="@(() => CloseMe(true))">
         <span>@_errorMessage</span><br/>
     </MudAlert>
 }
@@ -17,7 +17,7 @@
 
     <MudText Typo="Typo.h4" GutterBottom="true">用户注册</MudText>
     <MudText>已有账户？
-        <MudLink Href="/pages/authentication/login">立即登录</MudLink>
+        <MudLink Href="@Login.PageUri">立即登录</MudLink>
     </MudText>
 
     <MudTextField T="string" @bind-Value="_model.Username" Required="true" RequiredError="用户名不能为空!"
@@ -99,7 +99,7 @@
                 _errorMessage = result?.Message ?? "注册失败，请稍后重试";
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             _showErrorAlert = true;
             _errorMessage = "注册过程中发生错误，请重试";

@@ -22,11 +22,8 @@ builder.Services.AddScoped<IAccessTokenProvider, AccessTokenProvider>();
 builder.Services.AddScoped<IAuthenticationProvider, BaseBearerTokenAuthenticationProvider>();
 builder.Services.AddScoped<IRequestAdapter, HttpClientRequestAdapter>();
 builder.Services.AddScoped<ApiClient>();
-builder.Services.AddScoped<ITokenStorageService, TokenStorageService>();
-builder.Services.AddScoped<ITokenSessionService, TokenSessionService>();
 
 #endregion
-
 
 builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();
@@ -34,9 +31,11 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<TokenAuthenticationStateProvider>();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<AuthenticationStateProvider, TokenAuthenticationStateProvider>();
+builder.Services.AddScoped<ITokenSessionService, TokenSessionService>();
 
 builder.Services.AddSingleton<MenuProvider>();
 builder.Services.AddScoped<LayoutStore>();
 builder.Services.AddScoped<BreadcrumbStore>();
+builder.Services.AddScoped<TokenStore>();
 
 await builder.Build().RunAsync();

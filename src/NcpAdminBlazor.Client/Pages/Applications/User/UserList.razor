@@ -120,17 +120,16 @@
         {
             var result = await ApiClient.Api.User.List.GetAsync(configure =>
             {
-                configure.QueryParameters.Username = _filter.Username;
-                configure.QueryParameters.Email = _filter.Email;
-                configure.QueryParameters.Phone = _filter.Phone;
-                configure.QueryParameters.RealName = _filter.RealName;
-                configure.QueryParameters.PageIndex = state.Page;
+                // configure.QueryParameters.Username = _filter.Username;
+                // configure.QueryParameters.Email = _filter.Email;
+                // configure.QueryParameters.Phone = _filter.Phone;
+                // configure.QueryParameters.RealName = _filter.RealName;
+                configure.QueryParameters.PageIndex = state.Page + 1;
                 configure.QueryParameters.PageSize = state.PageSize;
+                configure.QueryParameters.CountTotal = true;
             });
             if (result is { Success: true, Data: not null })
             {
-                state.Page = result.Data.PageIndex ?? state.Page;
-                state.PageSize = result.Data.PageSize ?? state.PageSize;
                 return new GridData<NcpAdminBlazorWebApplicationQueriesUserListItemDto>
                 {
                     Items = result.Data.Items ?? [], TotalItems = result.Data.Total ?? 0,

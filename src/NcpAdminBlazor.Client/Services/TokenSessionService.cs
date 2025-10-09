@@ -1,9 +1,10 @@
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 using NcpAdminBlazor.Client.Models;
 using NcpAdminBlazor.Client.Providers;
-using NcpAdminBlazor.Client;
 using NcpAdminBlazor.Client.Pages.Authentication;
+using NcpAdminBlazor.Client.Stores;
+using NetCorePal.Extensions.Dto;
 
 namespace NcpAdminBlazor.Client.Services;
 
@@ -21,18 +22,14 @@ public interface ITokenSessionService
         string userId,
         CancellationToken cancellationToken = default);
 
-    Task SignInAsync(
-        NcpAdminBlazorWebAspNetCoreMyTokenResponse tokenResponse,
-        CancellationToken cancellationToken = default);
-
     Task SignOutAsync(
         bool redirectToLogin = true,
         CancellationToken cancellationToken = default);
 }
 
 internal sealed class TokenSessionService(
-    ITokenStorageService storage,
-    ApiClient apiClient,
+    TokenStore storage,
+    System.Net.Http.HttpClient httpClient,
     TokenAuthenticationStateProvider stateProvider,
     NavigationManager navigation,
     ILogger<TokenSessionService> logger) : ITokenSessionService
@@ -73,17 +70,6 @@ internal sealed class TokenSessionService(
         stateProvider.RaiseAuthenticationStateChanged();
     }
 
-    public Task SignInAsync(
-        NcpAdminBlazorWebAspNetCoreMyTokenResponse tokenResponse,
-        CancellationToken cancellationToken = default) =>
-        SignInAsync(
-            tokenResponse.AccessToken ?? string.Empty,
-            tokenResponse.RefreshToken ?? string.Empty,
-            tokenResponse.AccessTokenExpiry,
-            tokenResponse.RefreshTokenExpiry,
-            tokenResponse.UserId ?? string.Empty,
-            cancellationToken);
-
     public async Task SignOutAsync(bool redirectToLogin = true, CancellationToken cancellationToken = default)
     {
         await storage.ClearAsync(cancellationToken);
@@ -101,12 +87,14 @@ internal sealed class TokenSessionService(
         try
         {
             var latestSnapshot = await storage.GetAsync(cancellationToken);
-            if (!string.IsNullOrWhiteSpace(latestSnapshot.AccessToken) && !IsTokenExpiring(latestSnapshot.AccessTokenExpiry))
+            if (!string.IsNullOrWhiteSpace(latestSnapshot.AccessToken) &&
+                !IsTokenExpiring(latestSnapshot.AccessTokenExpiry))
             {
                 return latestSnapshot.AccessToken;
             }
 
-            if (string.IsNullOrWhiteSpace(latestSnapshot.RefreshToken) || string.IsNullOrWhiteSpace(latestSnapshot.UserId))
+            if (string.IsNullOrWhiteSpace(latestSnapshot.RefreshToken) ||
+                string.IsNullOrWhiteSpace(latestSnapshot.UserId))
             {
                 logger.LogInformation("刷新令牌缺失，执行登出流程。");
                 await SignOutAsync(cancellationToken: cancellationToken);
@@ -122,30 +110,52 @@ internal sealed class TokenSessionService(
 
             try
             {
-                var result = await apiClient.Api.User.RefreshToken.PostAsync(
-                    new FastEndpointsSecurityTokenRequest
+                var request = new HttpRequestMessage(HttpMethod.Post, "api/auth/refresh-token")
+                {
+                    Content = new FormUrlEncodedContent(new Dictionary<string, string?>
                     {
-                        RefreshToken = latestSnapshot.RefreshToken,
-                        UserId = latestSnapshot.UserId
-                    },
-                    cancellationToken: cancellationToken);
+                        { "refreshToken", latestSnapshot.RefreshToken },
+                        { "userId", latestSnapshot.UserId }
+                    })
+                };
+                var response = await httpClient.SendAsync(request, cancellationToken);
+                if (!response.IsSuccessStatusCode)
+                {
+                    logger.LogWarning("刷新令牌请求失败，状态码: {StatusCode}，执行登出流程。", response.StatusCode);
+                    await SignOutAsync(cancellationToken: cancellationToken);
+                    return null;
+                }
 
-                if (result is { Success: true, Data: { AccessToken: { } newToken } data })
+                var result =
+                    await response.Content.ReadFromJsonAsync<ResponseData<NcpAdminBlazorWebAspNetCoreMyTokenResponse>>(
+                        cancellationToken: cancellationToken);
+                if (result is
+                    {
+                        Success: true, Data:
+                        {
+                            AccessToken: { } newToken,
+                            RefreshToken: { } newRefreshToken,
+                            AccessTokenExpiry: { } accessTokenExpiry,
+                            RefreshTokenExpiry: { } refreshTokenExpiry,
+                        } data
+                    })
                 {
                     await SignInAsync(
                         newToken,
-                        data.RefreshToken ?? latestSnapshot.RefreshToken,
-                        data.AccessTokenExpiry,
-                        data.RefreshTokenExpiry,
+                        newRefreshToken,
+                        accessTokenExpiry,
+                        refreshTokenExpiry,
                         data.UserId ?? latestSnapshot.UserId ?? string.Empty,
                         cancellationToken);
 
                     return newToken;
                 }
-
-                logger.LogWarning("刷新令牌响应无效或缺少必要数据，执行登出流程。");
-                await SignOutAsync(cancellationToken: cancellationToken);
-                return null;
+                else
+                {
+                    logger.LogWarning("刷新令牌响应无效，执行登出流程。");
+                    await SignOutAsync(cancellationToken: cancellationToken);
+                    return null;
+                }
             }
             catch (OperationCanceledException)
             {

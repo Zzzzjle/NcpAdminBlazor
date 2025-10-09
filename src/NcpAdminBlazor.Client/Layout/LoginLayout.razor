@@ -1,9 +1,6 @@
-﻿@using NcpAdminBlazor.Client.Theme
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
+@layout MainLayout
 
-
-<MudThemeProvider Theme="_currentTheme" />
-<MudSnackbarProvider />
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
     <div class="d-flex flex-column mud-width-full">
@@ -14,7 +11,3 @@
         @*<MudAlert Severity="Severity.Info" Class="mt-8 mud-width-full" Style="max-width:500px;" >No authentication is required, click sign in.</MudAlert>*@
     </div>
 </MudContainer>
-
-@code {
-    private readonly MudTheme _currentTheme = new MudBlazorAdminDashboard();
-}

@@ -1,6 +1,4 @@
 ﻿@inherits LayoutComponentBase
-@using Microsoft.AspNetCore.Components.Authorization
-@using NcpAdminBlazor.Client.Pages.Authentication
 @using NcpAdminBlazor.Client.Stores
 @implements IDisposable
 
@@ -15,17 +13,7 @@
 }
 else
 {
-    <AuthorizeView>
-        <Authorized>
-            @Body
-        </Authorized>
-        <Authorizing>
-            <Authing/>
-        </Authorizing>
-        <NotAuthorized>
-            <RedirectToLogin/>
-        </NotAuthorized>
-    </AuthorizeView>
+    @Body
 }
 
 <div id="blazor-error-ui" data-nosnippet>

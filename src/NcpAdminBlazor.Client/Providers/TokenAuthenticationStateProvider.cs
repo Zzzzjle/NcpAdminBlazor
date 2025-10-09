@@ -1,11 +1,11 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 using NcpAdminBlazor.Client.Extensions;
-using NcpAdminBlazor.Client.Services;
+using NcpAdminBlazor.Client.Stores;
 
 namespace NcpAdminBlazor.Client.Providers
 {
-    public class TokenAuthenticationStateProvider(ITokenStorageService tokenStorage)
+    public class TokenAuthenticationStateProvider(TokenStore tokenStorage)
         : AuthenticationStateProvider
     {
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()

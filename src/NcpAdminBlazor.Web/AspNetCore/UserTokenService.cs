@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Security.Claims;
 using FastEndpoints;
 using FastEndpoints.Security;
