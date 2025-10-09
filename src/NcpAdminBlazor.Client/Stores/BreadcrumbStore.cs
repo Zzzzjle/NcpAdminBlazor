@@ -46,7 +46,7 @@ public sealed class BreadcrumbStore : IDisposable
             while (node != null)
             {
                 breadcrumbItems.Insert(0,
-                    new BreadcrumbItem(node.Title, href: null, disabled: true, icon: node.Icon));
+                    new BreadcrumbItem(node.Title, href: node.Href, icon: node.Icon));
                 node = node.Parent;
             }
         }

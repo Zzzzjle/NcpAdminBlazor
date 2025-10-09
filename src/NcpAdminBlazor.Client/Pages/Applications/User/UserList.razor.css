@@ -1,0 +1,4 @@
+/* 修改工具栏高度 */
+::deep .dense-toolbar .mud-toolbar {
+    height: 42px;
+}
