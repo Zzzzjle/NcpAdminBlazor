@@ -1,10 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@using NcpAdminBlazor.Client.Component
 @using NcpAdminBlazor.Client.Models
 
 @*@inject AuthenticationStateProvider GetAuthenticationStateAsync
 @attribute [Authorize]*@
 
-<AuthorizeView>
+<CustomAuthorizeView>
     <MudCard Elevation="0" Square="true" Class="@Class" Style="@Style">
         <MudCardHeader>
             <CardHeaderAvatar>
@@ -16,7 +17,7 @@
             </CardHeaderContent>
         </MudCardHeader>
     </MudCard>
-</AuthorizeView>
+</CustomAuthorizeView>
 
 
 @code {

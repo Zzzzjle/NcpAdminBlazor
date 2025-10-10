@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Components.Authorization
+@using NcpAdminBlazor.Client.Component
 @using NcpAdminBlazor.Client.Component.PageTabs
 @using NcpAdminBlazor.Client.Pages.Authentication
 @using NcpAdminBlazor.Client.Services
@@ -8,7 +9,7 @@
 @inherits LayoutComponentBase
 @implements IDisposable
 
-<AuthorizeView>
+<CustomAuthorizeView>
     <Authorizing>
         <Authing/>
     </Authorizing>
@@ -16,7 +17,13 @@
         <RedirectToLogin/>
     </NotAuthorized>
     <Authorized>
-        <MudLayout>
+        @{
+            // 使用用户ID作为key，确保只有在认证状态真正变化时才重新渲染
+            var userId = context.User?.FindFirst("sub")?.Value 
+                         ?? context.User?.FindFirst("UserId")?.Value 
+                         ?? (context.User?.Identity?.IsAuthenticated == true ? "authenticated" : "anonymous");
+        }
+        <MudLayout @key="@userId">
             <MudAppBar Class="appbar" Elevation="1" Gutters="false">
                 <MudStack Justify="Justify.Center" Class="border-solid" style="width:100%" Spacing="0">
                     <MudStack Row Style="height: 48px" Spacing="0">
@@ -78,7 +85,7 @@
         </MudLayout>
     </Authorized>
 
-</AuthorizeView>
+</CustomAuthorizeView>
 
 
 

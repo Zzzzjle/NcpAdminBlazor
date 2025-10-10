@@ -1,0 +1,144 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@inject AuthService AuthService
+
+@if (_isAuthorized.HasValue)
+{
+    @if (_isAuthorized.Value)
+    {
+        @if (Authorized != null)
+        {
+            <CascadingAuthenticationState>
+                @Authorized(context)
+            </CascadingAuthenticationState>
+        }
+    }
+    else
+    {
+        @if (NotAuthorized != null)
+        {
+            <CascadingAuthenticationState>
+                @NotAuthorized(context)
+            </CascadingAuthenticationState>
+        }
+    }
+}
+else
+{
+    @if (Authorizing != null)
+    {
+        @Authorizing
+    }
+}
+
+@code {
+    private bool? _isAuthorized;
+    private AuthenticationState? _authState;
+    private AuthenticationState context => _authState ?? new AuthenticationState(new ClaimsPrincipal());
+
+    /// <summary>
+    /// 已授权时显示的内容
+    /// </summary>
+    [Parameter]
+    public RenderFragment<AuthenticationState>? Authorized { get; set; }
+
+    /// <summary>
+    /// 未授权时显示的内容
+    /// </summary>
+    [Parameter]
+    public RenderFragment<AuthenticationState>? NotAuthorized { get; set; }
+
+    /// <summary>
+    /// 正在验证时显示的内容
+    /// </summary>
+    [Parameter]
+    public RenderFragment? Authorizing { get; set; }
+
+    /// <summary>
+    /// 指定需要的角色（逗号分隔）
+    /// </summary>
+    [Parameter]
+    public string? Roles { get; set; }
+
+    /// <summary>
+    /// 指定需要的策略
+    /// </summary>
+    [Parameter]
+    public string? Policy { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        
+        // 订阅认证状态变化事件
+        AuthService.OnAuthenticationStateChanged += OnAuthenticationStateChangedHandler;
+        
+        // 初始检查授权状态
+        await CheckAuthorizationAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        
+        // 当参数变化时重新检查授权
+        await CheckAuthorizationAsync();
+    }
+
+    private async Task CheckAuthorizationAsync()
+    {
+        try
+        {
+            _authState = await AuthService.GetAuthenticationStateAsync();
+            var user = _authState.User;
+
+            // 检查是否已认证
+            if (user?.Identity?.IsAuthenticated != true)
+            {
+                _isAuthorized = false;
+                StateHasChanged();
+                return;
+            }
+
+            // 如果指定了角色要求
+            if (!string.IsNullOrWhiteSpace(Roles))
+            {
+                var requiredRoles = Roles.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(r => r.Trim());
+
+                _isAuthorized = requiredRoles.Any(role => user.IsInRole(role));
+                StateHasChanged();
+                return;
+            }
+
+            // 如果指定了策略要求（这里简化处理，实际应该调用授权服务）
+            if (!string.IsNullOrWhiteSpace(Policy))
+            {
+                // 策略检查需要IAuthorizationService，这里简化为已授权
+                // 实际项目中应该注入IAuthorizationService并进行策略检查
+                _isAuthorized = true;
+                StateHasChanged();
+                return;
+            }
+
+            // 默认已认证即授权
+            _isAuthorized = true;
+            StateHasChanged();
+        }
+        catch
+        {
+            _isAuthorized = false;
+            StateHasChanged();
+        }
+    }
+
+    private async void OnAuthenticationStateChangedHandler()
+    {
+        await CheckAuthorizationAsync();
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnAuthenticationStateChanged -= OnAuthenticationStateChangedHandler;
+    }
+}

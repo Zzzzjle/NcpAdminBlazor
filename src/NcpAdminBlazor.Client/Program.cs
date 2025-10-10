@@ -36,6 +36,7 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, TokenAuthenticationStateProvider>();
 builder.Services.AddScoped<ITokenSessionService, TokenSessionService>();
+builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<MenuProvider>();
 builder.Services.AddScoped<LayoutStore>();
 builder.Services.AddScoped<BreadcrumbStore>();
