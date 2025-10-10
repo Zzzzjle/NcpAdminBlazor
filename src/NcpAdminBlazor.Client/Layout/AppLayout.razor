@@ -8,7 +8,7 @@
 @inherits LayoutComponentBase
 @implements IDisposable
 
-<CustomAuthorizeView>
+<AuthorizeView>
     <Authorizing>
         <Authing/>
     </Authorizing>
@@ -17,12 +17,16 @@
     </NotAuthorized>
     <Authorized>
         @{
-            // 使用用户ID作为key，确保只有在认证状态真正变化时才重新渲染
-            var userId = context.User?.FindFirst("sub")?.Value 
-                         ?? context.User?.FindFirst("UserId")?.Value 
-                         ?? (context.User?.Identity?.IsAuthenticated == true ? "authenticated" : "anonymous");
+            // Use user identifier as key to prevent unnecessary re-renders when auth state changes
+            // but user remains the same (e.g., token refresh)
+            var userKey = context.User?.Identity?.IsAuthenticated == true 
+                ? (context.User.FindFirst("sub")?.Value 
+                   ?? context.User.FindFirst("UserId")?.Value 
+                   ?? context.User.Identity.Name 
+                   ?? "authenticated")
+                : "anonymous";
         }
-        <MudLayout @key="@userId">
+        <MudLayout @key="@userKey">
             <MudAppBar Class="appbar" Elevation="1" Gutters="false">
                 <MudStack Justify="Justify.Center" Class="border-solid" style="width:100%" Spacing="0">
                     <MudStack Row Style="height: 48px" Spacing="0">
@@ -84,7 +88,7 @@
         </MudLayout>
     </Authorized>
 
-</CustomAuthorizeView>
+</AuthorizeView>
 
 
 

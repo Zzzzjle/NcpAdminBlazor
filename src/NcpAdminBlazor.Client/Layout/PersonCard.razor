@@ -4,7 +4,7 @@
 @*@inject AuthenticationStateProvider GetAuthenticationStateAsync
 @attribute [Authorize]*@
 
-<CustomAuthorizeView>
+<AuthorizeView>
     <MudCard Elevation="0" Square="true" Class="@Class" Style="@Style">
         <MudCardHeader>
             <CardHeaderAvatar>
@@ -16,7 +16,7 @@
             </CardHeaderContent>
         </MudCardHeader>
     </MudCard>
-</CustomAuthorizeView>
+</AuthorizeView>
 
 
 @code {
