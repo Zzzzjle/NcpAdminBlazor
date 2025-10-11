@@ -1,0 +1,25 @@
+@* 
+    This component is used to display a loading indicator while the Blazor WebAssembly app is loading.
+    It checks if the renderer is interactive (i.e., the app has fully loaded) and displays the ChildContent
+    only when it is. Otherwise, it shows a loading indicator.
+    view more：https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/startup?view=aspnetcore-9.0#global-interactive-webassembly-rendering-without-prerendering
+ *@
+@if (!RendererInfo.IsInteractive)
+{
+    <!-- OPTIONAL ...
+    <HeadContent>
+        <style>
+            ...
+        </style>
+    </HeadContent>
+    -->
+    <WasmLoading/>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
