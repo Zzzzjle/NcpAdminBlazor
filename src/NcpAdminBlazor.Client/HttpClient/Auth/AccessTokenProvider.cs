@@ -3,7 +3,7 @@ using NcpAdminBlazor.Client.Services;
 
 namespace NcpAdminBlazor.Client.HttpClient.Auth;
 
-public class AccessTokenProvider(ITokenSessionService tokenSessionService) : IAccessTokenProvider
+public sealed class AccessTokenProvider(IAuthTokenService tokenService) : IAccessTokenProvider
 {
     public AllowedHostsValidator AllowedHostsValidator { get; } = new();
 
@@ -12,7 +12,7 @@ public class AccessTokenProvider(ITokenSessionService tokenSessionService) : IAc
         Dictionary<string, object>? additionalAuthenticationContext = null,
         CancellationToken cancellationToken = default)
     {
-        var token = await tokenSessionService.EnsureAccessTokenAsync(cancellationToken);
+        var token = await tokenService.GetTokenAsync(cancellationToken);
         return token ?? string.Empty;
     }
 }

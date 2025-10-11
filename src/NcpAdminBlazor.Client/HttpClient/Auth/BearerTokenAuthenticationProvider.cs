@@ -6,7 +6,7 @@ namespace NcpAdminBlazor.Client.HttpClient.Auth;
 public class BearerTokenAuthenticationProvider(IAuthenticationProvider authenticationProvider)
     : IAuthenticationProvider
 {
-    public new async Task AuthenticateRequestAsync(
+    public async Task AuthenticateRequestAsync(
         RequestInformation request,
         Dictionary<string, object>? additionalAuthenticationContext = null,
         CancellationToken cancellationToken = default)

@@ -34,11 +34,11 @@ builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<AuthenticationStateProvider, TokenAuthenticationStateProvider>();
-builder.Services.AddScoped<ITokenSessionService, TokenSessionService>();
+builder.Services.AddScoped<IAuthTokenService, LocalStorageAuthTokenService>();
+builder.Services.AddScoped<TokenAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<TokenAuthenticationStateProvider>());
 builder.Services.AddScoped<MenuProvider>();
 builder.Services.AddScoped<LayoutStore>();
 builder.Services.AddScoped<BreadcrumbStore>();
-builder.Services.AddScoped<TokenStore>();
 
 await builder.Build().RunAsync();

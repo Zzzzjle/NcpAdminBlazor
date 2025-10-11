@@ -1,6 +1,6 @@
 @using NcpAdminBlazor.Client.Component.PageTabs
 @using NcpAdminBlazor.Client.Pages.Authentication
-@using NcpAdminBlazor.Client.Services
+@using NcpAdminBlazor.Client.Providers
 @using NcpAdminBlazor.Client.Stores
 
 @layout MainLayout
@@ -38,8 +38,7 @@
                             Account
                         </MudMenuItem>
                         <MudMenuItem Icon="@Icons.Material.Outlined.Logout"
-                                     OnClick="@Logout"
-                                     Href="@Login.PageUri">
+                                     OnClick="@Logout">
                             Logout
                         </MudMenuItem>
                     </ChildContent>
@@ -71,7 +70,7 @@
 
 @code {
     [CascadingParameter] private RouteData? RouteData { get; set; }
-    [Inject] ITokenSessionService TokenSessionService { get; set; } = null!;
+    [Inject] TokenAuthenticationStateProvider AuthStateProvider { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
     [Inject] BreadcrumbStore BreadcrumbStore { get; set; } = null!;
     [Inject] LayoutStore LayoutStore { get; set; } = null!;
@@ -115,7 +114,8 @@
 
     async Task Logout()
     {
-        await TokenSessionService.SignOutAsync();
+        await AuthStateProvider.LogoutAsync();
+        NavigationManager.NavigateTo(Login.PageUri);
     }
 
 }

@@ -2,6 +2,7 @@
 @layout LoginLayout
 @using NcpAdminBlazor.Client.HttpClient.Auth
 @using NcpAdminBlazor.Client.Models
+@using NcpAdminBlazor.Client.Providers
 @using NcpAdminBlazor.Client.Services
 
 @if (_showErrorAlert)
@@ -56,7 +57,7 @@
 @code {
     [Inject] ApiClient ApiClient { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
-    [Inject] ITokenSessionService TokenSessionService { get; set; } = null!;
+    [Inject] TokenAuthenticationStateProvider AuthStateProvider { get; set; } = null!;
     private bool _showErrorAlert;
     private string _errorMessage = string.Empty;
     [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
@@ -89,14 +90,14 @@
             {
                 var data = result.Data;
                 // 通知认证状态更改
-                await TokenSessionService.SignInAsync(
+                await AuthStateProvider.LoginAsync(new TokenStorageSnapshot(
                     data.AccessToken ?? string.Empty,
                     data.RefreshToken ?? string.Empty,
                     data.AccessTokenExpiry,
                     data.RefreshTokenExpiry,
-                    data.UserId ?? string.Empty);
+                    data.UserId ?? string.Empty));
 
-                NavigationManager.NavigateTo("/");
+                NavigationManager.NavigateTo(ReturnUrl ?? "/");
             }
             else
             {
