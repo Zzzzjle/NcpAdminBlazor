@@ -20,7 +20,8 @@ public sealed class UserListEndpoint(IMediator mediator)
             req.Phone,
             req.RealName,
             req.PageIndex,
-            req.PageSize
+            req.PageSize,
+            req.CountTotal
         );
 
         var result = await mediator.Send(query, ct);

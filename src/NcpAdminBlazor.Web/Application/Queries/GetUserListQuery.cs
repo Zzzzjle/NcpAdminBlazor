@@ -9,7 +9,8 @@ public record GetUserListQuery(
     string? Phone,
     string? RealName,
     int PageIndex = 1,
-    int PageSize = 10
+    int PageSize = 10,
+    bool CountTotal = true
 ) : IQuery<PagedData<UserListItemDto>>;
 
 public record UserListItemDto(
@@ -58,6 +59,6 @@ public class GetUserListQueryHandler(ApplicationDbContext context)
                 u.Roles.Select(r => r.RoleName).ToList()
             ));
 
-        return await query.ToPagedDataAsync(request.PageIndex, request.PageSize, cancellationToken: cancellationToken);
+        return await query.ToPagedDataAsync(request.PageIndex, request.PageSize, request.CountTotal, cancellationToken: cancellationToken);
     }
 }
