@@ -51,13 +51,6 @@ public sealed class TokenAuthenticationStateProvider : AuthenticationStateProvid
             {
                 var expTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expClaim.Value));
 
-                if (expTime < DateTimeOffset.UtcNow)
-                {
-                    _logger.LogDebug("Token expired, clearing and returning anonymous");
-                    await _tokenService.ClearTokensAsync();
-                    return CreateAnonymousState();
-                }
-
                 // Proactive refresh if expiring soon
                 if (expTime < DateTimeOffset.UtcNow.AddMinutes(5))
                 {
