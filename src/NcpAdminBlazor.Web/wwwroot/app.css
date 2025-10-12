@@ -1,3 +1,4 @@
-.mud-appbar .mud-toolbar-appbar {
-    height: 100%;
+/*noinspection CssUnresolvedCustomProperty*/
+.app-border-default {
+    border-color: var(--mud-palette-lines-default);
 }

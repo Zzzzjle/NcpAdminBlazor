@@ -4,7 +4,9 @@
 @inject NavigationManager NavigationManager
 @inject MenuProvider MenuProvider
 
-<div class="pl-2">
+@namespace NcpAdminBlazor.Client.Layout
+
+<div class="pl-2 page-tabs-container border-b app-border-default">
     <MudStack Row Spacing="1">
         @foreach (var item in _pageTabs)
         {
