@@ -1,0 +1,220 @@
+@* Acts as a reusable container for search criteria with consistent spacing, default
+    input styling, and optional expand/collapse behaviour for additional filters. *@
+
+@using System.Linq
+@namespace NcpAdminBlazor.Client.Component
+
+<CascadingValue Value="this" IsFixed="true">
+    @if (ChildContent is not null)
+    {
+        @ChildContent(_itemAttributes)
+    }
+</CascadingValue>
+
+<MudPaper Outlined Class="pa-4" Style="flex: 0 0 auto;">
+    <MudForm>
+        <MudGrid Spacing="4" Justify="Justify.FlexStart">
+            @foreach (var item in VisibleItems)
+            {
+                <MudItem xs="@item.Xs" sm="@item.Sm" md="@item.Md" lg="@item.Lg">
+                    @item.ChildContent
+                </MudItem>
+            }
+            <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex align-items-center ml-auto">
+                <MudStack Row="true" Style="width: 100%" Spacing="5" AlignItems="AlignItems.Center"
+                          Justify="Justify.FlexEnd">
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Warning"
+                               Disabled="_loading"
+                               OnClick="@HandleResetAsync">
+                        重置
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Disabled="_loading"
+                               OnClick="@HandleSearchAsync">
+                        @if (_loading)
+                        {
+                            <MudProgressCircular Indeterminate="true" Class="me-1" Size="Size.Small"/>
+                        }
+                        搜索
+                    </MudButton>
+                    @if (ShouldShowMoreButton)
+                    {
+                        <MudButton Variant="Variant.Text"
+                                   Color="Color.Info"
+                                   StartIcon="@(_showAll ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)"
+                                   OnClick="@ToggleShowAll">
+                            @(_showAll ? "收起" : "更多")
+                        </MudButton>
+                    }
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+    </MudForm>
+</MudPaper>
+
+@code {
+
+    // Items registered by individual QueryFormItem components.
+    private readonly List<QueryFormItem> _items = [];
+
+    // Tracks whether all search fields should currently be visible.
+    private bool _showAll;
+
+    // Indicates an ongoing search request to disable actions and show progress.
+    private bool _loading;
+
+    // Remembers if the user has manually toggled the expanded state to avoid overwriting their choice.
+    private bool _hasUserToggle;
+
+    /// <summary>
+    /// Margin applied to input fields unless consumers override it via additional attributes.
+    /// </summary>
+    [Parameter]
+    public Margin ItemMargin { get; set; } = Margin.Dense;
+
+    /// <summary>
+    /// Variant applied to input fields unless consumers override it via additional attributes.
+    /// </summary>
+    [Parameter]
+    public Variant ItemVariant { get; set; } = Variant.Outlined;
+
+    /// <summary>
+    /// Child content defining search fields; receives the computed attribute dictionary.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<IReadOnlyDictionary<string, object?>>? ChildContent { get; set; }
+
+    /// <summary>
+    /// Number of fields shown before the "More" button appears; set to 0 to always show all fields.
+    /// </summary>
+    [Parameter]
+    public int ShowItemsCount { get; set; } = 3;
+
+    /// <summary>
+    /// Determines whether the component starts in the fully expanded state when applicable.
+    /// </summary>
+    [Parameter]
+    public bool DefaultExpanded { get; set; }
+
+    /// <summary>
+    /// Callback triggered when the user clicks the search button.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnSearch { get; set; }
+
+    /// <summary>
+    /// Callback triggered when the user clicks the reset button.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnReset { get; set; }
+
+    // Cached dictionary passed down to child fragments so they inherit the configured defaults.
+    private Dictionary<string, object?> _itemAttributes = [];
+
+    protected override void OnParametersSet()
+    {
+        if (ShowItemsCount <= 0)
+        {
+            _hasUserToggle = false;
+        }
+
+        _itemAttributes = new Dictionary<string, object?>
+        {
+            { "Margin", ItemMargin },
+            { "Variant", ItemVariant }
+        };
+
+        EnsureDefaultVisibility();
+    }
+
+    internal void AddItem(QueryFormItem item)
+    {
+        if (_items.Contains(item)) return;
+        _items.Add(item);
+        EnsureDefaultVisibility();
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    internal void RemoveItem(QueryFormItem item)
+    {
+        if (!_items.Remove(item)) return;
+        if (_items.Count <= ShowItemsCount)
+        {
+            _hasUserToggle = false;
+        }
+
+        EnsureDefaultVisibility();
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private IEnumerable<QueryFormItem> VisibleItems =>
+        _showAll || !ShouldShowMoreButton
+            ? _items
+            : _items.Take(Math.Max(ShowItemsCount, 0));
+
+    private bool ShouldShowMoreButton => ShowItemsCount > 0 && _items.Count > ShowItemsCount;
+
+    private void EnsureDefaultVisibility()
+    {
+        // When there are not enough items to warrant toggling, always show everything.
+        if (!ShouldShowMoreButton)
+        {
+            _hasUserToggle = false;
+            _showAll = true;
+            return;
+        }
+
+        // Preserve any explicit user toggle even if the number of items changes afterward.
+        if (_hasUserToggle)
+        {
+            return;
+        }
+
+        _showAll = DefaultExpanded;
+    }
+
+    private async Task HandleSearchAsync()
+    {
+        // Ignore duplicate submissions while a search is already in progress.
+        if (_loading)
+        {
+            return;
+        }
+
+        _loading = true;
+        try
+        {
+            if (OnSearch.HasDelegate)
+            {
+                await OnSearch.InvokeAsync();
+            }
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task HandleResetAsync()
+    {
+        if (OnReset.HasDelegate)
+        {
+            await OnReset.InvokeAsync();
+        }
+    }
+
+    private void ToggleShowAll()
+    {
+        // If the total number of items fits within the visible range, skip toggling.
+        if (!ShouldShowMoreButton)
+        {
+            return;
+        }
+
+        _hasUserToggle = true;
+        _showAll = !_showAll;
+    }
+
+}
