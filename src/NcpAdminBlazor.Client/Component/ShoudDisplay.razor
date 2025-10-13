@@ -1,0 +1,9 @@
+<div class="@(Value ? "" : "d-none")">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public bool Value { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

@@ -65,9 +65,6 @@
     // Indicates an ongoing search request to disable actions and show progress.
     private bool _loading;
 
-    // Remembers if the user has manually toggled the expanded state to avoid overwriting their choice.
-    private bool _hasUserToggle;
-
     /// <summary>
     /// Margin applied to input fields unless consumers override it via additional attributes.
     /// </summary>
@@ -113,12 +110,11 @@
     // Cached dictionary passed down to child fragments so they inherit the configured defaults.
     private Dictionary<string, object?> _itemAttributes = [];
 
+    private bool _initialized;
+
     protected override void OnParametersSet()
     {
-        if (ShowItemsCount <= 0)
-        {
-            _hasUserToggle = false;
-        }
+        if (_initialized) return;
 
         _itemAttributes = new Dictionary<string, object?>
         {
@@ -126,27 +122,13 @@
             { "Variant", ItemVariant }
         };
 
-        EnsureDefaultVisibility();
+        _showAll = DefaultExpanded;
+        _initialized = true;
     }
 
     internal void AddItem(QueryFormItem item)
     {
-        if (_items.Contains(item)) return;
         _items.Add(item);
-        EnsureDefaultVisibility();
-        _ = InvokeAsync(StateHasChanged);
-    }
-
-    internal void RemoveItem(QueryFormItem item)
-    {
-        if (!_items.Remove(item)) return;
-        if (_items.Count <= ShowItemsCount)
-        {
-            _hasUserToggle = false;
-        }
-
-        EnsureDefaultVisibility();
-        _ = InvokeAsync(StateHasChanged);
     }
 
     private IEnumerable<QueryFormItem> VisibleItems =>
@@ -155,25 +137,6 @@
             : _items.Take(Math.Max(ShowItemsCount, 0));
 
     private bool ShouldShowMoreButton => ShowItemsCount > 0 && _items.Count > ShowItemsCount;
-
-    private void EnsureDefaultVisibility()
-    {
-        // When there are not enough items to warrant toggling, always show everything.
-        if (!ShouldShowMoreButton)
-        {
-            _hasUserToggle = false;
-            _showAll = true;
-            return;
-        }
-
-        // Preserve any explicit user toggle even if the number of items changes afterward.
-        if (_hasUserToggle)
-        {
-            return;
-        }
-
-        _showAll = DefaultExpanded;
-    }
 
     private async Task HandleSearchAsync()
     {
@@ -213,7 +176,6 @@
             return;
         }
 
-        _hasUserToggle = true;
         _showAll = !_showAll;
     }
 

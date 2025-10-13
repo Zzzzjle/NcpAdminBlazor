@@ -1,9 +1,6 @@
 @* Represents a single search field within <QueryForm>, registering itself with the parent
    so the layout and visibility can be centrally managed. *@
-
-@implements IDisposable
 @namespace NcpAdminBlazor.Client.Component
-
 
 @code {
 
@@ -49,12 +46,6 @@
 
         // Register the item so the parent can include it in the visible grid layout.
         Parent.AddItem(this);
-    }
-
-    void IDisposable.Dispose()
-    {
-        // Unregister the item if the component is removed from the render tree.
-        Parent?.RemoveItem(this);
     }
 
 }

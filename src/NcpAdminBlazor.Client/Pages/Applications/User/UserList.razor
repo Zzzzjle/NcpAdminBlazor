@@ -5,11 +5,9 @@
 
 <PageTitle>用户管理</PageTitle>
 <div style="display: flex; flex-direction: column; height: 100%; gap: 0.75rem; overflow: hidden;">
-    @if (_searchOpen)
-    {
+    <ShoudDisplay Value="_searchOpen">
         <QueryForm OnSearch="@OnSearchAsync"
                    OnReset="@OnResetAsync"
-                   ShowItemsCount="3"
                    Context="itemAttrs">
             <QueryFormItem>
                 <MudTextField @bind-Value="_filter.Username"
@@ -36,7 +34,7 @@
                               @attributes="itemAttrs"/>
             </QueryFormItem>
         </QueryForm>
-    }
+    </ShoudDisplay>
 
     <MudPaper Outlined Class="pa-0" Style="flex: 1 1 auto;overflow: hidden">
         <MudDataGrid @ref="_dataGrid" T="NcpAdminBlazorWebApplicationQueriesUserListItemDto"
