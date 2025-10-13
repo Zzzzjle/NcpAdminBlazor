@@ -1,0 +1,261 @@
+@namespace NcpAdminBlazor.Client.Component
+@attribute [CascadingTypeParameter(nameof(T))]
+
+@typeparam T
+
+<MudPaper Outlined="@Outlined" Class="@PaperClass" Style="@PaperStyle">
+    <MudDataGrid @ref="_dataGrid"
+                 T="T"
+                 ServerData="HandleServerDataAsync"
+                 FixedFooter="@FixedFooter"
+                 FixedHeader="@FixedHeader"
+                 Height="@Height"
+                 Dense="@Dense"
+                 Hover="@Hover"
+                 @attributes="AdditionalAttributes">
+        <ToolBarContent>
+            @if (!HideToolbar)
+            {
+                if (!string.IsNullOrWhiteSpace(Title))
+                {
+                    <MudText Typo="@TitleTypo">@Title</MudText>
+                }
+
+                if (ShouldRenderToolbarControls)
+                {
+                    if (!string.IsNullOrWhiteSpace(Title))
+                    {
+                        <MudSpacer/>
+                    }
+
+                    <MudStack Row AlignItems="AlignItems.Center" Spacing="1">
+                        @if (ShowAddButton)
+                        {
+                            <MudButton Variant="@Variant.Filled"
+                                       Color="@Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Add"
+                                       Disabled="@AddButtonDisabled"
+                                       OnClick="@HandleAddClickAsync">
+                                @AddButtonText
+                            </MudButton>
+                        }
+
+                        @if (ShowSearchToggle)
+                        {
+                            <MudToggleIconButton Toggled="@_searchOpen"
+                                                 ToggledChanged="@ToggleSearchAsync"
+                                                 Icon="@Icons.Material.Filled.Search"
+                                                 Color="@Color.Default"
+                                                 ToggledColor="@Color.Primary"/>
+                        }
+
+                        @ToolbarContent
+                    </MudStack>
+                }
+            }
+        </ToolBarContent>
+
+        <Columns>
+            @if (ColumnsContent is not null)
+            {
+                @ColumnsContent
+            }
+
+            @if (ShowActionColumn)
+            {
+                <TemplateColumn Title="@ActionColumnTitle" StickyRight="@ActionColumnStickyRight">
+                    <CellTemplate Context="context">
+                        @if (ActionTemplate is not null)
+                        {
+                            @ActionTemplate(context.Item)
+                        }
+                        else
+                        {
+                            <MudStack Row Spacing="1">
+                                @if (ShowEditButton)
+                                {
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                   Size="Size.Small"
+                                                   Color="@Color.Primary"
+                                                   Disabled="@EditButtonDisabled"
+                                                   OnClick="@CreateEditCallback(context.Item)"/>
+                                }
+
+                                @if (ShowDeleteButton)
+                                {
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                                   Size="Size.Small"
+                                                   Color="@Color.Error"
+                                                   Disabled="@DeleteButtonDisabled"
+                                                   OnClick="@CreateDeleteCallback(context.Item)"/>
+                                }
+                            </MudStack>
+                        }
+                    </CellTemplate>
+                </TemplateColumn>
+            }
+        </Columns>
+
+        <PagerContent>
+            @if (!HidePager)
+            {
+                if (PagerContent is not null)
+                {
+                    @PagerContent
+                }
+                else
+                {
+                    <MudDataGridPager T="T" PageSizeOptions="@PageSizeOptions"/>
+                }
+            }
+        </PagerContent>
+    </MudDataGrid>
+</MudPaper>
+
+@code {
+
+    private MudDataGrid<T> _dataGrid = null!;
+    private bool _searchOpen;
+
+    [Parameter] public string? Title { get; set; }
+
+    [Parameter] public Typo TitleTypo { get; set; } = Typo.h6;
+
+    [Parameter] public bool HideToolbar { get; set; }
+
+    [Parameter] public RenderFragment? ToolbarContent { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private RenderFragment? ColumnsContent => ChildContent;
+
+    [Parameter] public RenderFragment? PagerContent { get; set; }
+
+    [Parameter] public Func<GridState<T>, Task<GridData<T>>>? ServerData { get; set; }
+
+    [Parameter] public bool ShowAddButton { get; set; } = true;
+
+    [Parameter] public string AddButtonText { get; set; } = "新增";
+
+    [Parameter] public bool AddButtonDisabled { get; set; }
+
+    [Parameter] public EventCallback OnAdd { get; set; }
+
+    [Parameter] public bool ShowSearchToggle { get; set; } = true;
+
+    [Parameter] public bool SearchOpen { get; set; }
+
+    [Parameter] public EventCallback<bool> SearchOpenChanged { get; set; }
+
+    [Parameter] public bool ShowActionColumn { get; set; } = true;
+
+    [Parameter] public string ActionColumnTitle { get; set; } = "Actions";
+
+    [Parameter] public bool ActionColumnStickyRight { get; set; } = true;
+
+    [Parameter] public bool ShowEditButton { get; set; } = true;
+
+    [Parameter] public bool EditButtonDisabled { get; set; }
+
+    [Parameter] public EventCallback<T> OnEdit { get; set; }
+
+    [Parameter] public bool ShowDeleteButton { get; set; } = true;
+
+    [Parameter] public bool DeleteButtonDisabled { get; set; }
+
+    [Parameter] public EventCallback<T> OnDelete { get; set; }
+
+    [Parameter] public RenderFragment<T>? ActionTemplate { get; set; }
+
+    [Parameter] public bool FixedHeader { get; set; } = true;
+
+    [Parameter] public bool FixedFooter { get; set; } = true;
+
+    [Parameter] public bool Dense { get; set; }
+
+    [Parameter] public bool Hover { get; set; } = true;
+
+    [Parameter] public string Height { get; set; } = "100%";
+
+    [Parameter] public bool HidePager { get; set; }
+
+    [Parameter] public string PaperClass { get; set; } = "pa-0";
+
+    [Parameter] public string PaperStyle { get; set; } = "flex: 1 1 auto;overflow: hidden";
+
+    [Parameter] public bool Outlined { get; set; } = true;
+
+    [Parameter] public int[] PageSizeOptions { get; set; } = [10, 25, 50, 100];
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object?>? AdditionalAttributes { get; set; }
+
+    public Task ReloadServerData()
+    {
+        return _dataGrid.ReloadServerData();
+    }
+
+    protected override void OnParametersSet()
+    {
+        _searchOpen = SearchOpen;
+    }
+
+    private async Task<GridData<T>> HandleServerDataAsync(GridState<T> state)
+    {
+        if (ServerData is null)
+        {
+            return new GridData<T>();
+        }
+
+        return await ServerData.Invoke(state);
+    }
+
+    private async Task HandleAddClickAsync()
+    {
+        if (OnAdd.HasDelegate)
+        {
+            await OnAdd.InvokeAsync();
+        }
+    }
+
+    private async Task ToggleSearchAsync(bool toggled)
+    {
+        if (_searchOpen == toggled)
+        {
+            return;
+        }
+
+        _searchOpen = toggled;
+        SearchOpen = toggled;
+
+        if (SearchOpenChanged.HasDelegate)
+        {
+            await SearchOpenChanged.InvokeAsync(toggled);
+        }
+    }
+
+    private async Task HandleEditAsync(T item)
+    {
+        if (OnEdit.HasDelegate)
+        {
+            await OnEdit.InvokeAsync(item);
+        }
+    }
+
+    private async Task HandleDeleteAsync(T item)
+    {
+        if (OnDelete.HasDelegate)
+        {
+            await OnDelete.InvokeAsync(item);
+        }
+    }
+
+    private bool ShouldRenderToolbarControls => ShowAddButton || ShowSearchToggle || ToolbarContent is not null;
+
+    private EventCallback<MouseEventArgs> CreateEditCallback(T item) =>
+        EventCallback.Factory.Create<MouseEventArgs>(this, () => HandleEditAsync(item));
+
+    private EventCallback<MouseEventArgs> CreateDeleteCallback(T item) =>
+        EventCallback.Factory.Create<MouseEventArgs>(this, () => HandleDeleteAsync(item));
+
+}
