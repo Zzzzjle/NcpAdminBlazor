@@ -42,7 +42,7 @@
 
                         @if (ShowSearchToggle)
                         {
-                            <MudToggleIconButton Toggled="@_searchOpen"
+                            <MudToggleIconButton Toggled="@SearchOpen"
                                                  ToggledChanged="@ToggleSearchAsync"
                                                  Icon="@Icons.Material.Filled.Search"
                                                  Color="@Color.Default"
@@ -115,7 +115,6 @@
 @code {
 
     private MudDataGrid<T> _dataGrid = null!;
-    private bool _searchOpen;
 
     [Parameter] public string? Title { get; set; }
 
@@ -195,11 +194,6 @@
         return _dataGrid.ReloadServerData();
     }
 
-    protected override void OnParametersSet()
-    {
-        _searchOpen = SearchOpen;
-    }
-
     private async Task<GridData<T>> HandleServerDataAsync(GridState<T> state)
     {
         if (ServerData is null)
@@ -220,12 +214,6 @@
 
     private async Task ToggleSearchAsync(bool toggled)
     {
-        if (SearchOpen == toggled)
-        {
-            return;
-        }
-        SearchOpen = toggled;
-
         if (SearchOpenChanged.HasDelegate)
         {
             await SearchOpenChanged.InvokeAsync(toggled);
