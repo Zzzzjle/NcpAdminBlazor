@@ -220,12 +220,10 @@
 
     private async Task ToggleSearchAsync(bool toggled)
     {
-        if (_searchOpen == toggled)
+        if (SearchOpen == toggled)
         {
             return;
         }
-
-        _searchOpen = toggled;
         SearchOpen = toggled;
 
         if (SearchOpenChanged.HasDelegate)
