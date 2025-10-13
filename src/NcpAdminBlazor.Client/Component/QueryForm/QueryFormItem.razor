@@ -1,0 +1,51 @@
+@* Represents a single search field within <QueryForm>, registering itself with the parent
+   so the layout and visibility can be centrally managed. *@
+@namespace NcpAdminBlazor.Client.Component
+
+@code {
+
+    // Reference to the surrounding QueryForm provided via cascading value.
+    [CascadingParameter] private QueryForm? Parent { get; set; }
+
+    /// <summary>
+    /// Content for the search field, typically a Mud input component bound to a filter value.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Grid column span for extra-small breakpoints.
+    /// </summary>
+    [Parameter]
+    public int Xs { get; set; } = 12;
+
+    /// <summary>
+    /// Grid column span for small breakpoints.
+    /// </summary>
+    [Parameter]
+    public int Sm { get; set; } = 6;
+
+    /// <summary>
+    /// Grid column span for medium breakpoints.
+    /// </summary>
+    [Parameter]
+    public int Md { get; set; } = 4;
+
+    /// <summary>
+    /// Grid column span for large breakpoints.
+    /// </summary>
+    [Parameter]
+    public int Lg { get; set; } = 3;
+
+    protected override void OnInitialized()
+    {
+        if (Parent is null)
+        {
+            throw new InvalidOperationException("QueryFormItem must be used inside a QueryForm component.");
+        }
+
+        // Register the item so the parent can include it in the visible grid layout.
+        Parent.AddItem(this);
+    }
+
+}
