@@ -6,7 +6,7 @@
 @inherits LayoutComponentBase
 @implements IDisposable
 
-<MudLayout>
+<MudLayout Class="flex">
     <MudAppBar Dense Elevation="0" Gutters="false" Class="pr-3 border-b app-border-default">
         <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit"
                        OnClick="@DrawerToggle"/>
@@ -51,15 +51,11 @@
         </MudDrawerHeader>
         <NavMenu/>
     </MudDrawer>
-    <MudMainContent>
-        <MudHidden Breakpoint="Breakpoint.SmAndDown">
-            <PageTabs @ref="_pageTabs"></PageTabs>
-        </MudHidden>
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-4 overflow-auto">
-            <PageContainer PageTabs="_pageTabs">
-                @Body
-            </PageContainer>
-        </MudContainer>
+    <MudMainContent Class="flex flex-col overflow-hidden">
+        <PageTabs @ref="_pageTabs"/>
+        <PageContainer PageTabs="_pageTabs">
+            @Body
+        </PageContainer>
     </MudMainContent>
 </MudLayout>
 

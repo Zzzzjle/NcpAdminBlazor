@@ -1,3 +1,4 @@
+@using MudBlazor.Utilities
 @using NcpAdminBlazor.Client.Component
 @implements IDisposable
 
@@ -5,11 +6,13 @@
 
 @foreach (var route in _openedRoutes)
 {
-    <div class="@(_activeRoute == route ? "" : "d-none")" @key="@($"{route}%")">
+    <MudContainer MaxWidth="MaxWidth.False"
+                  Class="@ContainerClass(route)"
+                  @key="@($"{route}%")">
         <ConditionalRender Value="@(route == GetCurrentRoute())">
             @ChildContent
         </ConditionalRender>
-    </div>
+    </MudContainer>
 }
 
 @code {
@@ -20,6 +23,11 @@
     private readonly List<string> _openedRoutes = [];
     private string? _activeRoute;
     private bool _isSubscribed;
+
+    private string ContainerClass(string route) =>
+        new CssBuilder("p-4 overflow-auto grow")
+            .AddClass("hidden", when: route != _activeRoute)
+            .Build();
 
     protected override void OnInitialized()
     {

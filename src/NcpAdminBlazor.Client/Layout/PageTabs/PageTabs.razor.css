@@ -1,9 +1,7 @@
 /*noinspection CssUnresolvedCustomProperty*/
 .page-tabs-container {
     width: 100%;
-    position: sticky;
     background-color: var(--mud-palette-appbar-background);
-    top: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4);
 }
 
 /* 1. Target the custom class on the button itself */
