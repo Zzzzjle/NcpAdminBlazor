@@ -71,4 +71,8 @@
       />
   </Target>
 
+  <Target Name="TailwindCliBuild" BeforeTargets="Compile">
+      <Exec Command="npm run build:css" />
+  </Target>
+
 </Project>
