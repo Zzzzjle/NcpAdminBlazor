@@ -9,28 +9,28 @@
         <QueryForm OnSearch="@OnSearchAsync"
                    OnReset="@OnResetAsync"
                    Context="itemAttrs">
-            <QueryFormItem>
+            <QueryFormItem Label="用户名">
                 <MudTextField @bind-Value="_filter.Username"
-                              Label="用户名"
                               Clearable="true"
+                              Placeholder="请输入用户名"
                               @attributes="itemAttrs"/>
             </QueryFormItem>
-            <QueryFormItem>
+            <QueryFormItem Label="邮箱">
                 <MudTextField @bind-Value="_filter.Email"
-                              Label="邮箱"
                               Clearable="true"
+                              Placeholder="请输入邮箱"
                               @attributes="itemAttrs"/>
             </QueryFormItem>
-            <QueryFormItem>
+            <QueryFormItem Label="手机号">
                 <MudTextField @bind-Value="_filter.Phone"
-                              Label="手机号"
                               Clearable="true"
+                              Placeholder="请输入手机号"
                               @attributes="itemAttrs"/>
             </QueryFormItem>
-            <QueryFormItem>
+            <QueryFormItem Label="真实名称">
                 <MudTextField @bind-Value="_filter.RealName"
-                              Label="真实名称"
                               Clearable="true"
+                              Placeholder="请输入真实名称"
                               @attributes="itemAttrs"/>
             </QueryFormItem>
         </QueryForm>

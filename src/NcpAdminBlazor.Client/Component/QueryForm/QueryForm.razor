@@ -11,17 +11,24 @@
     }
 </CascadingValue>
 
-<MudPaper Outlined Class="pa-4" Style="flex: 0 0 auto;">
+<MudPaper Outlined Class="p-4">
     <MudForm>
-        <MudGrid Spacing="4" Justify="Justify.FlexStart">
+        <MudGrid Spacing="4">
             @foreach (var item in VisibleItems)
             {
-                <MudItem xs="@item.Xs" sm="@item.Sm" md="@item.Md" lg="@item.Lg">
-                    @item.ChildContent
+                <MudItem xs="12" sm="6" md="4" xl="3">
+                    <MudGrid Spacing="2" Class="items-center">
+                        <MudItem xs="3" Class="font-medium justify-items-end">
+                            <MudText Typo="Typo.body2" Class="font-medium">@(item.Label + ":")</MudText>
+                        </MudItem>
+                        <MudItem xs="9">
+                            @item.ChildContent
+                        </MudItem>
+                    </MudGrid>
                 </MudItem>
             }
-            <MudItem xs="12" sm="6" md="4" lg="3" Class="d-flex align-items-center ml-auto">
-                <MudStack Row="true" Style="width: 100%" Spacing="5" AlignItems="AlignItems.Center"
+            <MudItem xs="12" sm="6" md="4" xl="3" Class="flex ml-auto">
+                <MudStack Row="true" Class="w-full" Spacing="4" AlignItems="AlignItems.Center"
                           Justify="Justify.FlexEnd">
                     <MudButton Variant="Variant.Filled"
                                Color="Color.Warning"
@@ -87,7 +94,7 @@
     /// Number of fields shown before the "More" button appears; set to 0 to always show all fields.
     /// </summary>
     [Parameter]
-    public int ShowItemsCount { get; set; } = 3;
+    public int ShowItemsCount { get; set; } = 2;
 
     /// <summary>
     /// Determines whether the component starts in the fully expanded state when applicable.
