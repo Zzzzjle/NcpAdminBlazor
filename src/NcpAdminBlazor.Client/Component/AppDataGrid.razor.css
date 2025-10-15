@@ -1,0 +1,11 @@
+::deep .mud-table-container {
+    flex-grow: 1;
+}
+
+::deep .mud-table-toolbar {
+    flex-shrink: 0;
+}
+
+::deep .mud-table-pagination{
+    flex-shrink: 0;
+}

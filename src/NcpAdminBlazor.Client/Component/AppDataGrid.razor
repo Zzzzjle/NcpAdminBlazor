@@ -3,55 +3,46 @@
 
 @typeparam T
 
-<MudPaper Outlined="@Outlined" Class="@PaperClass" Style="@PaperStyle">
+<div class="flex flex-col grow min-h-0">
     <MudDataGrid @ref="_dataGrid"
                  T="T"
                  ServerData="HandleServerDataAsync"
-                 FixedFooter="@FixedFooter"
-                 FixedHeader="@FixedHeader"
-                 Height="@Height"
-                 Dense="@Dense"
-                 Hover="@Hover"
+                 Outlined
+                 FixedFooter
+                 FixedHeader
+                 Hover
+                 Class="flex flex-col h-full"
                  @attributes="AdditionalAttributes">
         <ToolBarContent>
             @if (!HideToolbar)
             {
-                if (!string.IsNullOrWhiteSpace(Title))
+                @if (!string.IsNullOrWhiteSpace(Title))
                 {
                     <MudText Typo="@TitleTypo">@Title</MudText>
                 }
 
-                if (ShouldRenderToolbarControls)
-                {
-                    if (!string.IsNullOrWhiteSpace(Title))
+                <MudSpacer/>
+                <MudStack Row AlignItems="AlignItems.Center" Spacing="1">
+                    @if (ShowAddButton)
                     {
-                        <MudSpacer/>
+                        <MudButton Variant="@Variant.Filled"
+                                   Color="@Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.Add"
+                                   Disabled="@AddButtonDisabled"
+                                   OnClick="@HandleAddClickAsync">
+                            @AddButtonText
+                        </MudButton>
                     }
-
-                    <MudStack Row AlignItems="AlignItems.Center" Spacing="1">
-                        @if (ShowAddButton)
-                        {
-                            <MudButton Variant="@Variant.Filled"
-                                       Color="@Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Add"
-                                       Disabled="@AddButtonDisabled"
-                                       OnClick="@HandleAddClickAsync">
-                                @AddButtonText
-                            </MudButton>
-                        }
-
-                        @if (ShowSearchToggle)
-                        {
-                            <MudToggleIconButton Toggled="@SearchOpen"
-                                                 ToggledChanged="@ToggleSearchAsync"
-                                                 Icon="@Icons.Material.Filled.Search"
-                                                 Color="@Color.Default"
-                                                 ToggledColor="@Color.Primary"/>
-                        }
-
-                        @ToolbarContent
-                    </MudStack>
-                }
+                    @if (ShowSearchToggle)
+                    {
+                        <MudToggleIconButton Toggled="@SearchOpen"
+                                             ToggledChanged="@ToggleSearchAsync"
+                                             Icon="@Icons.Material.Filled.Search"
+                                             Color="@Color.Default"
+                                             ToggledColor="@Color.Primary"/>
+                    }
+                    @ToolbarContent
+                </MudStack>
             }
         </ToolBarContent>
 
@@ -110,7 +101,7 @@
             }
         </PagerContent>
     </MudDataGrid>
-</MudPaper>
+</div>
 
 @code {
 
@@ -166,25 +157,9 @@
 
     [Parameter] public RenderFragment<T>? ActionTemplate { get; set; }
 
-    [Parameter] public bool FixedHeader { get; set; } = true;
-
-    [Parameter] public bool FixedFooter { get; set; } = true;
-
-    [Parameter] public bool Dense { get; set; }
-
-    [Parameter] public bool Hover { get; set; } = true;
-
-    [Parameter] public string Height { get; set; } = "100%";
-
     [Parameter] public bool HidePager { get; set; }
 
-    [Parameter] public string PaperClass { get; set; } = "pa-0";
-
-    [Parameter] public string PaperStyle { get; set; } = "flex: 1 1 auto;overflow: hidden";
-
-    [Parameter] public bool Outlined { get; set; } = true;
-
-    [Parameter] public int[] PageSizeOptions { get; set; } = [10, 25, 50, 100];
+    [Parameter] public int[] PageSizeOptions { get; set; } = [5, 10, 25, 50, 100];
 
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object?>? AdditionalAttributes { get; set; }
@@ -235,8 +210,6 @@
             await OnDelete.InvokeAsync(item);
         }
     }
-
-    private bool ShouldRenderToolbarControls => ShowAddButton || ShowSearchToggle || ToolbarContent is not null;
 
     private EventCallback<MouseEventArgs> CreateEditCallback(T item) =>
         EventCallback.Factory.Create<MouseEventArgs>(this, () => HandleEditAsync(item));
