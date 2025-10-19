@@ -8,10 +8,12 @@
 
 <!--suppress CssUnresolvedCustomProperty -->
 <div class="pl-2 w-full border-b app-border-default" style="background-color: var(--mud-palette-appbar-background)">
-    <div class="flex my-0.5">
-        @foreach (var item in _pageTabs)
+    <div class="flex my-0.5 h-10 items-center gap-1">
+        @for (var index = 0; index < _pageTabs.Count; index++)
         {
+            var item = _pageTabs[index];
             <MudButton
+                Class="shrink-0"
                 Variant="Variant.Text"
                 StartIcon="@item.Icon"
                 Color="@(_activeRoute == item.Route ? Color.Primary : Color.Default)"
@@ -26,11 +28,15 @@
                         role="button"
                         title="Close tab"
                         aria-label="Close tab"
-                        @onclick="(_) => OnClosed(item)"
+                        @onclick="_ => OnClosed(item)"
                         @onclick:preventDefault
                         @onclick:stopPropagation>&times;</span>
                 }
             </MudButton>
+            @if (index < _pageTabs.Count - 1)
+            {
+                <MudDivider Vertical="true" Class="h-3/4"/>
+            }
         }
     </div>
 </div>
