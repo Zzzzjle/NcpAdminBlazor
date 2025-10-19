@@ -1,5 +1,4 @@
 ﻿@page "/application/email/{folder?}"
-@inject NavigationManager navigationManager
 
 <MudHidden Breakpoint="Breakpoint.SmAndDown">
     <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Email Application</MudText>
@@ -14,17 +13,17 @@
     <MudHidden Breakpoint="Breakpoint.SmAndDown">
         <MudPaper  Class="px-3 py-6 mr-6" MinWidth="250px">
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Class="my-2" FullWidth="true">Compose</MudButton>
-            <EmailNavList folder="@folder" />
+            <EmailNavList Folder="@Folder" />
         </MudPaper>
     </MudHidden>
     <MudPaper  Class="py-4 flex-grow-1">
-        <MudToolBar Dense="true" DisableGutters="true">
+        <MudToolBar Dense="true" Gutters="false">
             <MudCheckBox T="bool" Label="Select All" Class="ml-2" />
             <MudSpacer />
             <MudIconButton Icon="@Icons.Material.Outlined.NavigateBefore" Class="mx-2" />
             <MudIconButton Icon="@Icons.Material.Outlined.NavigateNext" Class="mr-4" />
         </MudToolBar>
-        @if (folder == "inbox")
+        @if (Folder == "inbox")
         {
             <Inbox />
         }
@@ -34,28 +33,28 @@
         }
     </MudPaper>
 </div>
-<MudDrawer @bind-Open="@open" Anchor="@Anchor.Left" Elevation="1" Variant="@DrawerVariant.Temporary">
+<MudDrawer @bind-Open="@_open" Anchor="@Anchor.Left" Elevation="1" Variant="@DrawerVariant.Temporary">
     <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Class="mx-4 mt-6 mb-4">Compose</MudButton>
-    <EmailNavList folder="@folder" />
+    <EmailNavList Folder="@Folder" />
 </MudDrawer>
 
 
 @code
 {
-    bool open;
+    bool _open;
 
-    [Parameter] public string folder { get; set; } = string.Empty;
+    [Parameter] public string Folder { get; set; } = string.Empty;
 
     protected override void OnInitialized()
     {
-        if (String.IsNullOrEmpty(folder))
+        if (String.IsNullOrEmpty(Folder))
         {
-            folder = "inbox";
+            Folder = "inbox";
         }
     }
 
     void OpenDrawer()
     {
-        open = true;
+        _open = true;
     }
 }

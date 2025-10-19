@@ -33,9 +33,11 @@ public interface IApplicationUserRepository : IRepository<ApplicationUser, Appli
 
 public class ApplicationUserRepository(ApplicationDbContext context) : RepositoryBase<ApplicationUser, ApplicationUserId, ApplicationDbContext>(context), IApplicationUserRepository
 {
+    private readonly ApplicationDbContext _context = context;
+
     public async Task<ApplicationUser?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        return await context.ApplicationUsers
+        return await _context.ApplicationUsers
             .Include(u => u.Roles)
             .Include(u => u.Permissions)
             .FirstOrDefaultAsync(x => x.Email == email && !x.IsDeleted, cancellationToken);
@@ -43,7 +45,7 @@ public class ApplicationUserRepository(ApplicationDbContext context) : Repositor
     
     public async Task<ApplicationUser?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
     {
-        return await context.ApplicationUsers
+        return await _context.ApplicationUsers
             .Include(u => u.Roles)
             .Include(u => u.Permissions)
             .FirstOrDefaultAsync(x => x.Username == name && !x.IsDeleted, cancellationToken);
@@ -51,7 +53,7 @@ public class ApplicationUserRepository(ApplicationDbContext context) : Repositor
     
     public async Task<ApplicationUser?> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default)
     {
-        return await context.ApplicationUsers
+        return await _context.ApplicationUsers
             .Include(u => u.Roles)
             .Include(u => u.Permissions)
             .FirstOrDefaultAsync(x => x.Phone == phone && !x.IsDeleted, cancellationToken);

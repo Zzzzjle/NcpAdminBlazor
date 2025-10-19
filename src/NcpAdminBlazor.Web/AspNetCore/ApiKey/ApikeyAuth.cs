@@ -31,7 +31,7 @@ sealed class ApikeyAuth(
 
 
         // 通过apikey初始化当前用户
-        var user = await InitLoginUser(extractedApiKey);
+        var user = await InitLoginUserAsync(extractedApiKey);
 
         if (!IsPublicEndpoint() && user.UserId == 0)
             return AuthenticateResult.Fail("Invalid API credentials!");
@@ -41,7 +41,7 @@ sealed class ApikeyAuth(
         return AuthenticateResult.Success(ticket);
     }
 
-    private async Task<LoginUser> InitLoginUser(StringValues extractedApiKey)
+    private async Task<LoginUser> InitLoginUserAsync(StringValues extractedApiKey)
     {
         // 临时代码：后续改成通过apikey从缓存加载用户信息
         var loginUser = new LoginUser();

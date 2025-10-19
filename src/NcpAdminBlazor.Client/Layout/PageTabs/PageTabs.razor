@@ -111,9 +111,9 @@
     {
         _pageTabs.Remove(pageTabItem);
 
-        if (_activeRoute == pageTabItem.Route && _pageTabs.Any())
+        if (_activeRoute == pageTabItem.Route && _pageTabs.Count > 0)
         {
-            NavigationManager.NavigateTo(_pageTabs.Last().Route);
+            NavigationManager.NavigateTo(_pageTabs[^1].Route);
         }
 
         OnTabClosed?.Invoke(pageTabItem.Route);
@@ -156,7 +156,7 @@
     }
 
     // 数据模型 (建议将其移至一个共享的 Models 文件夹)
-    private record PageTabItem(
+    private sealed record PageTabItem(
         string Route,
         string Title,
         string Icon,

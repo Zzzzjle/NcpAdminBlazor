@@ -64,6 +64,11 @@
     <ProjectReference Include="..\NcpAdminBlazor.Shared\NcpAdminBlazor.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Application\Jobs\" />
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
   <Target Name="ClientGen" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">
       <Exec WorkingDirectory="$(RunWorkingDirectory)"
             Command="$(RunCommand) --generateclients true"

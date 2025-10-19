@@ -6,7 +6,9 @@ public class MenuItem
     public string? Href { get; init; }
     public string? Icon { get; init; }
 
+#pragma warning disable S2325
     public List<MenuItem>? ChildItems
+#pragma warning restore S2325
     {
         get;
         set

@@ -77,7 +77,7 @@
                         <tr>
                             <td>
                                 <div class="d-flex flex-row">
-                                    <MudAvatar Image="@report.Avatar" Class="mud-elevation-25"/>
+                                    <MudAvatar Class="mud-elevation-25"/>
                                     <div class="ml-6">
                                         <MudText Typo="Typo.subtitle2">@report.Name</MudText>
                                         <MudText Typo="Typo.body2">@report.Title</MudText>
@@ -106,7 +106,7 @@
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent Class="px-0">
-                <MudList T="string" Clickable="true">
+                <MudList T="string">
                     <MudListItem T="string">
                         <div class="d-flex flex-row">
                             <MudAvatar Class="mud-elevation-25">
@@ -157,12 +157,10 @@
 </MudGrid>
 
 @code {
-    [Inject] ApiClient ApiClient { get; set; } = null!;
-
-
-    protected async override Task OnInitializedAsync()
+    
+    protected override Task OnInitializedAsync()
     {
-        // var respone = await ApiClient.GetFromJsonAsync<List<Student>>("api/students");
+        return Task.CompletedTask;
     }
 
     readonly EarningReport[] _earningReports =

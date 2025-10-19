@@ -25,16 +25,18 @@ public interface IRoleRepository : IRepository<Role, RoleId>
 
 public class RoleRepository(ApplicationDbContext context) : RepositoryBase<Role, RoleId, ApplicationDbContext>(context), IRoleRepository
 {
+    private readonly ApplicationDbContext _context = context;
+
     public async Task<Role?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
     {
-        return await context.Roles
+        return await _context.Roles
             .Include(r => r.Permissions)
             .FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
     }
     
     public async Task<List<Role>> GetByIdsAsync(IEnumerable<RoleId> roleIds, CancellationToken cancellationToken = default)
     {
-        return await context.Roles
+        return await _context.Roles
             .Include(r => r.Permissions)
             .Where(r => roleIds.Contains(r.Id))
             .ToListAsync(cancellationToken);

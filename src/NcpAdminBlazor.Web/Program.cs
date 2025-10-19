@@ -149,13 +149,6 @@ try
 
     #endregion
 
-    #region Query
-
-    builder.Services.AddScoped<OrderQuery>();
-
-    #endregion
-
-
     #region 基础设施
 
     builder.Services.AddRepositories(typeof(ApplicationDbContext).Assembly);

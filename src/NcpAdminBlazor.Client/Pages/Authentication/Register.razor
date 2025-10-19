@@ -30,7 +30,7 @@
                   Label="确认密码" Variant="Variant.Outlined" InputType="InputType.Password"
                   Validation="@(new Func<string, string>(PasswordMatch))" Class="mt-4"/>
 
-    <MudCheckBox T="bool" @bind-Checked="@AgreeToTerms" Label="I agree to the terms and privacy" Color="Color.Primary"
+    <MudCheckBox T="bool" @bind-Value="@AgreeToTerms" Label="I agree to the terms and privacy" Color="Color.Primary"
                  Class="ml-n1 my-3"></MudCheckBox>
 
     <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success || _isBusy)"
@@ -99,7 +99,7 @@
                 _errorMessage = result?.Message ?? "注册失败，请稍后重试";
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             _showErrorAlert = true;
             _errorMessage = "注册过程中发生错误，请重试";

@@ -5,7 +5,9 @@
 namespace NcpAdminBlazor.Infrastructure.Migrations
 {
     /// <inheritdoc />
+#pragma warning disable CS8981 // 该类型名称仅包含小写 ascii 字符。此类名称可能会成为该语言的保留值。
     public partial class clear : Migration
+#pragma warning restore CS8981 // 该类型名称仅包含小写 ascii 字符。此类名称可能会成为该语言的保留值。
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
