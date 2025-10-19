@@ -7,14 +7,14 @@
 @namespace NcpAdminBlazor.Client.Layout
 
 <!--suppress CssUnresolvedCustomProperty -->
-<div class="pl-2 w-full border-b app-border-default" style="background-color: var(--mud-palette-appbar-background)">
+<div class="pl-2 w-full flex items-center border-b app-border-default"
+     style="background-color: var(--mud-palette-appbar-background)">
     <div class="flex my-0.5 h-10 items-center gap-1">
         @for (var index = 0; index < _pageTabs.Count; index++)
         {
             var item = _pageTabs[index];
             <MudButton
                 Class="shrink-0"
-                Variant="Variant.Text"
                 StartIcon="@item.Icon"
                 Color="@(_activeRoute == item.Route ? Color.Primary : Color.Default)"
                 Style="@(_activeRoute == item.Route ? "background-color: var(--mud-palette-primary-hover)" : "")"
@@ -35,10 +35,26 @@
             </MudButton>
             @if (index < _pageTabs.Count - 1)
             {
-                <MudDivider Vertical="true" Class="h-3/4"/>
+                <MudDivider Vertical="true" Class="h-1/2"/>
             }
         }
     </div>
+    <MudButtonGroup Color="Color.Inherit" Variant="Variant.Text" Class="ml-auto">
+        <MudMenu Dense Icon="@Icons.Material.Filled.KeyboardArrowDown">
+            <ChildContent>
+                <MudMenuItem Label="刷新" Icon="@Icons.Material.Filled.Autorenew"/>
+                <MudMenuItem Label="固定" Icon="@Icons.Material.Filled.PushPin"/>
+                <MudMenuItem Label="在新窗口打开" Icon="@Icons.Material.Filled.OpenInNew"></MudMenuItem>
+                <MudDivider/>
+                <MudMenuItem Label="关闭左侧标签页" Icon="@Icons.Material.Filled.ArrowBack"/>
+                <MudMenuItem Label="关闭右侧标签页" Icon="@Icons.Material.Filled.ArrowForward"/>
+                <MudDivider/>
+                <MudMenuItem Label="关闭其他标签页" Icon="@Icons.Material.Filled.CompareArrows"/>
+                <MudMenuItem Label="关闭全部标签页" Icon="@Icons.Material.Filled.Close"></MudMenuItem>
+            </ChildContent>
+        </MudMenu>
+        <MudIconButton Icon="@Icons.Material.Filled.Fullscreen"></MudIconButton>
+    </MudButtonGroup>
 </div>
 
 @code {
