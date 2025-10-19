@@ -6,26 +6,33 @@
 
 @namespace NcpAdminBlazor.Client.Layout
 
-<div class="pl-2 page-tabs-container border-b app-border-default">
-    <MudStack Row Spacing="1">
+<!--suppress CssUnresolvedCustomProperty -->
+<div class="pl-2 w-full border-b app-border-default" style="background-color: var(--mud-palette-appbar-background)">
+    <div class="flex my-0.5">
         @foreach (var item in _pageTabs)
         {
             <MudButton
                 Variant="Variant.Text"
+                StartIcon="@item.Icon"
                 Color="@(_activeRoute == item.Route ? Color.Primary : Color.Default)"
+                Style="@(_activeRoute == item.Route ? "background-color: var(--mud-palette-primary-hover)" : "")"
                 OnClick="@(() => OnClicked(item))"
                 Ripple="false">
                 @item.Title
                 @if (item.IsCloseable)
                 {
-                    <MudIconButton
-                        OnClick="@(() => OnClosed(item))"
-                        Icon="@Icons.Material.Filled.Close"
-                        Class="extra-small-icon-button"/>
+                    <span
+                        class="ml-2 -mr-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-sm text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-300"
+                        role="button"
+                        title="Close tab"
+                        aria-label="Close tab"
+                        @onclick="(_) => OnClosed(item)"
+                        @onclick:preventDefault
+                        @onclick:stopPropagation>&times;</span>
                 }
             </MudButton>
         }
-    </MudStack>
+    </div>
 </div>
 
 @code {
@@ -66,7 +73,8 @@
         if (_pageTabs.Any(c => c.Route == currentRoute)) return;
         var menuItem = FindMenuItemByHref(MenuProvider.MenuItems, currentRoute);
         var title = menuItem?.Title ?? GenerateFallbackTitle(currentRoute);
-        _pageTabs.Add(new PageTabItem { Route = currentRoute, Title = title, IsCloseable = currentRoute != "/" });
+        var icon = menuItem?.Icon ?? string.Empty;
+        _pageTabs.Add(new PageTabItem(currentRoute, title, icon, currentRoute != "/"));
     }
 
     private void OnClicked(PageTabItem page)
@@ -126,11 +134,11 @@
     }
 
     // 数据模型 (建议将其移至一个共享的 Models 文件夹)
-    private class PageTabItem
-    {
-        public required string Route { get; init; }
-        public required string Title { get; init; }
-        public bool IsCloseable { get; init; } = true;
-    }
+    private record PageTabItem(
+        string Route,
+        string Title,
+        string Icon,
+        bool IsCloseable
+    );
 
 }
