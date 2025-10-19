@@ -4,7 +4,7 @@
     "tailwindcss": "^4.1.14"
   },
   "scripts": {
-    "build:css": "npx @tailwindcss/cli -i wwwroot/input.css -o wwwroot/tailwind.css",
-    "watch:css": "npx @tailwindcss/cli -i wwwroot/input.css -o wwwroot/tailwind.css --watch"
+    "build:css": "npx @tailwindcss/cli -i wwwroot/app.css -o wwwroot/tailwind.css",
+    "watch:css": "npx @tailwindcss/cli -i wwwroot/app.css -o wwwroot/tailwind.css --watch"
   }
 }

@@ -1,4 +1,6 @@
-/*noinspection CssUnresolvedCustomProperty*/
-.app-border-default {
-    border-color: var(--mud-palette-lines-default);
-}
+@import "tailwindcss" source(none) important;
+/* Use source(none) to completely disable automatic source detection */
+/* You can use @source "path" to manually specify a source */
+/* view more:https://tailwindcss.com/docs/detecting-classes-in-source-files#disabling-automatic-detection */
+@source "../Components";
+@source "../../NcpAdminBlazor.Client"

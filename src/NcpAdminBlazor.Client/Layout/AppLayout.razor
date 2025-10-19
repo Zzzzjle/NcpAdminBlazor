@@ -7,7 +7,7 @@
 @implements IDisposable
 
 <MudLayout Class="flex">
-    <MudAppBar Dense Elevation="0" Gutters="false" Class="pr-3 border-b app-border-default">
+    <MudAppBar Dense Elevation="0" Gutters="false" Class="pr-3 border-b border-[var(--mud-palette-lines-default)]">
         <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit"
                        OnClick="@DrawerToggle"/>
         <MudHidden Breakpoint="Breakpoint.SmAndDown">
@@ -42,7 +42,7 @@
             </ChildContent>
         </MudMenu>
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" Class="border-r app-border-default">
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" Class="border-r border-[var(--mud-palette-lines-default)]">
         <MudDrawerHeader>
             <NavLink ActiveClass="d-flex align-center me-4" href="/">
                 <MudIcon Icon="@Icons.Custom.Brands.MudBlazor" Size="Size.Large" Class="mr-2"/>
