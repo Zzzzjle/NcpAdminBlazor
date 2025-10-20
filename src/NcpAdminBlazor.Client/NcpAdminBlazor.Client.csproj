@@ -8,6 +8,11 @@
     <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
   </PropertyGroup>
 
+  <!--    -->
+  <PropertyGroup>
+      <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+  </PropertyGroup>
+    
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.9" />
@@ -15,23 +20,12 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.9" />
     <PackageReference Include="Microsoft.Kiota.Bundle" Version="1.19.1" />
     <PackageReference Include="MudBlazor" Version="8.*" />
+    <PackageReference Include="MudBlazor.Translations" Version="2.6.0" />
     <PackageReference Include="PodNet.Blazor.TypedRoutes" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NcpAdminBlazor.Shared\NcpAdminBlazor.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Pages\Applications\Chat\Chat.razor" />
-    <_ContentIncludedByDefault Remove="Pages\Applications\Chat\ChatChannels.razor" />
-    <_ContentIncludedByDefault Remove="Pages\Applications\Chat\ChatUsers.razor" />
-    <_ContentIncludedByDefault Remove="Pages\Applications\Chat\User.razor" />
-    <_ContentIncludedByDefault Remove="Pages\Applications\Chat\UserMessage.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Extensions\" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,47 @@
+@using System.Globalization
+@using Blazored.LocalStorage
+
+<MudMenu Icon="@Icons.Material.Outlined.Translate" Color="Color.Inherit" Dense>
+    @foreach (var culture in _supportedCultures)
+    {
+        <MudMenuItem OnClick="@(() => SetCultureAsync(culture))"
+                     Disabled="@(CultureInfo.CurrentCulture.Equals(culture))">
+            @culture.DisplayName
+        </MudMenuItem>
+    }
+</MudMenu>
+
+@code
+{
+    [Inject] private IConfiguration Configuration { get; set; } = null!;
+    [Inject] private ILocalStorageService LocalStorageService { get; set; } = null!;
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
+
+    private string _localStorageKey = string.Empty;
+    private CultureInfo[] _supportedCultures = [];
+    private CultureInfo? _selectedCulture;
+
+    protected override void OnInitialized()
+    {
+        _localStorageKey = Configuration["Culture:LocalStorageKey"] ??
+                           throw new InvalidOperationException("Culture:LocalStorageKey is not configured.");
+        var list = Configuration.GetSection("Culture:SupportedCultures").Get<string[]>();
+        _supportedCultures = list?.Select(c => new CultureInfo(c)).ToArray() ?? [];
+        _selectedCulture = CultureInfo.CurrentCulture;
+    }
+
+    private async Task SetCultureAsync(CultureInfo culture)
+    {
+        _selectedCulture = culture;
+        await ApplySelectedCultureAsync();
+    }
+
+    private async Task ApplySelectedCultureAsync()
+    {
+        if (!CultureInfo.CurrentCulture.Equals(_selectedCulture))
+        {
+            await LocalStorageService.SetItemAsync(_localStorageKey, _selectedCulture!.Name);
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        }
+    }
+}

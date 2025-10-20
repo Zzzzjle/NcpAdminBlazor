@@ -16,11 +16,7 @@
         <MudSpacer/>
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit"
                        OnClick="@DarkModeToggle"/>
-        <MudMenu Icon="@Icons.Material.Outlined.Translate" Color="Color.Inherit" Dense="true">
-            <MudMenuItem>English</MudMenuItem>
-            <MudMenuItem>Swedish</MudMenuItem>
-            <MudMenuItem>Old Norse</MudMenuItem>
-        </MudMenu>
+        <CultureSelector />
         <MudMenu Icon="@Icons.Material.Outlined.Widgets" Color="Color.Inherit" Dense="true">
             <MudMenuItem Href="https://mudblazor.com/">MudBlazor</MudMenuItem>
             <MudMenuItem Href="https://github.com/Garderoben/MudBlazor.Templates">Source Code
