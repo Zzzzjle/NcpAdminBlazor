@@ -11,3 +11,5 @@ public record ApplicationUserPasswordChangedDomainEvent(ApplicationUser User) : 
 public record ApplicationUserDeletedDomainEvent(ApplicationUser User) : IDomainEvent;
 
 public record ApplicationUserRefreshTokenUpdatedDomainEvent(ApplicationUser User) : IDomainEvent;
+
+public record ApplicationUserInfoUpdatedDomainEvent(ApplicationUser User) : IDomainEvent;

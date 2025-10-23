@@ -1,7 +1,11 @@
 @page "/system/users"
 @attribute [Authorize]
 @using NcpAdminBlazor.Client.Component
+@using CreateUserRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersCreateUserRequest
+@using UpdateUserRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersUpdateUserRequest
+@using UserListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUserListItemDto
 @using NcpAdminBlazor.Client.Pages.Applications.User.Models
+@using NcpAdminBlazor.Client.Pages.Applications.User.Validators
 
 <PageTitle>用户管理</PageTitle>
 <div style="display: flex; flex-direction: column; height: 100%; gap: 0.75rem; overflow: hidden;">
@@ -37,10 +41,13 @@
     </ShouldDisplay>
 
     <AppDataGrid @ref="_dataGrid"
-                 T="NcpAdminBlazorWebApplicationQueriesUserListItemDto"
+                 T="UserListItemDto"
                  Title="用户列表"
                  AddButtonText="新增用户"
                  ServerData="ServerReload"
+                 ActionColumnTitle="操作"
+                 OnAdd="@OpenCreateDrawerAsync"
+                 OnEdit="@OpenEditDrawerAsync"
                  @bind-SearchOpen="_searchOpen">
         <PropertyColumn Property="x => x.Username"/>
         <PropertyColumn Property="x => x.Email"/>
@@ -56,17 +63,86 @@
         </TemplateColumn>
         <PropertyColumn Property="x => x.CreatedAt"/>
     </AppDataGrid>
+    <AppFormDrawer Open="_editDrawerOpen"
+                   OpenChanged="OnEditDrawerOpenChangedAsync"
+                   Title="编辑用户"
+                   OnClose="@HandleEditDrawerClosedAsync"
+                   OnPrimaryAction="@HandleEditSaveAsync"
+                   OnCancel="@HandleEditDrawerCancelAsync"
+                   PrimaryActionLoading="@_saving">
+        <MudForm @ref="_editForm" Model="@_editModel" Validation="_editModelValidator.ValidateValue"
+                 Spacing="3">
+            <MudTextField Label="用户名"
+                          @bind-Value="_editModel.Username"
+                          Required="true"
+                          For="@(() => _editModel.Username)"/>
+            <MudTextField Label="邮箱"
+                          @bind-Value="_editModel.Email"
+                          For="@(() => _editModel.Email)"/>
+            <MudTextField Label="手机号"
+                          @bind-Value="_editModel.Phone"
+                          For="@(() => _editModel.Phone)"
+                          InputType="InputType.Telephone"/>
+            <MudTextField Label="真实名称"
+                          @bind-Value="_editModel.RealName"
+                          Required="true"
+                          For="@(() => _editModel.RealName)"/>
+            <MudSwitch @bind-Value="_addModel.Status" Color="Color.Primary">启用</MudSwitch>
+        </MudForm>
+    </AppFormDrawer>
+    <AppFormDrawer Open="_addDrawerOpen"
+                   OpenChanged="OnAddDrawerOpenChangedAsync"
+                   Title="新增用户"
+                   OnClose="@HandleAddDrawerClosedAsync"
+                   OnPrimaryAction="@HandleAddSaveAsync"
+                   OnCancel="@HandleAddDrawerCancelAsync"
+                   PrimaryActionLoading="@_saving">
+        <MudForm @ref="_addForm" Model="_addModel" Validation="_addModelValidator.ValidateValue"
+                 Spacing="3">
+            <MudTextField Label="用户名"
+                          @bind-Value="_addModel.Username"
+                          Required="true"
+                          For="@(() => _addModel.Username)"/>
+            <MudTextField Label="密码"
+                          @bind-Value="_addModel.Password"
+                          Required="true"
+                          For="@(() => _addModel.Password)"
+                          InputType="InputType.Password"/>
+            <MudTextField Label="邮箱"
+                          @bind-Value="_addModel.Email"
+                          For="@(() => _addModel.Email)"/>
+            <MudTextField Label="手机号"
+                          @bind-Value="_addModel.Phone"
+                          For="@(() => _addModel.Phone)"
+                          InputType="InputType.Telephone"/>
+            <MudTextField Label="真实名称"
+                          @bind-Value="_addModel.RealName"
+                          Required="true"
+                          For="@(() => _addModel.RealName)"/>
+            <MudSwitch @bind-Value="_addModel.Status" Color="Color.Primary">启用</MudSwitch>
+        </MudForm>
+    </AppFormDrawer>
 </div>
 
 @code {
 
     [Inject] ApiClient ApiClient { get; set; } = null!;
-    AppDataGrid<NcpAdminBlazorWebApplicationQueriesUserListItemDto> _dataGrid = null!;
+    AppDataGrid<UserListItemDto> _dataGrid = null!;
     readonly UserSearchFilter _filter = new();
 
-    bool _searchOpen;
+    bool _searchOpen = true;
+    bool _editDrawerOpen;
+    bool _addDrawerOpen;
+    bool _saving;
+    MudForm? _editForm;
+    MudForm? _addForm;
+    string? _editingUserId;
+    UpdateUserRequest _editModel = new() { Status = 1 };
+    CreateUserRequest _addModel = new() { Status = 1 };
+    readonly UserAddModelValidator _addModelValidator = new();
+    readonly UserEditModelValidator _editModelValidator = new();
 
-    private async Task<GridData<NcpAdminBlazorWebApplicationQueriesUserListItemDto>> ServerReload(GridState<NcpAdminBlazorWebApplicationQueriesUserListItemDto> state)
+    private async Task<GridData<UserListItemDto>> ServerReload(GridState<UserListItemDto> state)
     {
         try
         {
@@ -82,7 +158,7 @@
             });
             if (result is { Success: true, Data: not null })
             {
-                return new GridData<NcpAdminBlazorWebApplicationQueriesUserListItemDto>
+                return new GridData<UserListItemDto>
                 {
                     Items = result.Data.Items ?? [],
                     TotalItems = result.Data.Total ?? 0,
@@ -94,7 +170,7 @@
             Console.WriteLine(ex);
         }
 
-        return new GridData<NcpAdminBlazorWebApplicationQueriesUserListItemDto> { Items = [], TotalItems = 0 };
+        return new GridData<UserListItemDto> { Items = [], TotalItems = 0 };
     }
 
     private Task OnResetAsync()
@@ -109,6 +185,186 @@
     private Task OnSearchAsync()
     {
         return _dataGrid.ReloadServerData();
+    }
+
+    private Task OpenCreateDrawerAsync()
+    {
+        _addModel = new CreateUserRequest
+        {
+            Status = 1,
+            Password = string.Empty
+        };
+        _addForm?.ResetValidation();
+        _addDrawerOpen = true;
+        return Task.CompletedTask;
+    }
+
+    private Task OpenEditDrawerAsync(UserListItemDto item)
+    {
+        _editingUserId = item.Id;
+        _editModel = new UpdateUserRequest
+        {
+            Username = item.Username,
+            Email = item.Email,
+            Phone = item.Phone,
+            RealName = item.RealName,
+            Status = item.Status ?? 1
+        };
+        _editForm?.ResetValidation();
+        _editDrawerOpen = true;
+        return Task.CompletedTask;
+    }
+
+    private Task HandleEditDrawerCancelAsync()
+    {
+        _editDrawerOpen = false;
+        return Task.CompletedTask;
+    }
+
+    private Task HandleAddDrawerCancelAsync()
+    {
+        _addDrawerOpen = false;
+        return Task.CompletedTask;
+    }
+
+    private Task OnEditDrawerOpenChangedAsync(bool open)
+    {
+        _editDrawerOpen = open;
+        return Task.CompletedTask;
+    }
+
+    private Task OnAddDrawerOpenChangedAsync(bool open)
+    {
+        _addDrawerOpen = open;
+        return Task.CompletedTask;
+    }
+
+    private Task HandleEditDrawerClosedAsync()
+    {
+        _editDrawerOpen = false;
+        _editingUserId = null;
+        _editModel = new UpdateUserRequest { Status = 1 };
+        _editForm?.ResetValidation();
+        return Task.CompletedTask;
+    }
+
+    private Task HandleAddDrawerClosedAsync()
+    {
+        _addDrawerOpen = false;
+        _addModel = new CreateUserRequest
+        {
+            Status = 1,
+            Password = string.Empty
+        };
+        _addForm?.ResetValidation();
+        return Task.CompletedTask;
+    }
+
+    private async Task HandleEditSaveAsync()
+    {
+        if (_saving)
+        {
+            return;
+        }
+
+        if (_editForm is not null)
+        {
+            await _editForm.Validate();
+            if (!_editForm.IsValid)
+            {
+                return;
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(_editingUserId) || !long.TryParse(_editingUserId, out var userId))
+        {
+            Console.WriteLine($"无效的用户ID：{_editingUserId}");
+            return;
+        }
+
+        _saving = true;
+        StateHasChanged();
+        try
+        {
+            var request = new UpdateUserRequest
+            {
+                Username = _editModel.Username?.Trim(),
+                Email = _editModel.Email?.Trim(),
+                Phone = _editModel.Phone?.Trim(),
+                RealName = _editModel.RealName?.Trim(),
+                Status = _editModel.Status ?? 1
+            };
+
+            var response = await ApiClient.Api.User[userId].Update.PostAsync(request);
+            if (response?.Success == true)
+            {
+                await HandleEditDrawerClosedAsync();
+                await _dataGrid.ReloadServerData();
+            }
+            else
+            {
+                Console.WriteLine(response?.Message ?? "更新用户失败");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private async Task HandleAddSaveAsync()
+    {
+        if (_saving)
+        {
+            return;
+        }
+
+        if (_addForm is not null)
+        {
+            await _addForm.Validate();
+            if (!_addForm.IsValid)
+            {
+                return;
+            }
+        }
+
+        _saving = true;
+        StateHasChanged();
+        try
+        {
+            var request = new CreateUserRequest
+            {
+                Username = _addModel.Username?.Trim(),
+                Password = _addModel.Password?.Trim(),
+                Email = _addModel.Email?.Trim(),
+                Phone = _addModel.Phone?.Trim(),
+                RealName = _addModel.RealName?.Trim(),
+                Status = _addModel.Status ?? 1
+            };
+
+            var response = await ApiClient.Api.User.PostAsync(request);
+            if (response?.Success == true)
+            {
+                await HandleAddDrawerClosedAsync();
+                await _dataGrid.ReloadServerData();
+            }
+            else
+            {
+                Console.WriteLine(response?.Message ?? "创建用户失败");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            _saving = false;
+        }
     }
 
 }

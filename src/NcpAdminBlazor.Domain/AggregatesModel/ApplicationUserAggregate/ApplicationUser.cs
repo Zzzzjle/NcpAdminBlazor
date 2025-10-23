@@ -111,26 +111,34 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
             }
         }
 
-        public void SetSpecificPermissions(IEnumerable<ApplicationUserPermission> permissionsToBeAssigned)
+        /// <summary>
+        /// 更新用户基础信息
+        /// </summary>
+        /// <param name="username">用户名</param>
+        /// <param name="realName">真实姓名</param>
+        /// <param name="email">邮箱</param>
+        /// <param name="phone">手机号</param>
+        /// <param name="status">状态标识</param>
+        public void UpdateProfile(string username, string realName, string email, string phone, int status)
         {
-            var currentSpecificPermissionMap =
-                Permissions.Where(p => p.SourceRoleIds.Count == 0).ToDictionary(p => p.PermissionCode);
-            var newSpecificPermissionMap = permissionsToBeAssigned.ToDictionary(p => p.PermissionCode);
+            if (string.IsNullOrWhiteSpace(username)) throw new KnownException("用户名不能为空");
+            if (string.IsNullOrWhiteSpace(realName)) throw new KnownException("姓名不能为空");
+            if (string.IsNullOrWhiteSpace(email)) throw new KnownException("邮箱不能为空");
+            if (string.IsNullOrWhiteSpace(phone)) throw new KnownException("手机号不能为空");
+            if (status is not (0 or 1)) throw new KnownException("用户状态无效");
 
-            var permissionCodesToRemove = currentSpecificPermissionMap.Keys.Except(newSpecificPermissionMap.Keys);
-            foreach (var permissionCode in permissionCodesToRemove)
-            {
-                var permission = currentSpecificPermissionMap[permissionCode];
-                Permissions.Remove(permission);
-            }
+            var normalizedUsername = username.Trim();
+            var normalizedRealName = realName.Trim();
+            var normalizedEmail = email.Trim();
+            var normalizedPhone = phone.Trim();
 
-            var permissionCodesToAdd = newSpecificPermissionMap.Keys.Except(currentSpecificPermissionMap.Keys);
-            foreach (var permissionCode in permissionCodesToAdd)
-            {
-                if (Permissions.Any(p => p.PermissionCode == permissionCode))
-                    throw new KnownException("权限重复！");
-                Permissions.Add(newSpecificPermissionMap[permissionCode]);
-            }
+            Username = normalizedUsername;
+            RealName = normalizedRealName;
+            Email = normalizedEmail;
+            Phone = normalizedPhone;
+            Status = status;
+
+            AddDomainEvent(new ApplicationUserInfoUpdatedDomainEvent(this));
         }
 
         /// <summary>

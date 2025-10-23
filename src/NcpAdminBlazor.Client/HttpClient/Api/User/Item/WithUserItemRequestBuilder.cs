@@ -4,6 +4,7 @@ using Microsoft.Kiota.Abstractions.Extensions;
 using Microsoft.Kiota.Abstractions;
 using NcpAdminBlazor.Client.Api.User.Item.Delete;
 using NcpAdminBlazor.Client.Api.User.Item.Profile;
+using NcpAdminBlazor.Client.Api.User.Item.Update;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -25,6 +26,11 @@ namespace NcpAdminBlazor.Client.Api.User.Item
         public global::NcpAdminBlazor.Client.Api.User.Item.Profile.ProfileRequestBuilder Profile
         {
             get => new global::NcpAdminBlazor.Client.Api.User.Item.Profile.ProfileRequestBuilder(PathParameters, RequestAdapter);
+        }
+        /// <summary>The update property</summary>
+        public global::NcpAdminBlazor.Client.Api.User.Item.Update.UpdateRequestBuilder Update
+        {
+            get => new global::NcpAdminBlazor.Client.Api.User.Item.Update.UpdateRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>
         /// Instantiates a new <see cref="global::NcpAdminBlazor.Client.Api.User.Item.WithUserItemRequestBuilder"/> and sets the default values.

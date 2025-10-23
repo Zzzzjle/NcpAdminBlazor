@@ -6,6 +6,50 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/user": {
+      "post": {
+        "tags": [
+          "User",
+          "Api"
+        ],
+        "summary": "创建用户",
+        "description": "创建一个新的后台用户",
+        "operationId": "NcpAdminBlazorWebEndpointsUsersCreateUserEndpoint",
+        "requestBody": {
+          "x-name": "CreateUserRequest",
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsUsersCreateUserRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseDataOfCreateUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/user/{userId}/delete": {
       "delete": {
         "tags": [
@@ -196,6 +240,68 @@
         }
       }
     },
+    "/api/user/{userId}/update": {
+      "post": {
+        "tags": [
+          "User",
+          "Api"
+        ],
+        "summary": "更新用户信息",
+        "description": "更新指定用户的基础信息",
+        "operationId": "NcpAdminBlazorWebEndpointsUsersUpdateUserEndpoint",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "123"
+          }
+        ],
+        "requestBody": {
+          "x-name": "UpdateUserRequest",
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsUsersUpdateUserRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseData"
+                },
+                "example": {
+                  "data": true,
+                  "success": true,
+                  "message": "",
+                  "code": 0,
+                  "errorData": []
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
     "/api/user/{userId}/profile": {
       "get": {
         "tags": [
@@ -332,6 +438,36 @@
   },
   "components": {
     "schemas": {
+      "NetCorePalExtensionsDtoResponseDataOfCreateUserResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseData"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "data": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsUsersCreateUserResponse"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "NcpAdminBlazorWebEndpointsUsersCreateUserResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "userId": {
+            "type": "string"
+          }
+        }
+      },
       "NetCorePalExtensionsDtoResponseData": {
         "type": "object",
         "additionalProperties": false,
@@ -349,6 +485,45 @@
           "errorData": {
             "type": "array",
             "items": {}
+          }
+        }
+      },
+      "NcpAdminBlazorWebEndpointsUsersCreateUserRequest": {
+        "type": "object",
+        "example": {
+          "username": "admin",
+          "password": "123456",
+          "realName": "管理员",
+          "email": "admin@example.com",
+          "phone": "13800000000",
+          "status": 1
+        },
+        "additionalProperties": false,
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "admin"
+          },
+          "password": {
+            "type": "string",
+            "example": "123456"
+          },
+          "realName": {
+            "type": "string",
+            "example": "管理员"
+          },
+          "email": {
+            "type": "string",
+            "example": "admin@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "13800000000"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1
           }
         }
       },
@@ -570,6 +745,40 @@
             "type": "string",
             "description": "密码",
             "example": "123"
+          }
+        }
+      },
+      "NcpAdminBlazorWebEndpointsUsersUpdateUserRequest": {
+        "type": "object",
+        "example": {
+          "username": "admin",
+          "realName": "管理员",
+          "email": "admin@example.com",
+          "phone": "13800000000",
+          "status": 1
+        },
+        "additionalProperties": false,
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "admin"
+          },
+          "realName": {
+            "type": "string",
+            "example": "管理员"
+          },
+          "email": {
+            "type": "string",
+            "example": "admin@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "13800000000"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1
           }
         }
       },
