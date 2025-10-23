@@ -1,0 +1,165 @@
+@* Provides a reusable drawer surface for create or edit workflows associated with data grids. *@
+@namespace NcpAdminBlazor.Client.Component
+
+<MudDrawer @bind-Open="Open"
+           Anchor="Anchor.End"
+           Variant="DrawerVariant.Temporary"
+           Elevation="1"
+           Width="400px"
+           Class="h-dvh flex flex-col">
+    <MudDrawerHeader Dense Class="shrink-0 items-center border-b border-[var(--mud-palette-lines-default)]">
+        <MudText Typo="@Typo.h6">@Title</MudText>
+        <MudIconButton
+            Class="ml-auto"
+            Icon="@Icons.Material.Filled.Close"
+            Disabled="@CloseButtonDisabled"
+            OnClick="@CloseAsync"/>
+    </MudDrawerHeader>
+
+    <div class="flex-1 overflow-y-auto p-4">
+        @if (ChildContent is not null)
+        {
+            @ChildContent
+        }
+    </div>
+
+    <div class="shrink-0 py-2 px-6 border-t border-[var(--mud-palette-lines-default)]">
+        <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center" Spacing="4">
+            <MudButton Variant="Variant.Outlined"
+                       Disabled="@CancelButtonDisabled"
+                       OnClick="@HandleCancelAsync">
+                取消
+            </MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Disabled="@(PrimaryActionLoading)"
+                       OnClick="@HandlePrimaryAsync">
+                @if (PrimaryActionLoading)
+                {
+                    <MudProgressCircular Indeterminate="true" Size="Size.Small" Class="me-1"/>
+                }
+                确定
+            </MudButton>
+        </MudStack>
+    </div>
+</MudDrawer>
+
+@code {
+
+    /// <summary>
+    /// Controls whether the drawer is currently visible.
+    /// </summary>
+    [Parameter]
+    public bool Open { get; set; }
+
+    /// <summary>
+    /// Two-way binding callback for <see cref="Open"/>.
+    /// </summary>
+    [Parameter]
+    public EventCallback<bool> OpenChanged { get; set; }
+
+    /// <summary>
+    /// Optional explicit title; falls back to mode-specific defaults when not provided.
+    /// </summary>
+    [Parameter]
+    public string? Title { get; set; }
+
+    /// <summary>
+    /// Main content of the drawer, typically a form for editing entity data.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Shows a progress indicator inside the primary action button.
+    /// </summary>
+    [Parameter]
+    public bool PrimaryActionLoading { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the primary action button is clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnPrimaryAction { get; set; }
+
+    /// <summary>
+    /// Disables the cancel button when true.
+    /// </summary>
+    [Parameter]
+    public bool CancelButtonDisabled { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the cancel button is clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    /// <summary>
+    /// Determines whether the drawer automatically closes after cancel actions.
+    /// </summary>
+    [Parameter]
+    public bool CloseOnCancel { get; set; } = true;
+
+    /// <summary>
+    /// Shows a close icon button in the header when true.
+    /// </summary>
+    [Parameter]
+    public bool ShowCloseButton { get; set; } = true;
+
+    /// <summary>
+    /// Disables the header close button when true.
+    /// </summary>
+    [Parameter]
+    public bool CloseButtonDisabled { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the drawer requests to close.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    private async Task HandlePrimaryAsync()
+    {
+        if (OnPrimaryAction.HasDelegate)
+        {
+            await OnPrimaryAction.InvokeAsync();
+        }
+    }
+
+    private async Task HandleCancelAsync()
+    {
+        if (CancelButtonDisabled)
+        {
+            return;
+        }
+
+        if (OnCancel.HasDelegate)
+        {
+            await OnCancel.InvokeAsync();
+        }
+
+        if (CloseOnCancel)
+        {
+            await CloseAsync();
+        }
+    }
+
+    private async Task CloseAsync()
+    {
+        if (OnClose.HasDelegate)
+        {
+            await OnClose.InvokeAsync();
+        }
+
+        await SetOpenAsync(false);
+    }
+
+    private async Task SetOpenAsync(bool open)
+    {
+        if (OpenChanged.HasDelegate)
+        {
+            await OpenChanged.InvokeAsync(open);
+        }
+    }
+
+}
