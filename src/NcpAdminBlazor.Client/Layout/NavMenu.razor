@@ -1,13 +1,12 @@
 ﻿@using NcpAdminBlazor.Client.Providers
 
-<MudNavMenu Color="Color.Primary" Rounded="true" >
+<MudNavMenu Color="Color.Primary">
     @foreach (var menuItem in MenuProvider.MenuItems)
     {
-        <NavItemRenderer Item="menuItem" />
+        <NavItemRenderer Item="menuItem"/>
     }
 </MudNavMenu>
 
 @code {
-    [Inject]
-    private MenuProvider MenuProvider { get; set; } = null!;
+    [Inject] private MenuProvider MenuProvider { get; set; } = null!;
 }
