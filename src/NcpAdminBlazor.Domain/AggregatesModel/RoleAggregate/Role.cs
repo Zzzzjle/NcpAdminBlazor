@@ -57,6 +57,11 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate
                 Permissions.Add(newPermissionMap[permissionCode]);
             }
 
+            if (permissionsToRemove.Count == 0 && permissionsToAdd.Count == 0)
+            {
+                return;
+            }
+
             AddDomainEvent(new RolePermissionChangedDomainEvent(this));
         }
     }

@@ -1,5 +1,4 @@
 using System.Net;
-using System.Linq;
 using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
 using NcpAdminBlazor.Web.Application.Queries;
 using NcpAdminBlazor.Web.Endpoints.Users;

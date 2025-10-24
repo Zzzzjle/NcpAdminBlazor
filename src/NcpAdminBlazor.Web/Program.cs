@@ -233,7 +233,7 @@ try
     // Add services to the container.
     builder.Services.AddRazorComponents()
         .AddInteractiveWebAssemblyComponents();
-    
+
     builder.Services.AddScoped<LayoutStore>();
 
     #endregion
@@ -266,7 +266,7 @@ try
         .AllowAnonymous();
 
     app.MapControllers();
-    app.UseFastEndpoints();
+    app.UseFastEndpoints(c => c.Binding.UseDefaultValuesForNullableProps = false);
     if (app.Environment.IsDevelopment())
     {
         app.UseSwaggerGen(); //add this

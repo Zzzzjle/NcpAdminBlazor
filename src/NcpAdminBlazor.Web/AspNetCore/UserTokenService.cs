@@ -3,6 +3,7 @@ using FastEndpoints;
 using FastEndpoints.Security;
 using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
 using NcpAdminBlazor.Web.Application.Commands;
+using NcpAdminBlazor.Web.Application.Commands.Users;
 using NcpAdminBlazor.Web.Application.Queries;
 
 namespace NcpAdminBlazor.Web.AspNetCore;

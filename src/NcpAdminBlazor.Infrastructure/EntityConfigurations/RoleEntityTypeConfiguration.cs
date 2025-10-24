@@ -10,19 +10,20 @@ internal class RoleEntityTypeConfiguration : IEntityTypeConfiguration<Role>
         builder.ToTable("roles");
         builder.HasKey(t => t.Id);
         builder.Property(t => t.Id).UseSnowFlakeValueGenerator();
-        
+
         builder.Property(t => t.Name).HasMaxLength(50).IsRequired();
         builder.Property(t => t.Description).HasMaxLength(200).IsRequired();
         builder.Property(t => t.Status).IsRequired();
         builder.Property(t => t.CreatedAt).IsRequired();
-        
+
         // 索引配置
         builder.HasIndex(t => t.Name).IsUnique();
-        
+
         // 配置与权限的关系
         builder.HasMany(r => r.Permissions)
             .WithOne()
-            .HasForeignKey("RoleId")
+            .HasForeignKey(rp => rp.RoleId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.Navigation(e => e.Permissions).AutoInclude();
     }
 }

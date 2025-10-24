@@ -1,7 +1,7 @@
 using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
 using NcpAdminBlazor.Infrastructure.Repositories;
 
-namespace NcpAdminBlazor.Web.Application.Commands;
+namespace NcpAdminBlazor.Web.Application.Commands.Users;
 
 public record DeleteUserCommand(ApplicationUserId UserId) : ICommand;
 

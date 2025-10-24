@@ -1,7 +1,7 @@
 using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
 using NcpAdminBlazor.Infrastructure.Repositories;
 
-namespace NcpAdminBlazor.Web.Application.Commands;
+namespace NcpAdminBlazor.Web.Application.Commands.Users;
 
 /// <summary>
 /// 更新用户的刷新令牌

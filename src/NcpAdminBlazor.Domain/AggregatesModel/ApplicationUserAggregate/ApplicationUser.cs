@@ -84,6 +84,19 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
             AddPermissions(newPermissions);
         }
 
+        public void RemoveRole(RoleId roleId)
+        {
+            var role = Roles.FirstOrDefault(r => r.RoleId == roleId);
+            if (role is null)
+            {
+                return;
+            }
+
+            Roles.Remove(role);
+            RemoveRolePermissions(roleId);
+            AddDomainEvent(new ApplicationUserInfoUpdatedDomainEvent(this));
+        }
+
         private void AddPermissions(IEnumerable<ApplicationUserPermission> permissions)
         {
             foreach (var permission in permissions)

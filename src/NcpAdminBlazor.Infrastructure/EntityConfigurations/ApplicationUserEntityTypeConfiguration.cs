@@ -30,13 +30,15 @@ internal class ApplicationUserEntityTypeConfiguration : IEntityTypeConfiguration
         // 配置与角色的关系
         builder.HasMany(u => u.Roles)
             .WithOne()
-            .HasForeignKey("ApplicationUserId")
+            .HasForeignKey(ur => ur.ApplicationUserId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.Navigation(u => u.Roles).AutoInclude();
 
         // 配置与权限的关系
         builder.HasMany(u => u.Permissions)
             .WithOne()
-            .HasForeignKey("ApplicationUserId")
+            .HasForeignKey(up => up.ApplicationUserId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.Navigation(u => u.Permissions).AutoInclude();
     }
 }

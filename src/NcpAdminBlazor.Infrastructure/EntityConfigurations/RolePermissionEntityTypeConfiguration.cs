@@ -13,10 +13,7 @@ internal class RolePermissionEntityTypeConfiguration : IEntityTypeConfiguration<
         
         builder.Property(t => t.PermissionCode).HasMaxLength(100).IsRequired();
         
-        // 外键约束
-        builder.Property<RoleId>("RoleId").IsRequired();
-        
         // 索引配置
-        builder.HasIndex("RoleId", "PermissionCode").IsUnique();
+                builder.HasIndex(rp => new { rp.RoleId, rp.PermissionCode }).IsUnique();
     }
 }

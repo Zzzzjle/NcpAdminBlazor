@@ -1,6 +1,5 @@
-using NetCorePal.Extensions.Repository.EntityFrameworkCore;
-using NetCorePal.Extensions.Repository;
 using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
+using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 
 namespace NcpAdminBlazor.Infrastructure.Repositories;
 
@@ -29,6 +28,14 @@ public interface IApplicationUserRepository : IRepository<ApplicationUser, Appli
     /// <param name="cancellationToken">取消令牌</param>
     /// <returns>用户实体，如果不存在则返回null</returns>
     Task<ApplicationUser?> GetByPhoneAsync(string phone, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 根据角色ID获取拥有该角色的用户列表
+    /// </summary>
+    /// <param name="roleId">角色ID</param>
+    /// <param name="cancellationToken">取消令牌</param>
+    /// <returns>用户实体列表</returns>
+    Task<List<ApplicationUser>> GetByRoleIdAsync(RoleId roleId, CancellationToken cancellationToken = default);
 }
 
 public class ApplicationUserRepository(ApplicationDbContext context) : RepositoryBase<ApplicationUser, ApplicationUserId, ApplicationDbContext>(context), IApplicationUserRepository
@@ -57,5 +64,14 @@ public class ApplicationUserRepository(ApplicationDbContext context) : Repositor
             .Include(u => u.Roles)
             .Include(u => u.Permissions)
             .FirstOrDefaultAsync(x => x.Phone == phone && !x.IsDeleted, cancellationToken);
+    }
+
+    public async Task<List<ApplicationUser>> GetByRoleIdAsync(RoleId roleId, CancellationToken cancellationToken = default)
+    {
+        return await _context.ApplicationUsers
+            .Include(u => u.Roles)
+            .Include(u => u.Permissions)
+            .Where(u => !u.IsDeleted && u.Roles.Any(r => r.RoleId == roleId))
+            .ToListAsync(cancellationToken);
     }
 }

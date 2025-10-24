@@ -2,6 +2,7 @@ using FastEndpoints;
 using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
 using NcpAdminBlazor.Shared.Auth;
 using NcpAdminBlazor.Web.Application.Commands;
+using NcpAdminBlazor.Web.Application.Commands.Users;
 
 namespace NcpAdminBlazor.Web.Endpoints.Users;
 
