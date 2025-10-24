@@ -5,8 +5,8 @@
            Anchor="Anchor.End"
            Variant="DrawerVariant.Temporary"
            Elevation="1"
-           Width="400px"
-           Class="h-dvh flex flex-col">
+           Width="@Width"
+           Class="h-dvh max-md:w-full flex flex-col">
     <MudDrawerHeader Dense Class="shrink-0 items-center border-b border-[var(--mud-palette-lines-default)]">
         <MudText Typo="@Typo.h6">@Title</MudText>
         <MudIconButton
@@ -63,6 +63,11 @@
     /// </summary>
     [Parameter]
     public string? Title { get; set; }
+
+    /// <summary>
+    /// Width of the drawer; defaults to "600px".
+    /// </summary>
+    public string? Width { get; set; } = "600px";
 
     /// <summary>
     /// Main content of the drawer, typically a form for editing entity data.
