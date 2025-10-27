@@ -1,0 +1,143 @@
+@page "/system/roles"
+@attribute [Authorize]
+@using System.Linq
+@using NcpAdminBlazor.Client.Component
+@using RoleListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesRolesRoleListItemDto
+@using NcpAdminBlazor.Client.Pages.Applications.Role.Components
+@using NcpAdminBlazor.Client.Pages.Applications.Role.Models
+@using NcpAdminBlazor.Shared.Auth
+
+<PageTitle>角色管理</PageTitle>
+<MudStack Spacing="3" Class="h-full">
+    <ShouldDisplay Value="_searchOpen">
+        <QueryForm OnSearch="@OnSearchAsync"
+                   OnReset="@OnResetAsync"
+                   Context="itemAttrs">
+            <QueryFormItem Label="角色名称">
+                <MudTextField @bind-Value="_filter.Name"
+                              Clearable="true"
+                              Placeholder="请输入角色名称"
+                              @attributes="itemAttrs"/>
+            </QueryFormItem>
+            <QueryFormItem Label="状态">
+                <MudSelect T="int?" @bind-Value="_filter.Status" Clearable="true" @attributes="itemAttrs">
+                    <MudSelectItem T="int?" Value="@(0)">启用</MudSelectItem>
+                    <MudSelectItem T="int?" Value="@(1)">停用</MudSelectItem>
+                </MudSelect>
+            </QueryFormItem>
+        </QueryForm>
+    </ShouldDisplay>
+
+    <AppDataGrid @ref="_dataGrid"
+                 T="RoleListItemDto"
+                 Title="角色列表"
+                 AddButtonText="新增角色"
+                 ServerData="ServerReload"
+                 ActionColumnTitle="操作"
+                 OnAdd="@(() => _addDrawerOpen = true)"
+                 OnEdit="@OnEditRole"
+                 @bind-SearchOpen="_searchOpen">
+        <PropertyColumn Property="x => x.Name" Title="角色名称"/>
+        <PropertyColumn Property="x => x.Description" Title="角色描述"/>
+        <TemplateColumn Title="状态">
+            <CellTemplate>
+                <MudChip T="string" Color="@(context.Item.Status is 1 ? Color.Success : Color.Default)"
+                         Size="Size.Small" Variant="Variant.Filled">
+                    @(context.Item.Status is 1 ? "启用" : "停用")
+                </MudChip>
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="创建时间">
+            <CellTemplate>
+                @(context.Item.CreatedAt?.ToLocalTime().ToString("yyyy-MM-dd HH:mm") ?? string.Empty)
+            </CellTemplate>
+        </TemplateColumn>
+    </AppDataGrid>
+
+    <RoleEditDrawer
+        @bind-Open="_editDrawerOpen"
+        EditingItem="_editingItem"
+        PermissionOptions="_permissionOptions"
+        OnSaved="HandleRoleUpdatedAsync"/>
+    <RoleAddDrawer
+        @bind-Open="_addDrawerOpen"
+        PermissionOptions="_permissionOptions"
+        OnSaved="HandleRoleCreatedAsync"/>
+</MudStack>
+
+@code {
+
+    [Inject] ApiClient ApiClient { get; set; } = null!;
+
+    AppDataGrid<RoleListItemDto> _dataGrid = null!;
+    readonly RoleSearchFilter _filter = new();
+
+    bool _searchOpen = true;
+    bool _editDrawerOpen;
+    bool _addDrawerOpen;
+    RoleListItemDto? _editingItem;
+    readonly List<string> _permissionOptions = AppPermissions.GetAllPermissionKeys().ToList();
+
+
+    private async Task<GridData<RoleListItemDto>> ServerReload(GridState<RoleListItemDto> state)
+    {
+        var pageSize = state.PageSize > 0 ? state.PageSize : 10;
+        try
+        {
+            var result = await ApiClient.Api.Roles.GetAsync(configure =>
+            {
+                configure.QueryParameters.Name = _filter.Name;
+                configure.QueryParameters.Status = _filter.Status;
+                configure.QueryParameters.PageIndex = state.Page + 1;
+                configure.QueryParameters.PageSize = pageSize;
+                configure.QueryParameters.CountTotal = true;
+            });
+
+            if (result is { Success: true, Data: not null })
+            {
+                var items = result.Data.Items ?? [];
+                return new GridData<RoleListItemDto>
+                {
+                    Items = items,
+                    TotalItems = result.Data.Total ?? 0
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+
+        return new GridData<RoleListItemDto> { Items = [], TotalItems = 0 };
+    }
+
+    private Task OnResetAsync()
+    {
+        _filter.Name = null;
+        _filter.Status = null;
+        return Task.CompletedTask;
+    }
+
+    private Task OnSearchAsync()
+    {
+        return _dataGrid.ReloadServerData();
+    }
+
+    private void OnEditRole(RoleListItemDto item)
+    {
+        _editDrawerOpen = true;
+        _editingItem = item;
+    }
+
+
+    private Task HandleRoleCreatedAsync()
+    {
+        return _dataGrid.ReloadServerData();
+    }
+
+    private Task HandleRoleUpdatedAsync(string? _)
+    {
+        return _dataGrid.ReloadServerData();
+    }
+
+}

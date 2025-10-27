@@ -12,7 +12,6 @@ public sealed class UpdateRoleInfoEndpoint(IMediator mediator)
     {
         Post("/api/roles/{roleId:long}/info");
         Description(d => d.WithTags("Role"));
-        Permissions(AppPermissions.Keys.System_Roles_Create);
     }
 
     public override async Task HandleAsync(UpdateRoleInfoRequest req, CancellationToken ct)

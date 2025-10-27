@@ -1,0 +1,119 @@
+@using NcpAdminBlazor.Client.Component
+@using NcpAdminBlazor.Client.Pages.Applications.Role.Models
+@using NcpAdminBlazor.Client.Pages.Applications.Role.Validators
+@using CreateRoleRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesCreateRoleRequest
+@inject ApiClient ApiClient
+
+<AppFormDrawer @bind-Open="Open"
+               Title="新增角色"
+               OnClose="@(() => Open = false)"
+               OnPrimaryAction="@HandleSaveAsync"
+               OnCancel="@(() => Open = false)"
+               PrimaryActionLoading="_saving">
+    <MudForm @ref="_form" Model="_model" Validation="_validator.ValidateValue"
+             Spacing="3">
+        <MudTextField Label="角色名称"
+                      @bind-Value="_model.Name"
+                      Required="true"
+                      For="@(() => _model.Name)"/>
+        <MudTextField Label="角色描述"
+                      @bind-Value="_model.Description"
+                      Lines="3"
+                      Required="true"
+                      For="@(() => _model.Description)"/>
+        <MudSwitch T="int" @bind-Value="_model.Status" Color="Color.Primary">启用</MudSwitch>
+        <MudSelect T="string"
+                   MultiSelection="true"
+                   @bind-SelectedValues="_model.PermissionCodes"
+                   Label="分配权限">
+            @foreach (var permission in PermissionOptions)
+            {
+                <MudSelectItem T="string" Value="@permission">@permission</MudSelectItem>
+            }
+        </MudSelect>
+    </MudForm>
+</AppFormDrawer>
+
+@code {
+    [Parameter] public IEnumerable<string> PermissionOptions { get; set; } = [];
+
+    [Parameter] public EventCallback OnSaved { get; set; }
+
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
+
+    bool _saving;
+    MudForm _form = null!;
+    RoleFormModel _model = new();
+    readonly RoleAddModelValidator _validator = new();
+
+    async Task HandleSaveAsync()
+    {
+        if (_saving)
+        {
+            return;
+        }
+
+        await _form.Validate();
+        if (!_form.IsValid)
+        {
+            return;
+        }
+
+        _saving = true;
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            var request = new CreateRoleRequest
+            {
+                Name = _model.Name.Trim(),
+                Description = _model.Description.Trim(),
+                Status = _model.Status,
+                PermissionCodes = _model.PermissionCodes
+                    .Where(code => !string.IsNullOrWhiteSpace(code))
+                    .Select(code => code.Trim())
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList()
+            };
+
+            var response = await ApiClient.Api.Roles.PostAsync(request);
+            if (response is { Success: true })
+            {
+                Open = false;
+                await OpenChanged.InvokeAsync(Open);
+                ResetModel();
+                if (OnSaved.HasDelegate)
+                {
+                    await OnSaved.InvokeAsync();
+                }
+            }
+            else
+            {
+                Console.WriteLine(response?.Message ?? "创建角色失败");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            _saving = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    void ResetModel()
+    {
+        _model = new RoleFormModel
+        {
+            Name = string.Empty,
+            Description = string.Empty,
+            Status = 1,
+            PermissionCodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        };
+    }
+
+
+}

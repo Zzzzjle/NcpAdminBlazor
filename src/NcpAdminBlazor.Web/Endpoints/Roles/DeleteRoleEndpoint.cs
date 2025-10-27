@@ -12,7 +12,6 @@ public sealed class DeleteRoleEndpoint(IMediator mediator)
     {
         Delete("/api/roles/{roleId:long}");
         Description(d => d.WithTags("Role"));
-        Permissions(AppPermissions.Keys.System_Roles_Delete);
     }
 
     public override async Task HandleAsync(DeleteRoleRequest req, CancellationToken ct)

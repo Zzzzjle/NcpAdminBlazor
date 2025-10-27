@@ -1,0 +1,185 @@
+@using NcpAdminBlazor.Client.Component
+@using NcpAdminBlazor.Client.Pages.Applications.Role.Models
+@using NcpAdminBlazor.Client.Pages.Applications.Role.Validators
+@using RoleListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesRolesRoleListItemDto
+@using UpdateRoleInfoRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesUpdateRoleInfoRequest
+@using UpdateRolePermissionsRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesUpdateRolePermissionsRequest
+@inject ApiClient ApiClient
+
+<AppFormDrawer @bind-Open="Open"
+               Title="编辑角色"
+               OnClose="@(() => Open = false)"
+               OnPrimaryAction="@HandleSaveAsync"
+               OnCancel="@(() => Open = false)"
+               PrimaryActionLoading="_saving">
+    <MudForm @ref="_form" Model="_model" Validation="_validator.ValidateValue"
+             Spacing="3">
+        <MudTextField Label="角色名称"
+                      @bind-Value="_model.Name"
+                      Required="true"
+                      For="@(() => _model.Name)"/>
+        <MudTextField Label="角色描述"
+                      @bind-Value="_model.Description"
+                      Lines="3"
+                      Required="true"
+                      For="@(() => _model.Description)"/>
+        <MudSwitch T="int" @bind-Value="_model.Status" Color="Color.Primary">启用</MudSwitch>
+        <MudSelect T="string"
+                   MultiSelection="true"
+                   @bind-SelectedValues="_model.PermissionCodes"
+                   Label="分配权限">
+            @foreach (var permission in PermissionOptions)
+            {
+                <MudSelectItem T="string" Value="@permission">@permission</MudSelectItem>
+            }
+        </MudSelect>
+    </MudForm>
+</AppFormDrawer>
+
+@code {
+    [Parameter] public IEnumerable<string> PermissionOptions { get; set; } = [];
+
+    [Parameter] public EventCallback<string?> OnSaved { get; set; }
+
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
+
+    [Parameter] public required RoleListItemDto? EditingItem { get; set; }
+
+    bool _saving;
+    string? _editingRoleId;
+    MudForm _form = null!;
+    readonly RoleFormModel _model = new();
+    readonly RoleEditModelValidator _validator = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        if (!Open)
+        {
+            return;
+        }
+
+        if (EditingItem is null)
+        {
+            Console.WriteLine("编辑角色数据为空");
+            return;
+        }
+
+        var roleIdValue = EditingItem.RoleId;
+        if (string.IsNullOrWhiteSpace(roleIdValue) || !long.TryParse(roleIdValue, out _))
+        {
+            Console.WriteLine($"无效的角色ID：{EditingItem.RoleId}");
+            return;
+        }
+
+        await LoadRoleAsync(roleIdValue, EditingItem);
+    }
+
+    async Task HandleSaveAsync()
+    {
+        if (_saving)
+        {
+            return;
+        }
+
+        await _form.Validate();
+        if (!_form.IsValid)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_editingRoleId))
+        {
+            Console.WriteLine("无效的角色ID");
+            return;
+        }
+
+        _saving = true;
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            var infoRequest = new UpdateRoleInfoRequest
+            {
+                Name = _model.Name,
+                Description = _model.Description,
+                Status = _model.Status
+            };
+
+            var infoResponse = await ApiClient.Api.Roles[_editingRoleId].Info.PostAsync(infoRequest);
+            if (infoResponse is not { Success: true })
+            {
+                Console.WriteLine(infoResponse?.Message ?? "更新角色基本信息失败");
+                return;
+            }
+
+            var permissionsRequest = new UpdateRolePermissionsRequest
+            {
+                PermissionCodes = _model.PermissionCodes
+                    .Where(code => !string.IsNullOrWhiteSpace(code))
+                    .Select(code => code.Trim())
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList()
+            };
+
+            var permissionsResponse = await ApiClient.Api.Roles[_editingRoleId].Permissions.PostAsync(permissionsRequest);
+            if (permissionsResponse is not { Success: true })
+            {
+                Console.WriteLine(permissionsResponse?.Message ?? "更新角色权限失败");
+                return;
+            }
+
+            if (OnSaved.HasDelegate)
+            {
+                await OnSaved.InvokeAsync(_editingRoleId);
+            }
+
+            Open = false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            _saving = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    async Task LoadRoleAsync(string roleIdPath, RoleListItemDto item)
+    {
+        _editingRoleId = roleIdPath;
+        _model.Name = item.Name ?? string.Empty;
+        _model.Description = item.Description ?? string.Empty;
+        _model.Status = item.Status ?? 1;
+        try
+        {
+            var infoResponse = await ApiClient.Api.Roles[roleIdPath].Info.GetAsync();
+            if (infoResponse is { Success: true, Data: not null })
+            {
+                _model.Name = infoResponse.Data.Name ?? _model.Name;
+                _model.Description = infoResponse.Data.Description ?? _model.Description;
+                _model.Status = infoResponse.Data.Status ?? _model.Status;
+            }
+
+            var permissionsResponse = await ApiClient.Api.Roles[roleIdPath].Permissions.GetAsync();
+            if (permissionsResponse is { Success: true, Data: not null })
+            {
+                var permissionCodes = permissionsResponse.Data.PermissionCodes ?? new List<string>();
+                _model.PermissionCodes = new HashSet<string>(
+                    permissionCodes
+                        .Where(code => !string.IsNullOrWhiteSpace(code))
+                        .Select(code => code.Trim()),
+                    StringComparer.OrdinalIgnoreCase);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+}

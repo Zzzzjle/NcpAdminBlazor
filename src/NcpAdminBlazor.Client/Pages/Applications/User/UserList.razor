@@ -8,7 +8,7 @@
 @using NcpAdminBlazor.Client.Pages.Applications.User.Validators
 
 <PageTitle>用户管理</PageTitle>
-<div style="display: flex; flex-direction: column; height: 100%; gap: 0.75rem; overflow: hidden;">
+<MudStack Spacing="3" Class="h-full">
     <ShouldDisplay Value="_searchOpen">
         <QueryForm OnSearch="@OnSearchAsync"
                    OnReset="@OnResetAsync"
@@ -63,8 +63,7 @@
         </TemplateColumn>
         <PropertyColumn Property="x => x.CreatedAt"/>
     </AppDataGrid>
-    <AppFormDrawer Open="_editDrawerOpen"
-                   OpenChanged="OnEditDrawerOpenChangedAsync"
+    <AppFormDrawer @bind-Open="_editDrawerOpen"
                    Title="编辑用户"
                    OnClose="@HandleEditDrawerClosedAsync"
                    OnPrimaryAction="@HandleEditSaveAsync"
@@ -90,8 +89,8 @@
             <MudSwitch @bind-Value="_addModel.Status" Color="Color.Primary">启用</MudSwitch>
         </MudForm>
     </AppFormDrawer>
-    <AppFormDrawer Open="_addDrawerOpen"
-                   OpenChanged="OnAddDrawerOpenChangedAsync"
+    <AppFormDrawer @bind-Open="_addDrawerOpen"
+                  
                    Title="新增用户"
                    OnClose="@HandleAddDrawerClosedAsync"
                    OnPrimaryAction="@HandleAddSaveAsync"
@@ -122,7 +121,7 @@
             <MudSwitch @bind-Value="_addModel.Status" Color="Color.Primary">启用</MudSwitch>
         </MudForm>
     </AppFormDrawer>
-</div>
+</MudStack>
 
 @code {
 
