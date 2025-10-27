@@ -434,6 +434,349 @@
           }
         ]
       }
+    },
+    "/api/roles": {
+      "post": {
+        "tags": [
+          "Role",
+          "Api"
+        ],
+        "operationId": "NcpAdminBlazorWebEndpointsRolesCreateRoleEndpoint",
+        "requestBody": {
+          "x-name": "CreateRoleRequest",
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesCreateRoleRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseDataOfCreateRoleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Role",
+          "Api"
+        ],
+        "operationId": "NcpAdminBlazorWebEndpointsRolesRoleListEndpoint",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            }
+          },
+          {
+            "name": "pageIndex",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "countTotal",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseDataOfPagedDataOfRoleListItemDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/roles/{roleId}": {
+      "delete": {
+        "tags": [
+          "Role",
+          "Api"
+        ],
+        "operationId": "NcpAdminBlazorWebEndpointsRolesDeleteRoleEndpoint",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseData"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/roles/{roleId}/info": {
+      "get": {
+        "tags": [
+          "Role",
+          "Api"
+        ],
+        "operationId": "NcpAdminBlazorWebEndpointsRolesRoleInfoEndpoint",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseDataOfRoleInfoDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Role",
+          "Api"
+        ],
+        "operationId": "NcpAdminBlazorWebEndpointsRolesUpdateRoleInfoEndpoint",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "x-name": "UpdateRoleInfoRequest",
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesUpdateRoleInfoRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseData"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/roles/{roleId}/permissions": {
+      "get": {
+        "tags": [
+          "Role",
+          "Api"
+        ],
+        "operationId": "NcpAdminBlazorWebEndpointsRolesRolePermissionsEndpoint",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseDataOfRolePermissionsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Role",
+          "Api"
+        ],
+        "operationId": "NcpAdminBlazorWebEndpointsRolesUpdateRolePermissionsEndpoint",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "x-name": "UpdateRolePermissionsRequest",
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesUpdateRolePermissionsRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseData"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -874,6 +1217,255 @@
       "NcpAdminBlazorWebEndpointsUsersGetUserListRequest": {
         "type": "object",
         "additionalProperties": false
+      },
+      "NetCorePalExtensionsDtoResponseDataOfCreateRoleResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseData"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "data": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesCreateRoleResponse"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "NcpAdminBlazorWebEndpointsRolesCreateRoleResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "roleId": {
+            "type": "string"
+          }
+        }
+      },
+      "NcpAdminBlazorWebEndpointsRolesCreateRoleRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "permissionCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "NcpAdminBlazorWebEndpointsRolesDeleteRoleRequest": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "NetCorePalExtensionsDtoResponseDataOfRoleInfoDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseData"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "data": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/NcpAdminBlazorWebApplicationQueriesRolesRoleInfoDto"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "NcpAdminBlazorWebApplicationQueriesRolesRoleInfoDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "roleId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "NcpAdminBlazorWebEndpointsRolesRoleInfoRequest": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "NetCorePalExtensionsDtoResponseDataOfPagedDataOfRoleListItemDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseData"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "data": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/NetCorePalExtensionsDtoPagedDataOfRoleListItemDto"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "NetCorePalExtensionsDtoPagedDataOfRoleListItemDto": {
+        "type": "object",
+        "description": "分页数据模型",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "description": "分页数据",
+            "items": {
+              "$ref": "#/components/schemas/NcpAdminBlazorWebApplicationQueriesRolesRoleListItemDto"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "description": "数据总数",
+            "format": "int32"
+          },
+          "pageIndex": {
+            "type": "integer",
+            "description": "当前页码，从1开始",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "每页数据条数",
+            "format": "int32"
+          }
+        }
+      },
+      "NcpAdminBlazorWebApplicationQueriesRolesRoleListItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "roleId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "NcpAdminBlazorWebEndpointsRolesGetRoleListRequest": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "NetCorePalExtensionsDtoResponseDataOfRolePermissionsDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/NetCorePalExtensionsDtoResponseData"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "data": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/NcpAdminBlazorWebApplicationQueriesRolesRolePermissionsDto"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "NcpAdminBlazorWebApplicationQueriesRolesRolePermissionsDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "roleId": {
+            "type": "string"
+          },
+          "permissionCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "NcpAdminBlazorWebEndpointsRolesRolePermissionsRequest": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "NcpAdminBlazorWebEndpointsRolesUpdateRoleInfoRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "NcpAdminBlazorWebEndpointsRolesUpdateRolePermissionsRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "permissionCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       }
     },
     "securitySchemes": {

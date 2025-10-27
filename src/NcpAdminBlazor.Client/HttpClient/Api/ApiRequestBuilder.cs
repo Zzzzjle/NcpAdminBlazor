@@ -2,6 +2,7 @@
 #pragma warning disable CS0618
 using Microsoft.Kiota.Abstractions.Extensions;
 using Microsoft.Kiota.Abstractions;
+using NcpAdminBlazor.Client.Api.Roles;
 using NcpAdminBlazor.Client.Api.User;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +16,11 @@ namespace NcpAdminBlazor.Client.Api
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     public partial class ApiRequestBuilder : BaseRequestBuilder
     {
+        /// <summary>The roles property</summary>
+        public global::NcpAdminBlazor.Client.Api.Roles.RolesRequestBuilder Roles
+        {
+            get => new global::NcpAdminBlazor.Client.Api.Roles.RolesRequestBuilder(PathParameters, RequestAdapter);
+        }
         /// <summary>The user property</summary>
         public global::NcpAdminBlazor.Client.Api.User.UserRequestBuilder User
         {
