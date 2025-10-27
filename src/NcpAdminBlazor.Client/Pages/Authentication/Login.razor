@@ -98,6 +98,11 @@
                     tokenData.UserId ?? string.Empty));
 
                 NavigationManager.NavigateTo(ReturnUrl ?? "/");
+                Snackbar.Add("登录成功！", Severity.Success, configure =>
+                {
+                    configure.SnackbarVariant = Variant.Text;
+                    configure.ShowCloseIcon = true;
+                });
             }
         }
         finally
