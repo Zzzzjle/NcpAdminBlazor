@@ -1,0 +1,154 @@
+@using NcpAdminBlazor.Client.Component
+@using NcpAdminBlazor.Client.Pages.Applications.User.Validators
+@using UpdateUserRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersUpdateUserRequest
+@using UserListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUserListItemDto
+@inject ApiClient ApiClient
+
+<AppFormDrawer @bind-Open="Open"
+               Title="编辑用户"
+               OnClose="@CloseDrawerAsync"
+               OnPrimaryAction="@HandleSaveAsync"
+               OnCancel="@CloseDrawerAsync"
+               PrimaryActionLoading="_saving">
+    <MudForm @ref="_form" Model="_model" Validation="_validator.ValidateValue"
+             Spacing="3">
+        <MudTextField Label="用户名"
+                      @bind-Value="_model.Username"
+                      Required="true"
+                      For="@(() => _model.Username)"/>
+        <MudTextField Label="邮箱"
+                      @bind-Value="_model.Email"
+                      For="@(() => _model.Email)"/>
+        <MudTextField Label="手机号"
+                      @bind-Value="_model.Phone"
+                      For="@(() => _model.Phone)"
+                      InputType="InputType.Telephone"/>
+        <MudTextField Label="真实名称"
+                      @bind-Value="_model.RealName"
+                      Required="true"
+                      For="@(() => _model.RealName)"/>
+        <MudSwitch @bind-Value="_model.Status" Color="Color.Primary">启用</MudSwitch>
+    </MudForm>
+</AppFormDrawer>
+
+@code {
+    [Parameter] public UserListItemDto? EditingItem { get; set; }
+
+    [Parameter] public EventCallback<string?> OnSaved { get; set; }
+
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
+
+    bool _saving;
+    string? _editingUserId;
+    MudForm? _form;
+    UpdateUserRequest _model = new() { Status = 1 };
+    readonly UserEditModelValidator _validator = new();
+
+    protected override void OnParametersSet()
+    {
+        if (!Open)
+        {
+            return;
+        }
+
+        if (EditingItem is null)
+        {
+            Console.WriteLine("编辑用户数据为空");
+            return;
+        }
+
+        LoadModel();
+    }
+
+    async Task HandleSaveAsync()
+    {
+        if (_saving)
+        {
+            return;
+        }
+
+        if (_form is not null)
+        {
+            await _form.Validate();
+            if (!_form.IsValid)
+            {
+                return;
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(_editingUserId) || !long.TryParse(_editingUserId, out var userId))
+        {
+            Console.WriteLine($"无效的用户ID：{_editingUserId}");
+            return;
+        }
+
+        _saving = true;
+        StateHasChanged();
+        try
+        {
+            var request = new UpdateUserRequest
+            {
+                Username = _model.Username?.Trim(),
+                Email = _model.Email?.Trim(),
+                Phone = _model.Phone?.Trim(),
+                RealName = _model.RealName?.Trim(),
+                Status = _model.Status ?? 1
+            };
+
+            var response = await ApiClient.Api.User[userId].Update.PostAsync(request);
+            if (response?.Success == true)
+            {
+                await CloseDrawerAsync();
+                if (OnSaved.HasDelegate)
+                {
+                    await OnSaved.InvokeAsync(_editingUserId);
+                }
+            }
+            else
+            {
+                Console.WriteLine(response?.Message ?? "更新用户失败");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            _saving = false;
+            StateHasChanged();
+        }
+    }
+
+    async Task CloseDrawerAsync()
+    {
+        if (!Open)
+        {
+            return;
+        }
+
+        Open = false;
+        await OpenChanged.InvokeAsync(Open);
+    }
+
+    void LoadModel()
+    {
+        if (EditingItem is null)
+        {
+            Console.WriteLine("编辑用户数据为空");
+            return;
+        }
+
+        _editingUserId = EditingItem.Id;
+        _model = new UpdateUserRequest
+        {
+            Username = EditingItem.Username,
+            Email = EditingItem.Email,
+            Phone = EditingItem.Phone,
+            RealName = EditingItem.RealName,
+            Status = EditingItem.Status ?? 1
+        };
+    }
+
+}

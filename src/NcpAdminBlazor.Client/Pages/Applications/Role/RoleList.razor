@@ -34,7 +34,7 @@
                  AddButtonText="新增角色"
                  ServerData="ServerReload"
                  ActionColumnTitle="操作"
-                 OnAdd="@(() => _addDrawerOpen = true)"
+                 OnAdd="@OpenCreateDrawerAsync"
                  OnEdit="@OnEditRole"
                  @bind-SearchOpen="_searchOpen">
         <PropertyColumn Property="x => x.Name" Title="角色名称"/>
@@ -129,7 +129,12 @@
         _editingItem = item;
     }
 
-
+    private Task OpenCreateDrawerAsync()
+    {
+        _addDrawerOpen = true;
+        return Task.CompletedTask;
+    }
+    
     private Task HandleRoleCreatedAsync()
     {
         return _dataGrid.ReloadServerData();

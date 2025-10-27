@@ -6,9 +6,9 @@
 
 <AppFormDrawer @bind-Open="Open"
                Title="新增角色"
-               OnClose="@(() => Open = false)"
+               OnClose="@CloseDrawerAsync"
                OnPrimaryAction="@HandleSaveAsync"
-               OnCancel="@(() => Open = false)"
+               OnCancel="@CloseDrawerAsync"
                PrimaryActionLoading="_saving">
     <MudForm @ref="_form" Model="_model" Validation="_validator.ValidateValue"
              Spacing="3">
@@ -18,7 +18,6 @@
                       For="@(() => _model.Name)"/>
         <MudTextField Label="角色描述"
                       @bind-Value="_model.Description"
-                      Lines="3"
                       Required="true"
                       For="@(() => _model.Description)"/>
         <MudSwitch T="int" @bind-Value="_model.Status" Color="Color.Primary">启用</MudSwitch>
@@ -102,6 +101,17 @@
             _saving = false;
             await InvokeAsync(StateHasChanged);
         }
+    }
+    
+    async Task CloseDrawerAsync()
+    {
+        if (!Open)
+        {
+            return;
+        }
+
+        Open = false;
+        await OpenChanged.InvokeAsync(Open);
     }
 
     void ResetModel()

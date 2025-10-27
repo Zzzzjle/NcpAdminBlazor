@@ -1,0 +1,126 @@
+@using NcpAdminBlazor.Client.Component
+@using NcpAdminBlazor.Client.Pages.Applications.User.Validators
+@using CreateUserRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersCreateUserRequest
+@inject ApiClient ApiClient
+
+<AppFormDrawer @bind-Open="Open"
+               Title="新增用户"
+               OnClose="@CloseDrawerAsync"
+               OnPrimaryAction="@HandleSaveAsync"
+               OnCancel="@CloseDrawerAsync"
+               PrimaryActionLoading="_saving">
+    <MudForm @ref="_form" Model="_model" Validation="_validator.ValidateValue"
+             Spacing="3">
+        <MudTextField Label="用户名"
+                      @bind-Value="_model.Username"
+                      Required="true"
+                      For="@(() => _model.Username)"/>
+        <MudTextField Label="密码"
+                      @bind-Value="_model.Password"
+                      Required="true"
+                      For="@(() => _model.Password)"
+                      InputType="InputType.Password"/>
+        <MudTextField Label="邮箱"
+                      @bind-Value="_model.Email"
+                      For="@(() => _model.Email)"/>
+        <MudTextField Label="手机号"
+                      @bind-Value="_model.Phone"
+                      For="@(() => _model.Phone)"
+                      InputType="InputType.Telephone"/>
+        <MudTextField Label="真实名称"
+                      @bind-Value="_model.RealName"
+                      Required="true"
+                      For="@(() => _model.RealName)"/>
+        <MudSwitch @bind-Value="_model.Status" Color="Color.Primary">启用</MudSwitch>
+    </MudForm>
+</AppFormDrawer>
+
+@code {
+    [Parameter] public EventCallback OnSaved { get; set; }
+
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
+
+    bool _saving;
+    MudForm? _form;
+    CreateUserRequest _model = new() { Status = 1, Password = string.Empty };
+    readonly UserAddModelValidator _validator = new();
+
+
+    async Task HandleSaveAsync()
+    {
+        if (_saving)
+        {
+            return;
+        }
+
+        if (_form is not null)
+        {
+            await _form.Validate();
+            if (!_form.IsValid)
+            {
+                return;
+            }
+        }
+
+        _saving = true;
+        StateHasChanged();
+        try
+        {
+            var request = new CreateUserRequest
+            {
+                Username = _model.Username?.Trim(),
+                Password = _model.Password?.Trim(),
+                Email = _model.Email?.Trim(),
+                Phone = _model.Phone?.Trim(),
+                RealName = _model.RealName?.Trim(),
+                Status = _model.Status ?? 1
+            };
+
+            var response = await ApiClient.Api.User.PostAsync(request);
+            if (response?.Success == true)
+            {
+                await CloseDrawerAsync();
+                ResetModel();
+                if (OnSaved.HasDelegate)
+                {
+                    await OnSaved.InvokeAsync();
+                }
+            }
+            else
+            {
+                Console.WriteLine(response?.Message ?? "创建用户失败");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            _saving = false;
+            StateHasChanged();
+        }
+    }
+
+    async Task CloseDrawerAsync()
+    {
+        if (!Open)
+        {
+            return;
+        }
+
+        Open = false;
+        await OpenChanged.InvokeAsync(Open);
+    }
+
+    void ResetModel()
+    {
+        _model = new CreateUserRequest
+        {
+            Status = 1,
+            Password = string.Empty
+        };
+    }
+
+}
