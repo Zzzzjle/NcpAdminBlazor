@@ -8,6 +8,7 @@ using MudBlazor.Services;
 using MudBlazor.Translations;
 using NcpAdminBlazor.Client;
 using NcpAdminBlazor.Client.Extensions;
+using NcpAdminBlazor.Client.HttpClient;
 using NcpAdminBlazor.Client.HttpClient.Auth;
 using NcpAdminBlazor.Client.Providers;
 using NcpAdminBlazor.Client.Services;
@@ -29,6 +30,7 @@ builder.Services.AddScoped<IAuthenticationProvider>(sp =>
 });
 builder.Services.AddScoped<IRequestAdapter, HttpClientRequestAdapter>();
 builder.Services.AddScoped<ApiClient>();
+builder.Services.AddScoped<ApiWrapper>();
 
 #endregion
 

@@ -1,4 +1,5 @@
 ﻿@page "/account/register"
+@using NcpAdminBlazor.Client.HttpClient
 @using NcpAdminBlazor.Client.Models
 @layout LoginLayout
 
@@ -48,7 +49,7 @@
 </MudForm>
 
 @code {
-    [Inject] ApiClient ApiClient { get; set; } = null!;
+    [Inject] ApiWrapper ApiWrapper { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
     private bool AgreeToTerms { get; set; }
 
@@ -73,41 +74,29 @@
         _isBusy = true;
         _showErrorAlert = false;
 
-        try
+        await _form.Validate();
+
+        if (!_form.IsValid)
         {
-            await _form.Validate();
+            _isBusy = false;
+            return;
+        }
 
-            if (!_form.IsValid)
-            {
-                _isBusy = false;
-                return;
-            }
-
-            var result = await ApiClient.Api.User.Create.PostAsync(new NcpAdminBlazorWebEndpointsUsersRegisterUserRequest
+        var registered = await ApiWrapper.HandleCallAsync(
+            apiClient => apiClient.Api.User.Create.PostAsync(new NcpAdminBlazorWebEndpointsUsersRegisterUserRequest
             {
                 Username = _model.Username,
                 Password = _model.Password
-            });
+            }),
+            _ => NavigationManager.NavigateTo(Login.PageUri));
 
-            if (result is { Success: true })
-            {
-                NavigationManager.NavigateTo(Login.PageUri);
-            }
-            else
-            {
-                _showErrorAlert = true;
-                _errorMessage = result?.Message ?? "注册失败，请稍后重试";
-            }
-        }
-        catch (Exception)
+        if (!registered)
         {
             _showErrorAlert = true;
-            _errorMessage = "注册过程中发生错误，请重试";
+            _errorMessage = "注册失败，请稍后重试";
         }
-        finally
-        {
-            _isBusy = false;
-        }
+
+        _isBusy = false;
     }
 
     private void CloseMe(bool value)

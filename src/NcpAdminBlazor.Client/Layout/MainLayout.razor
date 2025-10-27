@@ -17,11 +17,12 @@
 
 @code {
     [Inject] LayoutStore LayoutStore { get; set; } = null!;
+    [Inject] ISnackbar Snackbar { get; set; } = null!;
     private MudTheme? _theme;
 
     protected override void OnInitialized()
     {
-        base.OnInitialized();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         LayoutStore.OnDarkModeChanged += OnDarkModeToggled;
         _theme = new MudTheme
         {

@@ -1,7 +1,8 @@
 @using NcpAdminBlazor.Client.Component
 @using NcpAdminBlazor.Client.Pages.Applications.User.Validators
+@using NcpAdminBlazor.Client.HttpClient
 @using CreateUserRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersCreateUserRequest
-@inject ApiClient ApiClient
+@inject ApiWrapper ApiWrapper
 
 <AppFormDrawer @bind-Open="Open"
                Title="新增用户"
@@ -77,24 +78,19 @@
                 Status = _model.Status ?? 1
             };
 
-            var response = await ApiClient.Api.User.PostAsync(request);
-            if (response?.Success == true)
+            var created = await ApiWrapper.HandleCallAsync(
+                apiClient => apiClient.Api.User.PostAsync(request));
+            if (!created)
             {
-                await CloseDrawerAsync();
-                ResetModel();
-                if (OnSaved.HasDelegate)
-                {
-                    await OnSaved.InvokeAsync();
-                }
+                return;
             }
-            else
+
+            await CloseDrawerAsync();
+            ResetModel();
+            if (OnSaved.HasDelegate)
             {
-                Console.WriteLine(response?.Message ?? "创建用户失败");
+                await OnSaved.InvokeAsync();
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
         }
         finally
         {

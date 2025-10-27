@@ -2,6 +2,7 @@
 @attribute [Authorize]
 @using System.Linq
 @using NcpAdminBlazor.Client.Component
+@using NcpAdminBlazor.Client.HttpClient
 @using RoleListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesRolesRoleListItemDto
 @using NcpAdminBlazor.Client.Pages.Applications.Role.Components
 @using NcpAdminBlazor.Client.Pages.Applications.Role.Models
@@ -67,7 +68,7 @@
 
 @code {
 
-    [Inject] ApiClient ApiClient { get; set; } = null!;
+    [Inject] ApiWrapper ApiWrapper { get; set; } = null!;
 
     AppDataGrid<RoleListItemDto> _dataGrid = null!;
     readonly RoleSearchFilter _filter = new();
@@ -82,33 +83,33 @@
     private async Task<GridData<RoleListItemDto>> ServerReload(GridState<RoleListItemDto> state)
     {
         var pageSize = state.PageSize > 0 ? state.PageSize : 10;
-        try
+        var data = new GridData<RoleListItemDto>
         {
-            var result = await ApiClient.Api.Roles.GetAsync(configure =>
+            Items = [],
+            TotalItems = 0
+        };
+
+        await ApiWrapper.HandleCallAsync(
+            apiClient => apiClient.Api.Roles.GetAsync(configure =>
             {
                 configure.QueryParameters.Name = _filter.Name;
                 configure.QueryParameters.Status = _filter.Status;
                 configure.QueryParameters.PageIndex = state.Page + 1;
                 configure.QueryParameters.PageSize = pageSize;
                 configure.QueryParameters.CountTotal = true;
+            }),
+            result =>
+            {
+                if (result is not { Data: not null })
+                {
+                    return;
+                }
+
+                data.Items = result.Data.Items ?? [];
+                data.TotalItems = result.Data.Total ?? 0;
             });
 
-            if (result is { Success: true, Data: not null })
-            {
-                var items = result.Data.Items ?? [];
-                return new GridData<RoleListItemDto>
-                {
-                    Items = items,
-                    TotalItems = result.Data.Total ?? 0
-                };
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
-
-        return new GridData<RoleListItemDto> { Items = [], TotalItems = 0 };
+        return data;
     }
 
     private Task OnResetAsync()

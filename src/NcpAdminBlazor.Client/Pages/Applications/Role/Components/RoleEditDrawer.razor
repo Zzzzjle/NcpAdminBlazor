@@ -1,10 +1,11 @@
 @using NcpAdminBlazor.Client.Component
 @using NcpAdminBlazor.Client.Pages.Applications.Role.Models
 @using NcpAdminBlazor.Client.Pages.Applications.Role.Validators
+@using NcpAdminBlazor.Client.HttpClient
 @using RoleListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesRolesRoleListItemDto
 @using UpdateRoleInfoRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesUpdateRoleInfoRequest
 @using UpdateRolePermissionsRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesUpdateRolePermissionsRequest
-@inject ApiClient ApiClient
+@inject ApiWrapper ApiWrapper
 
 <AppFormDrawer @bind-Open="Open"
                Title="编辑角色"
@@ -105,10 +106,10 @@
                 Status = _model.Status
             };
 
-            var infoResponse = await ApiClient.Api.Roles[_editingRoleId].Info.PostAsync(infoRequest);
-            if (infoResponse is not { Success: true })
+            var infoUpdated = await ApiWrapper.HandleCallAsync(
+                apiClient => apiClient.Api.Roles[_editingRoleId].Info.PostAsync(infoRequest));
+            if (!infoUpdated)
             {
-                Console.WriteLine(infoResponse?.Message ?? "更新角色基本信息失败");
                 return;
             }
 
@@ -121,23 +122,18 @@
                     .ToList()
             };
 
-            var permissionsResponse = await ApiClient.Api.Roles[_editingRoleId].Permissions.PostAsync(permissionsRequest);
-            if (permissionsResponse is not { Success: true })
+            var permissionsUpdated = await ApiWrapper.HandleCallAsync(
+                apiClient => apiClient.Api.Roles[_editingRoleId].Permissions.PostAsync(permissionsRequest));
+            if (!permissionsUpdated)
             {
-                Console.WriteLine(permissionsResponse?.Message ?? "更新角色权限失败");
                 return;
             }
 
+            await CloseDrawerAsync();
             if (OnSaved.HasDelegate)
             {
                 await OnSaved.InvokeAsync(_editingRoleId);
             }
-
-            Open = false;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
         }
         finally
         {
@@ -152,31 +148,35 @@
         _model.Name = item.Name ?? string.Empty;
         _model.Description = item.Description ?? string.Empty;
         _model.Status = item.Status ?? 1;
-        try
-        {
-            var infoResponse = await ApiClient.Api.Roles[roleIdPath].Info.GetAsync();
-            if (infoResponse is { Success: true, Data: not null })
+        await ApiWrapper.HandleCallAsync(
+            apiClient => apiClient.Api.Roles[roleIdPath].Info.GetAsync(),
+            response =>
             {
-                _model.Name = infoResponse.Data.Name ?? _model.Name;
-                _model.Description = infoResponse.Data.Description ?? _model.Description;
-                _model.Status = infoResponse.Data.Status ?? _model.Status;
-            }
+                if (response is not { Data: not null })
+                {
+                    return;
+                }
 
-            var permissionsResponse = await ApiClient.Api.Roles[roleIdPath].Permissions.GetAsync();
-            if (permissionsResponse is { Success: true, Data: not null })
+                _model.Name = response.Data.Name ?? _model.Name;
+                _model.Description = response.Data.Description ?? _model.Description;
+                _model.Status = response.Data.Status ?? _model.Status;
+            });
+
+        await ApiWrapper.HandleCallAsync(
+            apiClient => apiClient.Api.Roles[roleIdPath].Permissions.GetAsync(),
+            response =>
             {
-                var permissionCodes = permissionsResponse.Data.PermissionCodes ?? new List<string>();
+                if (response is not { Data.PermissionCodes: { } permissionCodes })
+                {
+                    return;
+                }
+
                 _model.PermissionCodes = new HashSet<string>(
                     permissionCodes
                         .Where(code => !string.IsNullOrWhiteSpace(code))
                         .Select(code => code.Trim()),
                     StringComparer.OrdinalIgnoreCase);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
+            });
     }
 
     async Task CloseDrawerAsync()

@@ -1,19 +1,13 @@
 ﻿@page "/account/login"
 @layout LoginLayout
+@using NcpAdminBlazor.Client.HttpClient
 @using NcpAdminBlazor.Client.HttpClient.Auth
 @using NcpAdminBlazor.Client.Models
 @using NcpAdminBlazor.Client.Providers
 @using NcpAdminBlazor.Client.Services
 
-@if (_showErrorAlert)
-{
-    <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true"
-              CloseIconClicked="@(() => CloseMe(true))">@_errorMessage</MudAlert>
-}
-
 <MudForm @bind-IsValid="@_success" @bind-Errors="@_errors">
     <MudText Typo="Typo.h4" GutterBottom="true" Class="mt-4">Sign In</MudText>
-
     <MudText>Don't have an account?
         <MudLink Href="@Register.PageUri">Sign Up</MudLink>
     </MudText>
@@ -55,11 +49,10 @@
 
 
 @code {
-    [Inject] ApiClient ApiClient { get; set; } = null!;
+    [Inject] ApiWrapper ApiWrapper { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
     [Inject] TokenAuthenticationStateProvider AuthStateProvider { get; set; } = null!;
-    private bool _showErrorAlert;
-    private string _errorMessage = string.Empty;
+    [Inject] ISnackbar Snackbar { get; set; } = null!;
     [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
     private bool _isBusy;
     private readonly InputModel _model = new();
@@ -76,39 +69,36 @@
         if (_isBusy) return;
 
         _isBusy = true;
-        _showErrorAlert = false;
         StateHasChanged();
 
         try
         {
-            var result = await ApiClient.Api.User.Login.PostAsync(new NcpAdminBlazorWebEndpointsUsersLoginRequest
+            NcpAdminBlazorWebAspNetCoreMyTokenResponse? tokenData = null;
+            var loginSucceeded = await ApiWrapper.HandleCallAsync(
+                apiClient => apiClient.Api.User.Login.PostAsync(
+                    new NcpAdminBlazorWebEndpointsUsersLoginRequest
+                    {
+                        Username = _model.LoginName,
+                        Password = _model.Password
+                    },
+                    requestConfiguration => requestConfiguration.Options.Add(new AllowAnonymousRequestOption())),
+                response => tokenData = response.Data);
+
+            if (loginSucceeded && tokenData is
+                {
+                    AccessToken: { } accessToken,
+                    RefreshToken: { } refreshToken
+                })
             {
-                Username = _model.LoginName,
-                Password = _model.Password
-            }, requestConfiguration => requestConfiguration.Options.Add(new AllowAnonymousRequestOption()));
-            if (result is { Success: true, Data.AccessToken: not null })
-            {
-                var data = result.Data;
-                // 通知认证状态更改
                 await AuthStateProvider.LoginAsync(new TokenStorageSnapshot(
-                    data.AccessToken ?? string.Empty,
-                    data.RefreshToken ?? string.Empty,
-                    data.AccessTokenExpiry,
-                    data.RefreshTokenExpiry,
-                    data.UserId ?? string.Empty));
+                    accessToken,
+                    refreshToken,
+                    tokenData.AccessTokenExpiry,
+                    tokenData.RefreshTokenExpiry,
+                    tokenData.UserId ?? string.Empty));
 
                 NavigationManager.NavigateTo(ReturnUrl ?? "/");
             }
-            else
-            {
-                _errorMessage = result?.Message ?? "登录失败，请稍后重试";
-                _showErrorAlert = true;
-            }
-        }
-        catch (Exception ex)
-        {
-            _errorMessage = ex.Message;
-            _showErrorAlert = true;
         }
         finally
         {
@@ -120,11 +110,9 @@
     private Task HandleGuest()
     {
         if (_isBusy) return Task.CompletedTask;
-
         _isBusy = true;
-        _showErrorAlert = false;
+        Snackbar.Add("Guest login is not implemented yet.", Severity.Info);
         StateHasChanged();
-        _errorMessage = "暂未开放游客登录功能，请注册后登录";
         _isBusy = false;
         StateHasChanged();
         return Task.CompletedTask;
@@ -143,14 +131,6 @@
             _passwordVisibility = true;
             _passwordInputIcon = Icons.Material.Filled.Visibility;
             _passwordInput = InputType.Text;
-        }
-    }
-
-    private void CloseMe(bool value)
-    {
-        if (value)
-        {
-            _showErrorAlert = false;
         }
     }
 

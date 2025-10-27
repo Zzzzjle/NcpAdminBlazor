@@ -1,8 +1,9 @@
 @using NcpAdminBlazor.Client.Component
 @using NcpAdminBlazor.Client.Pages.Applications.User.Validators
+@using NcpAdminBlazor.Client.HttpClient
 @using UpdateUserRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersUpdateUserRequest
 @using UserListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUserListItemDto
-@inject ApiClient ApiClient
+@inject ApiWrapper ApiWrapper
 
 <AppFormDrawer @bind-Open="Open"
                Title="编辑用户"
@@ -96,23 +97,18 @@
                 Status = _model.Status ?? 1
             };
 
-            var response = await ApiClient.Api.User[userId].Update.PostAsync(request);
-            if (response?.Success == true)
+            var updated = await ApiWrapper.HandleCallAsync(
+                apiClient => apiClient.Api.User[userId].Update.PostAsync(request));
+            if (!updated)
             {
-                await CloseDrawerAsync();
-                if (OnSaved.HasDelegate)
-                {
-                    await OnSaved.InvokeAsync(_editingUserId);
-                }
+                return;
             }
-            else
+
+            await CloseDrawerAsync();
+            if (OnSaved.HasDelegate)
             {
-                Console.WriteLine(response?.Message ?? "更新用户失败");
+                await OnSaved.InvokeAsync(_editingUserId);
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
         }
         finally
         {

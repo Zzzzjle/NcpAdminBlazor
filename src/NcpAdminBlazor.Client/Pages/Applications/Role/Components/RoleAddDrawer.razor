@@ -1,8 +1,9 @@
 @using NcpAdminBlazor.Client.Component
 @using NcpAdminBlazor.Client.Pages.Applications.Role.Models
 @using NcpAdminBlazor.Client.Pages.Applications.Role.Validators
+@using NcpAdminBlazor.Client.HttpClient
 @using CreateRoleRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesCreateRoleRequest
-@inject ApiClient ApiClient
+@inject ApiWrapper ApiWrapper
 
 <AppFormDrawer @bind-Open="Open"
                Title="新增角色"
@@ -76,25 +77,19 @@
                     .ToList()
             };
 
-            var response = await ApiClient.Api.Roles.PostAsync(request);
-            if (response is { Success: true })
+            var created = await ApiWrapper.HandleCallAsync(
+                apiClient => apiClient.Api.Roles.PostAsync(request));
+            if (!created)
             {
-                Open = false;
-                await OpenChanged.InvokeAsync(Open);
-                ResetModel();
-                if (OnSaved.HasDelegate)
-                {
-                    await OnSaved.InvokeAsync();
-                }
+                return;
             }
-            else
+
+            await CloseDrawerAsync();
+            ResetModel();
+            if (OnSaved.HasDelegate)
             {
-                Console.WriteLine(response?.Message ?? "创建角色失败");
+                await OnSaved.InvokeAsync();
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
         }
         finally
         {
