@@ -1,12 +1,12 @@
-﻿using NcpAdminBlazor.Domain.DomainEvents.User;
-
-// ReSharper disable VirtualMemberCallInConstructor
+﻿using System.Linq;
+using NcpAdminBlazor.Domain.Common;
+using NcpAdminBlazor.Domain.DomainEvents;
 
 namespace NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate
 {
-    public partial record RoleId : IInt64StronglyTypedId;
+    public partial record RoleId : IGuidStronglyTypedId;
 
-    public class Role : Entity<RoleId>, IAggregateRoot
+    public class Role : Entity<RoleId>, IAggregateRoot, ISoftDeletable
     {
         protected Role()
         {
@@ -14,55 +14,49 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate
 
         public string Name { get; private set; } = string.Empty;
         public string Description { get; private set; } = string.Empty;
+        public bool IsDisabled { get; private set; } = false;
+        public ICollection<RoleMenuPermission> MenuPermissions { get; private set; } = [];
         public DateTimeOffset CreatedAt { get; init; }
+        public Deleted IsDeleted { get; private set; } = false;
+        public DeletedTime DeletedAt { get; private set; } = new(DateTimeOffset.MinValue);
 
-        /// <summary>
-        /// 状态
-        /// </summary>
-        public int Status { get; set; }
-
-        public virtual ICollection<RolePermission> Permissions { get; init; } = [];
-
-        public Role(string name, string description, IEnumerable<RolePermission> permissions, int status)
+        public Role(string name, string description, IEnumerable<RoleMenuPermission> permissions)
         {
             CreatedAt = DateTimeOffset.Now;
             Name = name;
             Description = description;
-            Permissions = new List<RolePermission>(permissions);
-            Status = status;
+            SetPermissions(permissions);
         }
 
-        public void UpdateRoleInfo(string name, string description, int status)
+        public void UpdateRoleInfo(string name, string description, bool? isDisabled = null)
         {
             Name = name;
             Description = description;
-            Status = status;
+            if (isDisabled.HasValue)
+            {
+                IsDisabled = isDisabled.Value;
+            }
             AddDomainEvent(new RoleInfoChangedDomainEvent(this));
         }
 
-        public void UpdateRolePermissions(IEnumerable<RolePermission> newPermissions)
+        public void UpdatePermissions(IEnumerable<RoleMenuPermission> permissions)
         {
-            var currentPermissionMap = Permissions.ToDictionary(p => p.PermissionCode);
-            var newPermissionMap = newPermissions.ToDictionary(p => p.PermissionCode);
-
-            var permissionsToRemove = currentPermissionMap.Keys.Except(newPermissionMap.Keys).ToList();
-            foreach (var permissionCode in permissionsToRemove)
-            {
-                Permissions.Remove(currentPermissionMap[permissionCode]);
-            }
-
-            var permissionsToAdd = newPermissionMap.Keys.Except(currentPermissionMap.Keys).ToList();
-            foreach (var permissionCode in permissionsToAdd)
-            {
-                Permissions.Add(newPermissionMap[permissionCode]);
-            }
-
-            if (permissionsToRemove.Count == 0 && permissionsToAdd.Count == 0)
-            {
-                return;
-            }
-
+            SetPermissions(permissions);
             AddDomainEvent(new RolePermissionChangedDomainEvent(this));
+        }
+
+        public void Delete()
+        {
+            IsDeleted = true;
+            AddDomainEvent(new RoleDeletedDomainEvent(this));
+        }
+
+        private void SetPermissions(IEnumerable<RoleMenuPermission> permissions)
+        {
+            MenuPermissions = permissions
+                .GroupBy(p => new { p.MenuId, p.PermissionCode })
+                .Select(g => g.Last())
+                .ToList();
         }
     }
 }

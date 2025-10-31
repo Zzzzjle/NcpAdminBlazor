@@ -5,6 +5,7 @@ using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
 using NcpAdminBlazor.Web.Application.Commands;
 using NcpAdminBlazor.Web.Application.Commands.Users;
 using NcpAdminBlazor.Web.Application.Queries;
+using NcpAdminBlazor.Web.Application.Queries.Users;
 
 namespace NcpAdminBlazor.Web.AspNetCore;
 

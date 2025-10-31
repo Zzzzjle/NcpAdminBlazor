@@ -1,6 +1,8 @@
 using System.Net;
 using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
-using NcpAdminBlazor.Web.Application.Queries;
+using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
+using NcpAdminBlazor.Web.Application.Queries.Users;
+using NcpAdminBlazor.Web.Endpoints.Roles;
 using NcpAdminBlazor.Web.Endpoints.Users;
 using NcpAdminBlazor.Web.Tests.Fixtures;
 
@@ -19,7 +21,7 @@ public class UsersManagementTests(AuthenticatedAppFixture app, UsersManagementTe
                 new RegisterUserRequest(UserState.Username, UserState.Password));
         // Assert
         rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
-        res.Data.UserId.Id.ShouldBeGreaterThan(0);
+        res.Data.UserId.Id.ShouldNotBe(Guid.Empty);
         state.RegisteredUserId = res.Data.UserId;
     }
 
@@ -43,7 +45,7 @@ public class UsersManagementTests(AuthenticatedAppFixture app, UsersManagementTe
 
         var (rsp, res) = await app.AuthenticatedClient
             .DELETEAsync<DeleteUserEndpoint, DeleteUserRequest, ResponseData>(new DeleteUserRequest
-                { UserId = userId.Id });
+                { UserId = userId });
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
         res.Success.ShouldBeTrue();
@@ -64,6 +66,21 @@ public class UsersManagementTests(AuthenticatedAppFixture app, UsersManagementTe
         var username = $"create_user_{uniqueSuffix}";
         var email = $"{username}@example.com";
         var phone = $"1{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds():0000000000000}"[..11];
+
+        var roleRequest = new CreateRoleRequest
+        {
+            Name = $"Auto Role {uniqueSuffix}",
+            Description = "Role for create user test",
+            MenuIds = []
+        };
+
+        var (roleRsp, roleRes) = await app.AuthenticatedClient
+            .POSTAsync<CreateRoleEndpoint, CreateRoleRequest, ResponseData<CreateRoleResponse>>(roleRequest);
+
+        roleRsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        roleRes.Success.ShouldBeTrue();
+        var roleId = roleRes.Data.RoleId;
+
         var request = new CreateUserRequest
         {
             Username = username,
@@ -71,7 +88,16 @@ public class UsersManagementTests(AuthenticatedAppFixture app, UsersManagementTe
             RealName = "Auto User",
             Email = email,
             Phone = phone,
-            Status = 1
+            Roles =
+            [
+                new CreateUserRoleItem
+                {
+                    RoleId = roleId,
+                    RoleName = roleRequest.Name,
+                    IsDisabled = false
+                }
+            ],
+            MenuPermissions = []
         };
 
         // Act
@@ -81,17 +107,19 @@ public class UsersManagementTests(AuthenticatedAppFixture app, UsersManagementTe
         // Assert
         rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
         res.Success.ShouldBeTrue();
-        res.Data.UserId.Id.ShouldBeGreaterThan(0);
+        res.Data.UserId.Id.ShouldNotBe(Guid.Empty);
 
         state.CreatedUserId = res.Data.UserId;
         state.CreatedUsername = username;
+        state.CreatedRoleId = roleId;
+        state.CreatedRoleName = roleRequest.Name;
 
         var (_, listResponse) = await app.AuthenticatedClient
             .GETAsync<UserListEndpoint, GetUserListRequest, ResponseData<PagedData<UserListItemDto>>>(
                 new GetUserListRequest { Username = username, PageSize = 1 });
 
         listResponse.Success.ShouldBeTrue();
-        listResponse.Data.Items.ShouldContain(u => u.Username == username);
+        listResponse.Data.Items.ShouldContain(u => u.Username == username && u.RoleNames.Contains(roleRequest.Name));
     }
 
     [Fact, Priority(5)]
@@ -100,6 +128,8 @@ public class UsersManagementTests(AuthenticatedAppFixture app, UsersManagementTe
         // Arrange
         var userId = state.CreatedUserId ?? throw new InvalidOperationException("Created user not initialized");
         var username = state.CreatedUsername ?? throw new InvalidOperationException("Created username not initialized");
+        var roleId = state.CreatedRoleId ?? throw new InvalidOperationException("Created role not initialized");
+        var roleName = state.CreatedRoleName ?? throw new InvalidOperationException("Created role name not initialized");
         var updatedRealName = "Updated Auto User";
         var updatedEmail = $"{username}+updated@example.com";
         var updatedPhone = $"1{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds():0000000000000}"[..11];
@@ -110,7 +140,17 @@ public class UsersManagementTests(AuthenticatedAppFixture app, UsersManagementTe
             RealName = updatedRealName,
             Email = updatedEmail,
             Phone = updatedPhone,
-            Status = 0
+            Status = 0,
+            Roles =
+            [
+                new UpdateUserRoleItem
+                {
+                    RoleId = roleId,
+                    RoleName = roleName,
+                    IsDisabled = false
+                }
+            ],
+            MenuPermissions = []
         };
 
         // Act
@@ -131,7 +171,7 @@ public class UsersManagementTests(AuthenticatedAppFixture app, UsersManagementTe
             user.RealName == updatedRealName &&
             user.Email == updatedEmail &&
             user.Phone == updatedPhone &&
-            user.Status == 0);
+            user.RoleNames.Contains(roleName));
     }
 
     /// <summary>
@@ -146,6 +186,8 @@ public class UsersManagementTests(AuthenticatedAppFixture app, UsersManagementTe
         public ApplicationUserId? RegisteredUserId;
         public ApplicationUserId? CreatedUserId;
         public string? CreatedUsername;
+    public RoleId? CreatedRoleId;
+    public string? CreatedRoleName;
 
         protected override async ValueTask SetupAsync()
         {

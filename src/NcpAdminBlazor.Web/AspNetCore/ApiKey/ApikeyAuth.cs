@@ -1,3 +1,4 @@
+using System;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text.Encodings.Web;
@@ -33,7 +34,7 @@ sealed class ApikeyAuth(
         // 通过apikey初始化当前用户
         var user = await InitLoginUserAsync(extractedApiKey);
 
-        if (!IsPublicEndpoint() && user.UserId == 0)
+        if (!IsPublicEndpoint() && user.UserId == Guid.Empty)
             return AuthenticateResult.Fail("Invalid API credentials!");
 
         // 传递身份信息
@@ -47,12 +48,12 @@ sealed class ApikeyAuth(
         var loginUser = new LoginUser();
         if (!extractedApiKey.Equals(_apiKey))
         {
-            loginUser.UserId = 0;
+            loginUser.UserId = Guid.Empty;
             loginUser.UserName = "匿名访客";
         }
         else
         {
-            loginUser.UserId = 123;
+            loginUser.UserId = Guid.NewGuid();
             loginUser.UserName = "登录用户";
         }
 
@@ -63,12 +64,12 @@ sealed class ApikeyAuth(
     private AuthenticationTicket CreateTicket(LoginUser user)
     {
         ClaimsIdentity identity;
-        if (user.UserId == 0) // 匿名访客
+        if (user.UserId == Guid.Empty) // 匿名访客
         {
             identity = new ClaimsIdentity(
                 claims:
                 [
-                    new Claim(ClaimTypes.NameIdentifier, "0"),
+                    new Claim(ClaimTypes.NameIdentifier, Guid.Empty.ToString()),
                     new Claim(ClaimTypes.Role, "guest"),
                 ],
                 authenticationType: Scheme.Name);
@@ -100,6 +101,6 @@ sealed class ApikeyAuth(
 
 public class LoginUser
 {
-    public long UserId { get; set; }
+    public Guid UserId { get; set; }
     public string UserName { get; set; } = string.Empty;
 }

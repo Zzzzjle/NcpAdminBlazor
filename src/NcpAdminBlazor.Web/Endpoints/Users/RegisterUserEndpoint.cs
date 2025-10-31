@@ -1,6 +1,7 @@
+using System;
 using FastEndpoints;
 using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
-using NcpAdminBlazor.Web.Application.Commands;
+using NcpAdminBlazor.Web.Application.Commands.Users;
 
 namespace NcpAdminBlazor.Web.Endpoints.Users;
 
@@ -56,6 +57,6 @@ internal sealed class RegisterUserSummary : Summary<RegisterUserEndpoint, Regist
         Summary = "创建用户";
         // 给webapi文档添加请求响应示例
         RequestExamples.Add(new RequestExample(new RegisterUserRequest("admin", "123"), "创建用户示例1"));
-        ResponseExamples.Add(200, new RegisterUserResponse(new ApplicationUserId(123)).AsResponseData());
+        ResponseExamples.Add(200, new RegisterUserResponse(new ApplicationUserId(Guid.NewGuid())).AsResponseData());
     }
 }

@@ -9,7 +9,7 @@ internal class ApplicationUserEntityTypeConfiguration : IEntityTypeConfiguration
     {
         builder.ToTable("application_users");
         builder.HasKey(t => t.Id);
-        builder.Property(t => t.Id).UseSnowFlakeValueGenerator();
+        builder.Property(t => t.Id).UseGuidVersion7ValueGenerator();
 
         builder.Property(t => t.Username).HasMaxLength(50).IsRequired();
         builder.Property(t => t.Phone).HasMaxLength(20).IsRequired();
@@ -19,7 +19,6 @@ internal class ApplicationUserEntityTypeConfiguration : IEntityTypeConfiguration
         builder.Property(t => t.Email).HasMaxLength(100).IsRequired();
         builder.Property(t => t.RefreshToken).HasMaxLength(256);
         builder.Property(t => t.RefreshExpiry);
-        builder.Property(t => t.Status).IsRequired();
         builder.Property(t => t.CreatedAt).IsRequired();
         builder.Property(t => t.IsDeleted).IsRequired();
         builder.Property(t => t.DeletedAt);
@@ -30,15 +29,13 @@ internal class ApplicationUserEntityTypeConfiguration : IEntityTypeConfiguration
         // 配置与角色的关系
         builder.HasMany(u => u.Roles)
             .WithOne()
-            .HasForeignKey(ur => ur.ApplicationUserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(ur => ur.UserId);
         builder.Navigation(u => u.Roles).AutoInclude();
 
         // 配置与权限的关系
-        builder.HasMany(u => u.Permissions)
+        builder.HasMany(u => u.MenuPermissions)
             .WithOne()
-            .HasForeignKey(up => up.ApplicationUserId)
-            .OnDelete(DeleteBehavior.Cascade);
-        builder.Navigation(u => u.Permissions).AutoInclude();
+            .HasForeignKey(up => up.UserId);
+        builder.Navigation(u => u.MenuPermissions).AutoInclude();
     }
 }

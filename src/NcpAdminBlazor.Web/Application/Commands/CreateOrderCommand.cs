@@ -1,8 +1,6 @@
 ﻿using NcpAdminBlazor.Domain.AggregatesModel.OrderAggregate;
 using NcpAdminBlazor.Infrastructure.Repositories;
 using NcpAdminBlazor.Web.Application.IntegrationEventHandlers;
-using FluentValidation;
-using NetCorePal.Extensions.Primitives;
 
 namespace NcpAdminBlazor.Web.Application.Commands;
 

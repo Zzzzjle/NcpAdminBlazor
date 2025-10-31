@@ -1,17 +1,11 @@
-using System.Globalization;
 using System.Security.Claims;
 using FastEndpoints;
-using FastEndpoints.Security;
-using NcpAdminBlazor.Web.Application.Commands;
+using NcpAdminBlazor.Web.Application.Commands.Users;
+using NcpAdminBlazor.Web.Application.Queries.Users;
 using NcpAdminBlazor.Web.AspNetCore;
 
 namespace NcpAdminBlazor.Web.Endpoints.Users;
 
-/// <summary>
-/// 登录请求体
-/// </summary>
-/// <param name="Username">登录账号</param>
-/// <param name="Password">登录密码</param>
 public record LoginRequest(string Username, string Password);
 
 public class LoginEndpoint(IMediator mediator)
@@ -26,16 +20,19 @@ public class LoginEndpoint(IMediator mediator)
 
     public override async Task HandleAsync(LoginRequest req, CancellationToken ct)
     {
-        var command = new LoginUserCommand(req.Username, req.Password);
-        var loginResult = await mediator.Send(command, ct);
+        var userId = await mediator.Send(new GetUserIdByNameQuery(req.Username), ct);
+        if (userId == null) throw new KnownException("用户名或密码错误");
+
+        await mediator.Send(new LoginUserCommand(userId, req.Password), ct);
+
         var tokenService = Resolve<UserTokenService>();
         var envelope = await tokenService.CreateCustomToken(
-            loginResult.UserId.ToString(),
+            userId.ToString(),
             privileges: privileges =>
             {
                 privileges.Claims.AddRange([
                     new Claim("ClientID", "Default"),
-                    new Claim(ClaimTypes.NameIdentifier, loginResult.UserId.ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
                     new Claim(ClaimTypes.Name, req.Username)
                 ]);
             },
@@ -45,7 +42,7 @@ public class LoginEndpoint(IMediator mediator)
     }
 }
 
-internal sealed class LoginSummary : Summary<LoginEndpoint, LoginRequest>
+public sealed class LoginSummary : Summary<LoginEndpoint, LoginRequest>
 {
     public LoginSummary()
     {

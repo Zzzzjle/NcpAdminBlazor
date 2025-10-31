@@ -97,12 +97,15 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                     b.ToTable("application_users", (string)null);
                 });
 
-            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUserPermission", b =>
+            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUserMenuPermission", b =>
                 {
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
 
                     b.Property<long>("ApplicationUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("MenuId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("PermissionCode")
@@ -216,9 +219,12 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                     b.ToTable("roles", (string)null);
                 });
 
-            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate.RolePermission", b =>
+            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate.RoleMenuPermission", b =>
                 {
                     b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("MenuId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("PermissionCode")
@@ -237,7 +243,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                     b.ToTable("role_permissions", (string)null);
                 });
 
-            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUserPermission", b =>
+            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUserMenuPermission", b =>
                 {
                     b.HasOne("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUser", null)
                         .WithMany("Permissions")
@@ -255,7 +261,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate.RolePermission", b =>
+            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate.RoleMenuPermission", b =>
                 {
                     b.HasOne("NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate.Role", null)
                         .WithMany("Permissions")

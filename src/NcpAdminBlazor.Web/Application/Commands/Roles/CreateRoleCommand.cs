@@ -1,3 +1,4 @@
+using System.Linq;
 using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using NcpAdminBlazor.Infrastructure.Repositories;
 using NcpAdminBlazor.Web.Application.Queries.Roles;
@@ -7,8 +8,7 @@ namespace NcpAdminBlazor.Web.Application.Commands.Roles;
 public record CreateRoleCommand(
     string Name,
     string Description,
-    int Status,
-    IEnumerable<string> PermissionCodes) : ICommand<RoleId>;
+    IEnumerable<RoleMenuPermission> MenuPermissions) : ICommand<RoleId>;
 
 public class CreateRoleCommandValidator : AbstractValidator<CreateRoleCommand>
 {
@@ -25,9 +25,8 @@ public class CreateRoleCommandValidator : AbstractValidator<CreateRoleCommand>
             .NotEmpty().WithMessage("角色描述不能为空")
             .MaximumLength(200).WithMessage("角色描述不能超过200个字符");
 
-        RuleFor(x => x.Status)
-            .Must(status => status is 0 or 1)
-            .WithMessage("角色状态必须是0或1");
+        RuleFor(x => x.MenuPermissions)
+            .NotNull().WithMessage("角色权限列表不能为空");
     }
 }
 
@@ -36,10 +35,11 @@ public class CreateRoleCommandHandler(IRoleRepository roleRepository)
 {
     public async Task<RoleId> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
     {
-        var permissions = request.PermissionCodes
-            .Select(code => new RolePermission(code))
+        var menuPermissions = (request.MenuPermissions ?? Enumerable.Empty<RoleMenuPermission>())
+            .Select(permission => new RoleMenuPermission(permission.MenuId, permission.PermissionCode))
             .ToList();
-        var role = new Role(request.Name, request.Description, permissions, request.Status);
+
+        var role = new Role(request.Name, request.Description, menuPermissions);
         await roleRepository.AddAsync(role, cancellationToken);
         return role.Id;
     }

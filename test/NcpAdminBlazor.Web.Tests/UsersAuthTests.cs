@@ -1,8 +1,10 @@
+using System;
 using System.Net;
 using System.Net.Http.Headers;
 using FastEndpoints.Security;
 using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
 using NcpAdminBlazor.Web.Application.Queries;
+using NcpAdminBlazor.Web.Application.Queries.Users;
 using NcpAdminBlazor.Web.Endpoints.Users;
 using NcpAdminBlazor.Web.Tests.Fixtures;
 
@@ -21,7 +23,7 @@ public class UsersAuthTests(WebAppFixture app, UsersAuthTests.UserState state)
                 new RegisterUserRequest(UserState.Username, UserState.Password));
         // Assert
         rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
-        res.Data.UserId.Id.ShouldBeGreaterThan(0);
+        res.Data.UserId.Id.ShouldNotBe(Guid.Empty);
         state.RegisteredUserId = res.Data.UserId;
     }
 
@@ -87,7 +89,7 @@ public class UsersAuthTests(WebAppFixture app, UsersAuthTests.UserState state)
         // Act
         var (rsp, res) = await app.Client
             .GETAsync<UserInfoEndpoint, UserInfoRequest, ResponseData<UserInfoDto>>(
-                new UserInfoRequest { UserId = userId.Id });
+                new UserInfoRequest { UserId = userId });
 
         // Assert
         rsp.StatusCode.ShouldBe(HttpStatusCode.OK);

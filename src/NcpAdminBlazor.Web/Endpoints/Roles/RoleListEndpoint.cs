@@ -16,7 +16,6 @@ public sealed class RoleListEndpoint(IMediator mediator)
     {
         var query = new GetRoleListQuery(
             req.Name,
-            req.Status,
             req.PageIndex,
             req.PageSize,
             req.CountTotal);
@@ -29,7 +28,6 @@ public sealed class RoleListEndpoint(IMediator mediator)
 public sealed class GetRoleListRequest : IPageRequest
 {
     [QueryParam] public string? Name { get; set; }
-    [QueryParam] public int? Status { get; set; }
     [QueryParam] public int PageIndex { get; set; } = 1;
     [QueryParam] public int PageSize { get; set; } = 10;
     [QueryParam] public bool CountTotal { get; set; } = true;
@@ -44,9 +42,5 @@ public sealed class GetRoleListRequestValidator : AbstractValidator<GetRoleListR
 
         RuleFor(x => x.PageSize)
             .InclusiveBetween(1, 100).WithMessage("每页条数必须在1-100之间");
-
-        RuleFor(x => x.Status)
-            .Must(status => status is null or 0 or 1)
-            .WithMessage("角色状态必须是0或1");
     }
 }

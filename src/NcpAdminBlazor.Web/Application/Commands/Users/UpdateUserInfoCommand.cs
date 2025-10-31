@@ -1,5 +1,6 @@
 using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
 using NcpAdminBlazor.Infrastructure.Repositories;
+using NcpAdminBlazor.Web.Application.Queries.Users;
 
 namespace NcpAdminBlazor.Web.Application.Commands.Users;
 
@@ -9,11 +10,12 @@ public record UpdateUserInfoCommand(
     string RealName,
     string Email,
     string Phone,
-    int Status) : ICommand;
+    List<UserRole> Roles,
+    List<UserMenuPermission> MenuPermissions) : ICommand;
 
 public class UpdateUserInfoCommandValidator : AbstractValidator<UpdateUserInfoCommand>
 {
-    public UpdateUserInfoCommandValidator()
+    public UpdateUserInfoCommandValidator(IMediator mediator)
     {
         RuleFor(x => x.UserId)
             .NotEmpty().WithMessage("用户ID不能为空");
@@ -21,6 +23,12 @@ public class UpdateUserInfoCommandValidator : AbstractValidator<UpdateUserInfoCo
         RuleFor(x => x.Username)
             .NotEmpty().WithMessage("用户名不能为空")
             .MaximumLength(50).WithMessage("用户名不能超过50个字符");
+
+        RuleFor(x => new { x.UserId, x.Username })
+            .MustAsync(async (model, cancellationToken) =>
+                !await mediator.Send(new CheckUserExistsByUsernameExceptIdQuery(model.Username, model.UserId),
+                    cancellationToken))
+            .WithMessage("用户名已存在");
 
         RuleFor(x => x.RealName)
             .NotEmpty().WithMessage("姓名不能为空")
@@ -35,9 +43,11 @@ public class UpdateUserInfoCommandValidator : AbstractValidator<UpdateUserInfoCo
             .NotEmpty().WithMessage("手机号不能为空")
             .MaximumLength(20).WithMessage("手机号不能超过20个字符");
 
-        RuleFor(x => x.Status)
-            .Must(status => status is 0 or 1)
-            .WithMessage("用户状态必须是0或1");
+        RuleFor(x => x.Roles)
+            .NotNull().WithMessage("角色列表不能为空");
+
+        RuleFor(x => x.MenuPermissions)
+            .NotNull().WithMessage("菜单权限列表不能为空");
     }
 }
 
@@ -49,38 +59,10 @@ public class UpdateUserInfoCommandHandler(IApplicationUserRepository userReposit
         var user = await userRepository.GetAsync(request.UserId, cancellationToken)
                    ?? throw new KnownException($"未找到用户，UserId = {request.UserId}");
 
-        var normalizedUsername = request.Username.Trim();
-        var normalizedRealName = request.RealName.Trim();
-        var normalizedEmail = request.Email.Trim();
-        var normalizedPhone = request.Phone.Trim();
+        var roles = new List<UserRole>(request.Roles);
+        var menuPermissions = new List<UserMenuPermission>(request.MenuPermissions);
 
-        if (!string.Equals(user.Username, normalizedUsername, StringComparison.OrdinalIgnoreCase))
-        {
-            var existingByName = await userRepository.GetByNameAsync(normalizedUsername, cancellationToken);
-            if (existingByName is not null && existingByName.Id != user.Id)
-            {
-                throw new KnownException("用户名已存在");
-            }
-        }
-
-        if (!string.Equals(user.Email, normalizedEmail, StringComparison.OrdinalIgnoreCase))
-        {
-            var existingByEmail = await userRepository.GetByEmailAsync(normalizedEmail, cancellationToken);
-            if (existingByEmail is not null && existingByEmail.Id != user.Id)
-            {
-                throw new KnownException("邮箱已存在");
-            }
-        }
-
-        if (!string.Equals(user.Phone, normalizedPhone, StringComparison.Ordinal))
-        {
-            var existingByPhone = await userRepository.GetByPhoneAsync(normalizedPhone, cancellationToken);
-            if (existingByPhone is not null && existingByPhone.Id != user.Id)
-            {
-                throw new KnownException("手机号已存在");
-            }
-        }
-
-        user.UpdateProfile(normalizedUsername, normalizedRealName, normalizedEmail, normalizedPhone, request.Status);
+        user.UpdateUserInfo(request.Username, request.RealName, request.Email, request.Phone,
+            roles, menuPermissions);
     }
 }

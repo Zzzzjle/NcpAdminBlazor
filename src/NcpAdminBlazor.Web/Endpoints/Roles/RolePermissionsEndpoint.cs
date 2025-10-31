@@ -9,7 +9,7 @@ public sealed class RolePermissionsEndpoint(IMediator mediator)
 {
     public override void Configure()
     {
-        Get("/api/roles/{roleId:long}/permissions");
+        Get("/api/roles/{roleId}/permissions");
         Description(d => d.WithTags("Role"));
     }
 

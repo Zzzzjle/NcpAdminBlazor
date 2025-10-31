@@ -14,7 +14,7 @@ public class DeleteRoleCommandValidator : AbstractValidator<DeleteRoleCommand>
     }
 }
 
-public class DeleteRoleCommandHandler(IRoleRepository roleRepository, IApplicationUserRepository userRepository)
+public class DeleteRoleCommandHandler(IRoleRepository roleRepository)
     : ICommandHandler<DeleteRoleCommand>
 {
     public async Task Handle(DeleteRoleCommand request, CancellationToken cancellationToken)
@@ -22,15 +22,6 @@ public class DeleteRoleCommandHandler(IRoleRepository roleRepository, IApplicati
         var role = await roleRepository.GetAsync(request.RoleId, cancellationToken)
                    ?? throw new KnownException($"未找到角色，RoleId = {request.RoleId}");
 
-        var users = await userRepository.GetByRoleIdAsync(role.Id, cancellationToken);
-        if (users.Count > 0)
-        {
-            foreach (var user in users)
-            {
-                user.RemoveRole(role.Id);
-            }
-        }
-
-        await roleRepository.RemoveAsync(role);
+        role.Delete();
     }
 }

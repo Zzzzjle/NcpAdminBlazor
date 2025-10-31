@@ -1,6 +1,8 @@
-using NcpAdminBlazor.Domain.DomainEvents.User;
-using NcpAdminBlazor.Web.Application.Commands.Roles;
+using System.Linq;
+using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
+using NcpAdminBlazor.Domain.DomainEvents;
 using NcpAdminBlazor.Web.Application.Commands.Users;
+using NcpAdminBlazor.Web.Application.Queries.Users;
 
 namespace NcpAdminBlazor.Web.Application.DomainEventHandlers;
 
@@ -9,11 +11,17 @@ internal class RolePermissionChangedDomainEventHandlerForSyncUserPermissions(IMe
 {
     public async Task Handle(RolePermissionChangedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(domainEvent);
-
         var role = domainEvent.Role;
-        var permissionCodes = role.Permissions.Select(p => p.PermissionCode).ToList();
-        var command = new SyncRolePermissionsToUsersCommand(role.Id, permissionCodes);
-        await mediator.Send(command, cancellationToken);
+        var affectedUserIds = await mediator.Send(new GetUserIdsByRoleIdQuery(role.Id), cancellationToken);
+
+        var menuPermissions = role.MenuPermissions
+            .Select(p => new UserMenuPermission(p.MenuId, role.Id, p.PermissionCode))
+            .ToList();
+
+        foreach (var userId in affectedUserIds)
+        {
+            await mediator.Send(new SyncRolePermissionsToUsersCommand(userId, role.Id, menuPermissions),
+                cancellationToken);
+        }
     }
 }

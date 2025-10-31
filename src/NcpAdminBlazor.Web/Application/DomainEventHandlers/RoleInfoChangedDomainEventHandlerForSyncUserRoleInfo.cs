@@ -1,6 +1,6 @@
-using NcpAdminBlazor.Domain.DomainEvents.User;
-using NcpAdminBlazor.Web.Application.Commands.Roles;
+using NcpAdminBlazor.Domain.DomainEvents;
 using NcpAdminBlazor.Web.Application.Commands.Users;
+using NcpAdminBlazor.Web.Application.Queries.Users;
 
 namespace NcpAdminBlazor.Web.Application.DomainEventHandlers;
 
@@ -9,10 +9,12 @@ internal class RoleInfoChangedDomainEventHandlerForSyncUserRoleInfo(IMediator me
 {
     public async Task Handle(RoleInfoChangedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(domainEvent);
-
         var role = domainEvent.Role;
-        var command = new SyncRoleInfoToUsersCommand(role.Id, role.Name);
-        await mediator.Send(command, cancellationToken);
+        var affectedUserIds = await mediator.Send(new GetUserIdsByRoleIdQuery(role.Id), cancellationToken);
+        foreach (var userId in affectedUserIds)
+        {
+            await mediator.Send(new SyncRoleInfoToUsersCommand(userId, role.Id, role.Name, role.IsDisabled),
+                cancellationToken);
+        }
     }
 }

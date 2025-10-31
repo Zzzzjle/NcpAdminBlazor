@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using NcpAdminBlazor.Shared.Auth;
@@ -17,9 +18,7 @@ public class RolesManagementTests(AuthenticatedAppFixture app, RolesManagementTe
         var request = new CreateRoleRequest
         {
             Name = state.RoleName,
-            Description = "Test role description",
-            Status = 1,
-            PermissionCodes = [AppPermissions.Keys.System_Roles_Create]
+            Description = "Test role description"
         };
 
         var (rsp, res) = await app.AuthenticatedClient
@@ -27,7 +26,7 @@ public class RolesManagementTests(AuthenticatedAppFixture app, RolesManagementTe
 
         rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
         res.Success.ShouldBeTrue();
-        res.Data.RoleId.Id.ShouldBeGreaterThan(0);
+        res.Data.RoleId.Id.ShouldNotBe(Guid.Empty);
 
         state.RoleId = res.Data.RoleId;
     }
@@ -67,7 +66,6 @@ public class RolesManagementTests(AuthenticatedAppFixture app, RolesManagementTe
 
         permRsp.StatusCode.ShouldBe(HttpStatusCode.OK);
         permRes.Success.ShouldBeTrue();
-        permRes.Data.PermissionCodes.ShouldContain(AppPermissions.Keys.System_Roles_Create);
     }
 
     [Fact, Priority(4)]
@@ -80,8 +78,7 @@ public class RolesManagementTests(AuthenticatedAppFixture app, RolesManagementTe
         {
             RoleId = roleId,
             Name = state.RoleName,
-            Description = updatedDescription,
-            Status = 0
+            Description = updatedDescription
         };
 
         var (infoRsp, infoRes) = await app.AuthenticatedClient
@@ -96,7 +93,6 @@ public class RolesManagementTests(AuthenticatedAppFixture app, RolesManagementTe
 
         infoResponse.Success.ShouldBeTrue();
         infoResponse.Data.Description.ShouldBe(updatedDescription);
-        infoResponse.Data.Status.ShouldBe(0);
     }
 
     [Fact, Priority(5)]
@@ -106,8 +102,7 @@ public class RolesManagementTests(AuthenticatedAppFixture app, RolesManagementTe
 
         var permissionsRequest = new UpdateRolePermissionsRequest
         {
-            RoleId = roleId,
-            PermissionCodes = [AppPermissions.Keys.System_Roles_Delete]
+            RoleId = roleId
         };
 
         var (permRsp, permRes) = await app.AuthenticatedClient
@@ -121,8 +116,6 @@ public class RolesManagementTests(AuthenticatedAppFixture app, RolesManagementTe
                 new RolePermissionsRequest { RoleId = roleId });
 
         permissionsResponse.Success.ShouldBeTrue();
-        permissionsResponse.Data.PermissionCodes.ShouldContain(AppPermissions.Keys.System_Roles_Delete);
-        permissionsResponse.Data.PermissionCodes.ShouldNotContain(AppPermissions.Keys.System_Roles_Create);
     }
 
     [Fact, Priority(6)]

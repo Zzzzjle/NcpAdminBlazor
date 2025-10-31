@@ -17,25 +17,14 @@ public sealed class DeleteUserEndpoint(IMediator mediator) : Endpoint<DeleteUser
 
     public override async Task HandleAsync(DeleteUserRequest r, CancellationToken ct)
     {
-        var command = new DeleteUserCommand(new ApplicationUserId(r.UserId));
-        await mediator.Send(command, ct);
+        await mediator.Send(new DeleteUserCommand(r.UserId), ct);
         await Send.OkAsync(true.AsResponseData(), ct);
     }
 }
 
 public sealed class DeleteUserRequest
 {
-    [RouteParam] public long UserId { get; set; }
-}
-
-public sealed class DeleteUserValidator : AbstractValidator<DeleteUserRequest>
-{
-    public DeleteUserValidator()
-    {
-        RuleFor(x => x.UserId)
-            .GreaterThan(0)
-            .WithMessage("用户ID必须大于0");
-    }
+    [RouteParam] public required ApplicationUserId UserId { get; set; }
 }
 
 public sealed class DeleteUserSummary : Summary<DeleteUserEndpoint, DeleteUserRequest>

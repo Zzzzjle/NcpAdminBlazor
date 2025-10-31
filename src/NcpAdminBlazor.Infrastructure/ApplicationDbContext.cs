@@ -1,9 +1,7 @@
-﻿using NcpAdminBlazor.Domain.AggregatesModel.OrderAggregate;
-using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
+﻿using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
+using NcpAdminBlazor.Domain.AggregatesModel.MenuAggregate;
 using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using NcpAdminBlazor.Domain.AggregatesModel.DeliverAggregate;
 
 namespace NcpAdminBlazor.Infrastructure;
 
@@ -12,10 +10,7 @@ public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext>
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        if (modelBuilder is null)
-        {
-            throw new ArgumentNullException(nameof(modelBuilder));
-        }
+        ArgumentNullException.ThrowIfNull(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
@@ -28,8 +23,7 @@ public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext>
         base.ConfigureConventions(configurationBuilder);
     }
 
-    public DbSet<Order> Orders => Set<Order>();
-    public DbSet<DeliverRecord> DeliverRecords => Set<DeliverRecord>();
     public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
     public DbSet<Role> Roles => Set<Role>();
+    public DbSet<Menu> Menus => Set<Menu>();
 }

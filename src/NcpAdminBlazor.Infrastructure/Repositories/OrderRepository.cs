@@ -1,14 +1,8 @@
-﻿using NetCorePal.Extensions.Repository.EntityFrameworkCore;
-using NcpAdminBlazor.Domain.AggregatesModel.OrderAggregate;
-using NetCorePal.Extensions.Repository;
+﻿using NcpAdminBlazor.Domain.AggregatesModel.OrderAggregate;
 
 namespace NcpAdminBlazor.Infrastructure.Repositories;
 
-public interface IOrderRepository : IRepository<Order, OrderId>
-{
-}
+public interface IOrderRepository : IRepository<Order, OrderId>;
 
-public class OrderRepository(ApplicationDbContext context) : RepositoryBase<Order, OrderId, ApplicationDbContext>(context), IOrderRepository
-{
-}
-
+public class OrderRepository(ApplicationDbContext context)
+    : RepositoryBase<Order, OrderId, ApplicationDbContext>(context), IOrderRepository;

@@ -1,5 +1,5 @@
 using FastEndpoints;
-using NcpAdminBlazor.Web.Application.Queries;
+using NcpAdminBlazor.Web.Application.Queries.Users;
 
 namespace NcpAdminBlazor.Web.Endpoints.Users;
 

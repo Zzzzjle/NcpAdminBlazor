@@ -1,6 +1,5 @@
 using FastEndpoints;
 using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
-using NcpAdminBlazor.Shared.Auth;
 using NcpAdminBlazor.Web.Application.Commands.Roles;
 
 namespace NcpAdminBlazor.Web.Endpoints.Roles;
@@ -10,7 +9,7 @@ public sealed class DeleteRoleEndpoint(IMediator mediator)
 {
     public override void Configure()
     {
-        Delete("/api/roles/{roleId:long}");
+        Delete("/api/roles/{roleId}");
         Description(d => d.WithTags("Role"));
     }
 

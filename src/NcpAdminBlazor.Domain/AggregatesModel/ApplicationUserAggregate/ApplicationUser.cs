@@ -1,13 +1,13 @@
 ﻿using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
-using NcpAdminBlazor.Domain.DomainEvents.User;
-
-// ReSharper disable VirtualMemberCallInConstructor
+using NcpAdminBlazor.Domain.Common;
+using NcpAdminBlazor.Domain.DomainEvents;
+using static NcpAdminBlazor.Domain.Common.PasswordHasher;
 
 namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
 {
-    public partial record ApplicationUserId : IInt64StronglyTypedId;
+    public partial record ApplicationUserId : IGuidStronglyTypedId;
 
-    public class ApplicationUser : Entity<ApplicationUserId>, IAggregateRoot
+    public class ApplicationUser : Entity<ApplicationUserId>, IAggregateRoot, ISoftDeletable
     {
         protected ApplicationUser()
         {
@@ -17,205 +17,154 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate
         public string Phone { get; private set; } = string.Empty;
         public string PasswordHash { get; private set; } = string.Empty;
         public string PasswordSalt { get; private set; } = string.Empty;
-
         public string RealName { get; private set; } = string.Empty;
         public string Email { get; private set; } = string.Empty;
-
-        public DateTimeOffset RefreshExpiry { get; private set; } = DateTimeOffset.MinValue;
-
         public string RefreshToken { get; private set; } = string.Empty;
-
-        /// <summary>
-        /// 0:已禁用  1:已启用
-        /// </summary>
-        public int Status { get; private set; } = 1;
-
+        public DateTimeOffset RefreshExpiry { get; private set; } = DateTimeOffset.MinValue;
+        public ICollection<UserRole> Roles { get; private set; } = [];
+        public ICollection<UserMenuPermission> MenuPermissions { get; private set; } = [];
         public DateTimeOffset CreatedAt { get; init; }
-        public virtual ICollection<ApplicationUserRole> Roles { get; } = [];
-
-        public virtual ICollection<ApplicationUserPermission> Permissions { get; } = [];
-
         public Deleted IsDeleted { get; private set; } = false;
         public DeletedTime DeletedAt { get; private set; } = new(DateTimeOffset.MinValue);
 
-        public ApplicationUser(string username, string passwordHash,
-            string passwordSalt)
+        public ApplicationUser(
+            string username,
+            string password,
+            string realName,
+            string email,
+            string phone,
+            List<UserRole> roles,
+            List<UserMenuPermission> menuPermissions)
         {
             CreatedAt = DateTimeOffset.Now;
             Username = username;
+            RealName = realName;
+            Email = email;
+            Phone = phone;
+            var salt = GeneratePasswordSalt();
+            var passwordHash = GeneratePasswordHash(password, salt);
+            PasswordSalt = salt;
             PasswordHash = passwordHash;
-            PasswordSalt = passwordSalt;
-            // 发布用户创建领域事件
-            AddDomainEvent(new ApplicationUserCreatedDomainEvent(this));
+            SetRoles(roles);
+            SetMenuPermissions(menuPermissions);
+            AddDomainEvent(new UserCreatedDomainEvent(this));
         }
 
-        public void UpdateRoleInfo(RoleId roleId, string roleName)
+        public void SyncRoleInfo(RoleId roleId, string roleName, bool isDisable,
+            IEnumerable<UserMenuPermission>? menuPermissions = null)
         {
             var savedRole = Roles.FirstOrDefault(r => r.RoleId == roleId);
-            savedRole?.UpdateRoleInfo(roleName);
-        }
-
-        public void UpdateRoles(IEnumerable<ApplicationUserRole> rolesToBeAssigned,
-            IEnumerable<ApplicationUserPermission> permissions)
-        {
-            var currentRoleMap = Roles.ToDictionary(r => r.RoleId);
-            var targetRoleMap = rolesToBeAssigned.ToDictionary(r => r.RoleId);
-
-            var roleIdsToRemove = currentRoleMap.Keys.Except(targetRoleMap.Keys);
-            foreach (var roleId in roleIdsToRemove)
+            if (savedRole is null)
             {
-                Roles.Remove(currentRoleMap[roleId]);
-                RemoveRolePermissions(roleId);
+                var newRole = new UserRole(roleId, roleName);
+                newRole.UpdateUserRoleInfo(roleName, isDisable);
+                Roles.Add(newRole);
+            }
+            else
+            {
+                savedRole.UpdateUserRoleInfo(roleName, isDisable);
             }
 
-            var roleIdsToAdd = targetRoleMap.Keys.Except(currentRoleMap.Keys);
-            foreach (var roleId in roleIdsToAdd)
+            if (menuPermissions is not null)
             {
-                var targetRole = targetRoleMap[roleId];
-                Roles.Add(targetRole);
+                ReplacePermissionsForRole(roleId, menuPermissions);
             }
 
-            AddPermissions(permissions);
-        }
-
-        public void UpdateRolePermissions(RoleId roleId, IEnumerable<ApplicationUserPermission> newPermissions)
-        {
-            RemoveRolePermissions(roleId);
-            AddPermissions(newPermissions);
+            AddDomainEvent(new UserMenuPermissionsChanged(this));
         }
 
         public void RemoveRole(RoleId roleId)
         {
             var role = Roles.FirstOrDefault(r => r.RoleId == roleId);
-            if (role is null)
-            {
-                return;
-            }
-
+            if (role is null) return;
             Roles.Remove(role);
-            RemoveRolePermissions(roleId);
-            AddDomainEvent(new ApplicationUserInfoUpdatedDomainEvent(this));
+            MenuPermissions = MenuPermissions
+                .Where(mp => mp.SourceRoleId != roleId)
+                .ToList();
+
+            AddDomainEvent(new UserMenuPermissionsChanged(this));
         }
 
-        private void AddPermissions(IEnumerable<ApplicationUserPermission> permissions)
+        public void UpdateUserInfo(string username, string realName, string email, string phone,
+            List<UserRole> rolesToBeAssigned, List<UserMenuPermission> menuPermissions)
         {
-            foreach (var permission in permissions)
-            {
-                var existedPermission = Permissions.SingleOrDefault(p => p.PermissionCode == permission.PermissionCode);
-                if (existedPermission is not null)
-                {
-                    foreach (var permissionSourceRoleId in permission.SourceRoleIds)
-                        existedPermission.AddSourceRoleId(permissionSourceRoleId);
-                }
-                else
-                {
-                    Permissions.Add(permission);
-                }
-            }
+            Username = username;
+            RealName = realName;
+            Email = email;
+            Phone = phone;
+            SetRoles(rolesToBeAssigned);
+            SetMenuPermissions(menuPermissions);
+            AddDomainEvent(new UserMenuPermissionsChanged(this));
         }
 
-        private void RemoveRolePermissions(RoleId roleId)
+        public void SyncRolePermissions(RoleId roleId, IEnumerable<UserMenuPermission> menuPermissions)
         {
-            foreach (var permission in Permissions.Where(p => p.SourceRoleIds.Remove(roleId) &&
-                                                              p.SourceRoleIds.Count == 0)
-                         .ToArray())
-            {
-                Permissions.Remove(permission);
-            }
+            ReplacePermissionsForRole(roleId, menuPermissions);
+            AddDomainEvent(new UserMenuPermissionsChanged(this));
         }
 
-        /// <summary>
-        /// 更新用户基础信息
-        /// </summary>
-        /// <param name="username">用户名</param>
-        /// <param name="realName">真实姓名</param>
-        /// <param name="email">邮箱</param>
-        /// <param name="phone">手机号</param>
-        /// <param name="status">状态标识</param>
-        public void UpdateProfile(string username, string realName, string email, string phone, int status)
+        public void ChangePassword(string oldPassword, string newPassword)
         {
-            if (string.IsNullOrWhiteSpace(username)) throw new KnownException("用户名不能为空");
-            if (string.IsNullOrWhiteSpace(realName)) throw new KnownException("姓名不能为空");
-            if (string.IsNullOrWhiteSpace(email)) throw new KnownException("邮箱不能为空");
-            if (string.IsNullOrWhiteSpace(phone)) throw new KnownException("手机号不能为空");
-            if (status is not (0 or 1)) throw new KnownException("用户状态无效");
-
-            var normalizedUsername = username.Trim();
-            var normalizedRealName = realName.Trim();
-            var normalizedEmail = email.Trim();
-            var normalizedPhone = phone.Trim();
-
-            Username = normalizedUsername;
-            RealName = normalizedRealName;
-            Email = normalizedEmail;
-            Phone = normalizedPhone;
-            Status = status;
-
-            AddDomainEvent(new ApplicationUserInfoUpdatedDomainEvent(this));
-        }
-
-        /// <summary>
-        ///     修改密码
-        /// </summary>
-        /// <param name="oldPasswordHash"></param>
-        /// <param name="newPasswordHash"></param>
-        public void EditPassword(string oldPasswordHash, string newPasswordHash)
-        {
+            var oldPasswordHash = GeneratePasswordHash(oldPassword, PasswordSalt);
             if (PasswordHash != oldPasswordHash) throw new KnownException("旧密码不正确");
+            var newPasswordHash = GeneratePasswordHash(newPassword, PasswordSalt);
+            if (PasswordHash == newPasswordHash) throw new KnownException("新密码不能与旧密码相同");
             PasswordHash = newPasswordHash;
-            AddDomainEvent(new ApplicationUserPasswordChangedDomainEvent(this));
+            AddDomainEvent(new UserPasswordChangedDomainEvent(this));
         }
 
-        /// <summary>
-        /// 修改密码（包含盐值更新）
-        /// </summary>
-        /// <param name="oldPasswordHash">旧密码哈希</param>
-        /// <param name="newPasswordHash">新密码哈希</param>
-        /// <param name="newPasswordSalt">新密码盐值</param>
-        public void ChangePassword(string oldPasswordHash, string newPasswordHash, string newPasswordSalt)
+        public void Login(string password)
         {
-            if (PasswordHash != oldPasswordHash) throw new KnownException("旧密码不正确");
-            PasswordHash = newPasswordHash;
-            PasswordSalt = newPasswordSalt;
-            AddDomainEvent(new ApplicationUserPasswordChangedDomainEvent(this));
+            if (IsDeleted) throw new KnownException("用户名或密码不正确");
+            var passwordHash = GeneratePasswordHash(password, PasswordSalt);
+            if (PasswordHash != passwordHash) throw new KnownException("用户名或密码不正确");
+
+            AddDomainEvent(new UserLoginDomainEvent(this));
         }
 
-        /// <summary>
-        /// 验证用户登录
-        /// </summary>
-        /// <param name="passwordHash">密码哈希</param>
-        /// <returns>登录是否成功</returns>
-        public bool VerifyLogin(string passwordHash)
+        public void SetRefreshToken(string refreshToken, DateTimeOffset refreshExpiry)
         {
-            if (IsDeleted) throw new KnownException("用户已被删除，无法登录");
-            if (Status != 1) throw new KnownException("用户已被禁用，无法登录");
-
-            var loginSuccess = PasswordHash == passwordHash;
-            if (loginSuccess)
-            {
-                AddDomainEvent(new ApplicationUserLoginDomainEvent(this));
-            }
-
-            return loginSuccess;
+            RefreshToken = refreshToken;
+            RefreshExpiry = refreshExpiry;
         }
 
         public void Delete()
         {
             if (IsDeleted) throw new KnownException("用户已经被删除！");
             IsDeleted = true;
-            AddDomainEvent(new ApplicationUserDeletedDomainEvent(this));
+            AddDomainEvent(new UserDeletedDomainEvent(this));
         }
 
-        /// <summary>
-        /// 设置/更新刷新令牌
-        /// </summary>
-        /// <param name="refreshToken">刷新令牌</param>
-        /// <param name="refreshExpiry">刷新令牌到期时间</param>
-        public void SetRefreshToken(string refreshToken, DateTimeOffset refreshExpiry)
+        private void SetRoles(IEnumerable<UserRole> roles)
         {
-            RefreshToken = refreshToken;
-            RefreshExpiry = refreshExpiry;
-            AddDomainEvent(new ApplicationUserRefreshTokenUpdatedDomainEvent(this));
+            Roles = (roles ?? Enumerable.Empty<UserRole>())
+                .GroupBy(r => r.RoleId)
+                .Select(g => g.Last())
+                .ToList();
+        }
+
+        private void SetMenuPermissions(IEnumerable<UserMenuPermission> menuPermissions)
+        {
+            MenuPermissions = (menuPermissions ?? Enumerable.Empty<UserMenuPermission>())
+                .GroupBy(p => new { p.MenuId, p.PermissionCode, p.SourceRoleId })
+                .Select(g => g.Last())
+                .ToList();
+        }
+
+        private void ReplacePermissionsForRole(RoleId roleId, IEnumerable<UserMenuPermission> menuPermissions)
+        {
+            var normalizedPermissions = (menuPermissions ?? Enumerable.Empty<UserMenuPermission>())
+                .Select(permission => new UserMenuPermission(permission.MenuId, roleId, permission.PermissionCode))
+                .GroupBy(p => new { p.MenuId, p.PermissionCode })
+                .Select(g => g.Last())
+                .ToList();
+
+            var retainedPermissions = MenuPermissions
+                .Where(p => p.SourceRoleId != roleId)
+                .ToList();
+
+            retainedPermissions.AddRange(normalizedPermissions);
+            MenuPermissions = retainedPermissions;
         }
     }
 }

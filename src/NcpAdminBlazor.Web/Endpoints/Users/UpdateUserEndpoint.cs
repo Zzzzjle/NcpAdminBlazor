@@ -1,5 +1,7 @@
 using FastEndpoints;
 using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
+using NcpAdminBlazor.Domain.AggregatesModel.MenuAggregate;
+using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using NcpAdminBlazor.Web.Application.Commands.Users;
 
 namespace NcpAdminBlazor.Web.Endpoints.Users;
@@ -14,13 +16,28 @@ public sealed class UpdateUserEndpoint(IMediator mediator) : Endpoint<UpdateUser
 
     public override async Task HandleAsync(UpdateUserRequest req, CancellationToken ct)
     {
+        var roleItems = req.Roles ?? [];
+        var roles = roleItems.Select(role =>
+        {
+            var userRole = new UserRole(role.RoleId, role.RoleName);
+            userRole.UpdateUserRoleInfo(role.RoleName, role.IsDisabled);
+            return userRole;
+        }).ToList();
+
+        var permissionItems = req.MenuPermissions ?? [];
+        var menuPermissions = permissionItems
+            .Select(permission =>
+                new UserMenuPermission(permission.MenuId, permission.SourceRoleId, permission.PermissionCode))
+            .ToList();
+
         var command = new UpdateUserInfoCommand(
             req.UserId,
-            req.Username.Trim(),
-            req.RealName.Trim(),
-            req.Email.Trim(),
-            req.Phone.Trim(),
-            req.Status);
+            req.Username,
+            req.RealName,
+            req.Email,
+            req.Phone,
+            roles,
+            menuPermissions);
 
         await mediator.Send(command, ct);
         await Send.OkAsync(true.AsResponseData(), ct);
@@ -38,8 +55,9 @@ public sealed class UpdateUserRequest
     public string Email { get; init; } = string.Empty;
 
     public string Phone { get; init; } = string.Empty;
-
     public int Status { get; init; }
+    public List<UpdateUserRoleItem> Roles { get; init; } = [];
+    public List<UpdateUserMenuPermissionItem> MenuPermissions { get; init; } = [];
 }
 
 public sealed class UpdateUserRequestValidator : AbstractValidator<UpdateUserRequest>
@@ -63,10 +81,50 @@ public sealed class UpdateUserRequestValidator : AbstractValidator<UpdateUserReq
             .NotEmpty().WithMessage("手机号不能为空")
             .MaximumLength(20).WithMessage("手机号不能超过20个字符");
 
-        RuleFor(x => x.Status)
-            .Must(status => status is 0 or 1)
-            .WithMessage("用户状态必须是0或1");
+        RuleFor(x => x.Roles)
+            .NotNull().WithMessage("角色列表不能为空");
+
+        RuleForEach(x => x.Roles).ChildRules(role =>
+        {
+            role.RuleFor(r => r.RoleId)
+                .NotEmpty().WithMessage("角色ID不能为空");
+
+            role.RuleFor(r => r.RoleName)
+                .NotEmpty().WithMessage("角色名称不能为空")
+                .MaximumLength(50).WithMessage("角色名称不能超过50个字符");
+        });
+
+        RuleForEach(x => x.MenuPermissions).ChildRules(permission =>
+        {
+            permission.RuleFor(p => p.MenuId)
+                .NotEmpty().WithMessage("菜单ID不能为空");
+
+            permission.RuleFor(p => p.SourceRoleId)
+                .NotEmpty().WithMessage("菜单权限来源角色不能为空");
+
+            permission.RuleFor(p => p.PermissionCode)
+                .NotEmpty().WithMessage("权限编码不能为空")
+                .MaximumLength(100).WithMessage("权限编码不能超过100个字符");
+        });
     }
+}
+
+public sealed class UpdateUserRoleItem
+{
+    public required RoleId RoleId { get; init; }
+
+    public string RoleName { get; init; } = string.Empty;
+
+    public bool IsDisabled { get; init; }
+}
+
+public sealed class UpdateUserMenuPermissionItem
+{
+    public required MenuId MenuId { get; init; }
+
+    public required RoleId SourceRoleId { get; init; }
+
+    public string PermissionCode { get; init; } = string.Empty;
 }
 
 internal sealed class UpdateUserSummary : Summary<UpdateUserEndpoint, UpdateUserRequest>
@@ -78,12 +136,12 @@ internal sealed class UpdateUserSummary : Summary<UpdateUserEndpoint, UpdateUser
         RequestExamples.Add(new RequestExample(
             new UpdateUserRequest
             {
-                UserId = new ApplicationUserId(123),
+                UserId = new ApplicationUserId(Guid.NewGuid()),
                 Username = "admin",
                 RealName = "管理员",
                 Email = "admin@example.com",
                 Phone = "13800000000",
-                Status = 1
+                Status = 0
             },
             "更新用户示例"));
         ResponseExamples.Add(200, true.AsResponseData());

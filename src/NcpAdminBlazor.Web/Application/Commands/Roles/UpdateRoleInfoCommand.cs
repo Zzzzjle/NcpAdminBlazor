@@ -8,7 +8,7 @@ public record UpdateRoleInfoCommand(
     RoleId RoleId,
     string Name,
     string Description,
-    int Status) : ICommand;
+    bool? IsDisabled) : ICommand;
 
 public class UpdateRoleInfoCommandValidator : AbstractValidator<UpdateRoleInfoCommand>
 {
@@ -28,10 +28,6 @@ public class UpdateRoleInfoCommandValidator : AbstractValidator<UpdateRoleInfoCo
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("角色描述不能为空")
             .MaximumLength(200).WithMessage("角色描述不能超过200个字符");
-
-        RuleFor(x => x.Status)
-            .Must(status => status is 0 or 1)
-            .WithMessage("角色状态必须是0或1");
     }
 }
 
@@ -43,6 +39,6 @@ public class UpdateRoleInfoCommandHandler(IRoleRepository roleRepository)
         var role = await roleRepository.GetAsync(request.RoleId, cancellationToken)
                    ?? throw new KnownException($"未找到角色，RoleId = {request.RoleId}");
 
-        role.UpdateRoleInfo(request.Name, request.Description, request.Status);
+        role.UpdateRoleInfo(request.Name, request.Description, request.IsDisabled);
     }
 }

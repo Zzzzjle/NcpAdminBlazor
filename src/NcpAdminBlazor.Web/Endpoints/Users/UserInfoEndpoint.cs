@@ -1,6 +1,6 @@
 using FastEndpoints;
 using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
-using NcpAdminBlazor.Web.Application.Queries;
+using NcpAdminBlazor.Web.Application.Queries.Users;
 
 namespace NcpAdminBlazor.Web.Endpoints.Users;
 
@@ -14,33 +14,17 @@ public sealed class UserInfoEndpoint(IMediator mediator) : Endpoint<UserInfoRequ
 
     public override async Task HandleAsync(UserInfoRequest r, CancellationToken ct)
     {
-        var userId = new ApplicationUserId(r.UserId);
-        var dto = await mediator.Send(new GetUserInfoQuery(userId), ct);
+        var dto = await mediator.Send(new GetUserInfoQuery(r.UserId), ct);
         await Send.OkAsync(dto.AsResponseData(), ct);
     }
 }
 
 public sealed class UserInfoRequest
 {
-    [RouteParam] public long UserId { get; set; }
-
-    public UserInfoRequest()
-    {
-    }
-
-    public UserInfoRequest(long userId) => UserId = userId;
+    [RouteParam] public required ApplicationUserId UserId { get; set; }
 }
 
-sealed class UserInfoValidator : AbstractValidator<UserInfoRequest>
-{
-    public UserInfoValidator()
-    {
-        RuleFor(x => x.UserId)
-            .GreaterThan(0);
-    }
-}
-
-sealed class UserInfoSummary : Summary<UserInfoEndpoint, UserInfoRequest>
+public sealed class UserInfoSummary : Summary<UserInfoEndpoint, UserInfoRequest>
 {
     public UserInfoSummary()
     {

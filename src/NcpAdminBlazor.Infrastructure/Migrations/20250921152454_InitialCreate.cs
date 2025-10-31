@@ -163,13 +163,13 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_application_user_permissions_ApplicationUserId_PermissionCode",
                 table: "application_user_permissions",
-                columns: new[] { "ApplicationUserId", "PermissionCode" },
+                columns: new[] { "UserId", "PermissionCode" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_application_user_roles_ApplicationUserId_RoleId",
                 table: "application_user_roles",
-                columns: new[] { "ApplicationUserId", "RoleId" },
+                columns: new[] { "UserId", "RoleId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(

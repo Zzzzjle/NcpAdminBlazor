@@ -1,5 +1,8 @@
+using System;
 using FastEndpoints;
 using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
+using NcpAdminBlazor.Domain.AggregatesModel.MenuAggregate;
+using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using NcpAdminBlazor.Web.Application.Commands.Users;
 
 namespace NcpAdminBlazor.Web.Endpoints.Users;
@@ -11,13 +14,27 @@ public sealed class CreateUserEndpoint(IMediator mediator)
 {
     public override async Task HandleAsync(CreateUserRequest req, CancellationToken ct)
     {
+        var roleItems = req.Roles ?? [];
+        var roles = roleItems.Select(role =>
+        {
+            var userRole = new UserRole(role.RoleId, role.RoleName);
+            userRole.UpdateUserRoleInfo(role.RoleName, role.IsDisabled);
+            return userRole;
+        }).ToList();
+
+        var permissionItems = req.MenuPermissions ?? [];
+        var menuPermissions = permissionItems
+            .Select(permission => new UserMenuPermission(permission.MenuId, permission.SourceRoleId, permission.PermissionCode))
+            .ToList();
+
         var command = new CreateUserCommand(
-            req.Username?.Trim() ?? string.Empty,
-            req.Password?.Trim() ?? string.Empty,
-            req.RealName?.Trim() ?? string.Empty,
-            req.Email?.Trim() ?? string.Empty,
-            req.Phone?.Trim() ?? string.Empty,
-            req.Status);
+            req.Username,
+            req.Password,
+            req.RealName,
+            req.Email,
+            req.Phone,
+            roles,
+            menuPermissions);
 
         var userId = await mediator.Send(command, ct);
         await Send.OkAsync(new CreateUserResponse(userId).AsResponseData(), ct);
@@ -31,7 +48,8 @@ public sealed class CreateUserRequest
     public string RealName { get; init; } = string.Empty;
     public string Email { get; init; } = string.Empty;
     public string Phone { get; init; } = string.Empty;
-    public int Status { get; init; } = 1;
+    public List<CreateUserRoleItem> Roles { get; init; } = [];
+    public List<CreateUserMenuPermissionItem> MenuPermissions { get; init; } = [];
 }
 
 public sealed record CreateUserResponse(ApplicationUserId UserId);
@@ -61,13 +79,53 @@ public sealed class CreateUserRequestValidator : AbstractValidator<CreateUserReq
             .NotEmpty().WithMessage("手机号不能为空")
             .MaximumLength(20).WithMessage("手机号不能超过20个字符");
 
-        RuleFor(x => x.Status)
-            .Must(status => status is 0 or 1)
-            .WithMessage("用户状态必须是0或1");
+        RuleFor(x => x.Roles)
+            .NotNull().WithMessage("角色列表不能为空");
+
+        RuleForEach(x => x.Roles).ChildRules(role =>
+        {
+            role.RuleFor(r => r.RoleId)
+                .NotEmpty().WithMessage("角色ID不能为空");
+
+            role.RuleFor(r => r.RoleName)
+                .NotEmpty().WithMessage("角色名称不能为空")
+                .MaximumLength(50).WithMessage("角色名称不能超过50个字符");
+        });
+
+        RuleForEach(x => x.MenuPermissions).ChildRules(permission =>
+        {
+            permission.RuleFor(p => p.MenuId)
+                .NotEmpty().WithMessage("菜单ID不能为空");
+
+            permission.RuleFor(p => p.SourceRoleId)
+                .NotEmpty().WithMessage("菜单权限来源角色不能为空");
+
+            permission.RuleFor(p => p.PermissionCode)
+                .NotEmpty().WithMessage("权限编码不能为空")
+                .MaximumLength(100).WithMessage("权限编码不能超过100个字符");
+        });
     }
 }
 
-internal sealed class CreateUserSummary : Summary<CreateUserEndpoint, CreateUserRequest>
+public sealed class CreateUserRoleItem
+{
+    public required RoleId RoleId { get; init; }
+
+    public string RoleName { get; init; } = string.Empty;
+
+    public bool IsDisabled { get; init; }
+}
+
+public sealed class CreateUserMenuPermissionItem
+{
+    public required MenuId MenuId { get; init; }
+
+    public required RoleId SourceRoleId { get; init; }
+
+    public string PermissionCode { get; init; } = string.Empty;
+}
+
+public sealed class CreateUserSummary : Summary<CreateUserEndpoint, CreateUserRequest>
 {
     public CreateUserSummary()
     {
@@ -81,9 +139,18 @@ internal sealed class CreateUserSummary : Summary<CreateUserEndpoint, CreateUser
                 RealName = "管理员",
                 Email = "admin@example.com",
                 Phone = "13800000000",
-                Status = 1
+                Roles =
+                [
+                    new CreateUserRoleItem
+                    {
+                        RoleId = new RoleId(Guid.NewGuid()),
+                        RoleName = "系统管理员",
+                        IsDisabled = false
+                    }
+                ],
+                MenuPermissions = []
             },
             "创建用户示例"));
-        ResponseExamples.Add(201, new CreateUserResponse(new ApplicationUserId(1)).AsResponseData());
+        ResponseExamples.Add(201, new CreateUserResponse(new ApplicationUserId(Guid.NewGuid())).AsResponseData());
     }
 }

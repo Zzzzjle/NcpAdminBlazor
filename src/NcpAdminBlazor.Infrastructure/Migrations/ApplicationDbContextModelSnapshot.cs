@@ -85,12 +85,15 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                     b.ToTable("application_users", (string)null);
                 });
 
-            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUserPermission", b =>
+            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUserMenuPermission", b =>
                 {
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("ApplicationUserId")
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("MenuId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("PermissionCode")
@@ -104,18 +107,18 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId", "PermissionCode")
+                    b.HasIndex("UserId", "PermissionCode")
                         .IsUnique();
 
                     b.ToTable("application_user_permissions", (string)null);
                 });
 
-            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUserRole", b =>
+            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.UserRole", b =>
                 {
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("ApplicationUserId")
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("RoleId")
@@ -128,7 +131,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId", "RoleId")
+                    b.HasIndex("UserId", "RoleId")
                         .IsUnique();
 
                     b.ToTable("application_user_roles", (string)null);
@@ -145,6 +148,66 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("deliverrecord", (string)null);
+                });
+
+            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.MenuAggregate.Menu", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ExternalUrl")
+                        .HasMaxLength(512)
+                        .HasColumnType("varchar(512)");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<bool>("KeepAlive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("PageKey")
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Path")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("PermissionCode")
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<bool>("RequireAll")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDisable")
+                        .HasColumnType("tinyint(1)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId", "Order")
+                        .HasDatabaseName("IX_Menu_Parent_Order");
+
+                    b.HasIndex("ParentId", "Title")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Menu_Parent_Title");
+
+                    b.ToTable("menus", (string)null);
                 });
 
             modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.OrderAggregate.Order", b =>
@@ -204,9 +267,12 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                     b.ToTable("roles", (string)null);
                 });
 
-            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate.RolePermission", b =>
+            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate.RoleMenuPermission", b =>
                 {
                     b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("MenuId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("PermissionCode")
@@ -225,28 +291,28 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
                     b.ToTable("role_permissions", (string)null);
                 });
 
-            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUserPermission", b =>
+            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUserMenuPermission", b =>
                 {
                     b.HasOne("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUser", null)
-                        .WithMany("Permissions")
-                        .HasForeignKey("ApplicationUserId")
+                        .WithMany("MenuPermissions")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUserRole", b =>
+            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.UserRole", b =>
                 {
                     b.HasOne("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUser", null)
                         .WithMany("Roles")
-                        .HasForeignKey("ApplicationUserId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate.RolePermission", b =>
+            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate.RoleMenuPermission", b =>
                 {
                     b.HasOne("NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate.Role", null)
-                        .WithMany("Permissions")
+                        .WithMany("MenuPermissions")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -254,14 +320,14 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
 
             modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUser", b =>
                 {
-                    b.Navigation("Permissions");
+                    b.Navigation("MenuPermissions");
 
                     b.Navigation("Roles");
                 });
 
             modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate.Role", b =>
                 {
-                    b.Navigation("Permissions");
+                    b.Navigation("MenuPermissions");
                 });
 #pragma warning restore 612, 618
         }

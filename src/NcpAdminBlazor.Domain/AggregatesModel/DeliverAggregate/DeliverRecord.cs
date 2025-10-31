@@ -2,18 +2,19 @@
 
 namespace NcpAdminBlazor.Domain.AggregatesModel.DeliverAggregate;
 
-public partial record DeliverRecordId : IInt64StronglyTypedId;
+public partial record DeliverRecordId : IGuidStronglyTypedId;
 
 public class DeliverRecord : Entity<DeliverRecordId>, IAggregateRoot
 {
-    protected DeliverRecord() { }
+    protected DeliverRecord()
+    {
+    }
 
 
     public DeliverRecord(OrderId orderId)
     {
-        this.OrderId = orderId;
+        OrderId = orderId;
     }
 
-    public OrderId OrderId { get; private set; } = default!;
+    public OrderId OrderId { get; private set; } = null!;
 }
-
