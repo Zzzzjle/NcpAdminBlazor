@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
+using NcpAdminBlazor.Domain.AggregatesModel.UserAggregate;
 
 namespace NcpAdminBlazor.Web.AspNetCore.Middlewares;
 
@@ -26,7 +26,7 @@ public class CurrentUserMiddleware(RequestDelegate next)
         var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier);
         var userNameClaim = claimsPrincipal.FindFirst(ClaimTypes.Name);
 
-        if (userIdClaim != null && ApplicationUserId.TryParse(userIdClaim.Value, out var userId))
+        if (userIdClaim != null && UserId.TryParse(userIdClaim.Value, out var userId))
         {
             concreteCurrentUser.UserId = userId;
         }

@@ -1,6 +1,5 @@
 using NcpAdminBlazor.Domain.DomainEvents;
-using NcpAdminBlazor.Web.Application.Commands.Users;
-using NcpAdminBlazor.Web.Application.Queries.Users;
+using NcpAdminBlazor.Web.Application.Queries.UsersManagement;
 
 namespace NcpAdminBlazor.Web.Application.DomainEventHandlers;
 
@@ -12,7 +11,7 @@ public class RoleDeletedDomainEventHandler(IMediator mediator) : IDomainEventHan
         var affectedUserIds = await mediator.Send(new GetUserIdsByRoleIdQuery(role.Id), cancellationToken);
         foreach (var userId in affectedUserIds)
         {
-            await mediator.Send(new RemoveUserRoleCommand(userId, role.Id), cancellationToken);
+            // await mediator.Send(new RemoveUserRoleCommand(userId, role.Id), cancellationToken);
         }
     }
 }

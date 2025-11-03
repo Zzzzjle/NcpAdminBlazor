@@ -22,7 +22,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUser", b =>
+            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.User", b =>
                 {
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
@@ -293,8 +293,8 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
 
             modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUserMenuPermission", b =>
                 {
-                    b.HasOne("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUser", null)
-                        .WithMany("MenuPermissions")
+                    b.HasOne("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.User", null)
+                        .WithMany("AssignedMenuIds")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -302,7 +302,7 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
 
             modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.UserRole", b =>
                 {
-                    b.HasOne("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUser", null)
+                    b.HasOne("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.User", null)
                         .WithMany("Roles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -312,22 +312,22 @@ namespace NcpAdminBlazor.Infrastructure.Migrations
             modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate.RoleMenuPermission", b =>
                 {
                     b.HasOne("NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate.Role", null)
-                        .WithMany("MenuPermissions")
+                        .WithMany("AssignedMenuIds")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.ApplicationUser", b =>
+            modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate.User", b =>
                 {
-                    b.Navigation("MenuPermissions");
+                    b.Navigation("AssignedMenuIds");
 
                     b.Navigation("Roles");
                 });
 
             modelBuilder.Entity("NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate.Role", b =>
                 {
-                    b.Navigation("MenuPermissions");
+                    b.Navigation("AssignedMenuIds");
                 });
 #pragma warning restore 612, 618
         }

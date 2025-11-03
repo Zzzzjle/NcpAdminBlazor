@@ -1,11 +1,9 @@
-using System;
 using System.Net;
 using System.Net.Http.Headers;
 using FastEndpoints.Security;
-using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
-using NcpAdminBlazor.Web.Application.Queries;
-using NcpAdminBlazor.Web.Application.Queries.Users;
-using NcpAdminBlazor.Web.Endpoints.Users;
+using NcpAdminBlazor.Domain.AggregatesModel.UserAggregate;
+using NcpAdminBlazor.Web.Application.Queries.UsersManagement;
+using NcpAdminBlazor.Web.Endpoints.UsersManagement;
 using NcpAdminBlazor.Web.Tests.Fixtures;
 
 namespace NcpAdminBlazor.Web.Tests;
@@ -78,7 +76,7 @@ public class UsersAuthTests(WebAppFixture app, UsersAuthTests.UserState state)
         // Assert
         rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
         res.Success.ShouldBeTrue();
-        res.Data.Name.ShouldBe(UserState.Username);
+    res.Data.Username.ShouldBe(UserState.Username);
     }
     
     [Fact, Priority(5)]
@@ -95,7 +93,7 @@ public class UsersAuthTests(WebAppFixture app, UsersAuthTests.UserState state)
         rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
         res.Success.ShouldBeTrue();
         res.Data.Id.ShouldBe(userId);
-        res.Data.Name.ShouldBe(UserState.Username);
+    res.Data.Username.ShouldBe(UserState.Username);
     }
 
     /// <summary>
@@ -108,7 +106,7 @@ public class UsersAuthTests(WebAppFixture app, UsersAuthTests.UserState state)
         public const string Password = "Test@1234";
 
         public TokenResponse? Token;
-        public ApplicationUserId? RegisteredUserId;
+        public UserId? RegisteredUserId;
 
         protected override async ValueTask SetupAsync()
         {

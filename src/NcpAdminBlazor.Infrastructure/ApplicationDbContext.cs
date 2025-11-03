@@ -1,7 +1,7 @@
-﻿using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
-using NcpAdminBlazor.Domain.AggregatesModel.MenuAggregate;
+﻿using NcpAdminBlazor.Domain.AggregatesModel.MenuAggregate;
 using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using MediatR;
+using NcpAdminBlazor.Domain.AggregatesModel.UserAggregate;
 
 namespace NcpAdminBlazor.Infrastructure;
 
@@ -23,7 +23,7 @@ public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext>
         base.ConfigureConventions(configurationBuilder);
     }
 
-    public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
+    public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<Menu> Menus => Set<Menu>();
 }

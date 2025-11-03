@@ -1,15 +1,15 @@
-using NcpAdminBlazor.Domain.AggregatesModel.ApplicationUserAggregate;
+using NcpAdminBlazor.Domain.AggregatesModel.UserAggregate;
 
 namespace NcpAdminBlazor.Web.AspNetCore;
 
 public interface ICurrentUser
 {
-    ApplicationUserId? UserId { get; }
+    UserId? UserId { get; }
     string UserName { get; }
 }
 
 public class CurrentUser : ICurrentUser
 {
-    public ApplicationUserId? UserId { get; set; }
+    public UserId? UserId { get; set; }
     public string UserName { get; set; } = string.Empty;
 }

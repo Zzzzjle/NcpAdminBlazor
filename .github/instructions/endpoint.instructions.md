@@ -23,13 +23,11 @@ FastEndpoints 是推荐的 API 端点实现方式，提供了比传统 MVC Contr
 - 请求DTO、响应DTO与端点定义在同一文件中
 - 不同的Endpoint放在不同文件中
 - 使用 `ResponseData<T>` 包装响应数据
-- 使用特性方式配置路由和权限：`[HttpPost("/api/...")]`、`[AllowAnonymous]`等
 - 在 `HandleAsync()` 方法中处理业务逻辑
 - 使用构造函数注入 `IMediator` 发送命令或查询
 - 使用 `Send.OkAsync()` 发送成功响应
 - 使用 `.AsResponseData()` 扩展方法创建响应数据
 
-**重要**: 使用特性方式而不是 `Configure()` 方法来配置端点。
 
 ## FastEndpoints响应方法
 
