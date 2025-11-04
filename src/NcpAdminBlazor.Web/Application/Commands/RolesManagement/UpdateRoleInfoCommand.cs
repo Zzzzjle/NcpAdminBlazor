@@ -9,8 +9,7 @@ public record UpdateRoleInfoCommand(
     RoleId RoleId,
     string Name,
     string Description,
-    bool IsDisabled,
-    List<MenuId> AssignedMenuIds) : ICommand;
+    bool IsDisabled) : ICommand;
 
 public class UpdateRoleInfoCommandValidator : AbstractValidator<UpdateRoleInfoCommand>
 {
@@ -30,9 +29,6 @@ public class UpdateRoleInfoCommandValidator : AbstractValidator<UpdateRoleInfoCo
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("角色描述不能为空")
             .MaximumLength(200).WithMessage("角色描述不能超过200个字符");
-
-        RuleFor(x => x.AssignedMenuIds)
-            .NotNull().WithMessage("角色菜单列表不能为空");
     }
 }
 
@@ -44,6 +40,6 @@ public class UpdateRoleInfoCommandHandler(IRoleRepository roleRepository)
         var role = await roleRepository.GetAsync(request.RoleId, cancellationToken)
                    ?? throw new KnownException($"未找到角色，RoleId = {request.RoleId}");
         
-        role.UpdateRoleInfo(request.Name, request.Description, request.IsDisabled, request.AssignedMenuIds);
+        role.UpdateRoleInfo(request.Name, request.Description, request.IsDisabled);
     }
 }

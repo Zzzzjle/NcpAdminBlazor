@@ -22,8 +22,7 @@ public class GetRoleInfoQueryHandler(ApplicationDbContext context)
     {
         var roleInfo = await context.Roles
             .Where(r => r.Id == request.RoleId)
-            .Include(r => r.AssignedMenuIds)
-            .Select(r => new RoleInfoResponse(r.Id, r.Name, r.Description, r.IsDisabled, r.AssignedMenuIds.ToList()))
+            .Select(r => new RoleInfoResponse(r.Id, r.Name, r.Description, r.IsDisabled))
             .FirstOrDefaultAsync(cancellationToken);
 
         return roleInfo ?? throw new KnownException($"未找到角色，RoleId = {request.RoleId}");

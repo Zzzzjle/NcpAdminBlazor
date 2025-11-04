@@ -1,5 +1,4 @@
 using FastEndpoints;
-using NcpAdminBlazor.Domain.AggregatesModel.MenuAggregate;
 using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using NcpAdminBlazor.Web.Application.Commands.RolesManagement;
 
@@ -16,8 +15,7 @@ public sealed class UpdateRoleInfoEndpoint(IMediator mediator)
 
     public override async Task HandleAsync(UpdateRoleInfoRequest req, CancellationToken ct)
     {
-        var command =
-            new UpdateRoleInfoCommand(req.RoleId, req.Name, req.Description, req.IsDisabled, req.AssignedMenuIds);
+        var command = new UpdateRoleInfoCommand(req.RoleId, req.Name, req.Description, req.IsDisabled);
         await mediator.Send(command, ct);
         await Send.OkAsync(true.AsResponseData(), ct);
     }
@@ -29,7 +27,6 @@ public sealed class UpdateRoleInfoRequest
     public string Name { get; init; } = string.Empty;
     public string Description { get; init; } = string.Empty;
     public bool IsDisabled { get; init; } = false;
-    public List<MenuId> AssignedMenuIds { get; init; } = [];
 }
 
 public sealed class UpdateRoleInfoRequestValidator : AbstractValidator<UpdateRoleInfoRequest>

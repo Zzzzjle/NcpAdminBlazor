@@ -70,8 +70,7 @@ public class UsersManagementTests(AuthenticatedAppFixture app, UsersManagementTe
         var roleRequest = new CreateRoleRequest
         {
             Name = $"Auto Role {uniqueSuffix}",
-            Description = "Role for create user test",
-            AssignedMenuIds = []
+            Description = "Role for create user test"
         };
 
         var (roleRsp, roleRes) = await app.AuthenticatedClient

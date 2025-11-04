@@ -1,5 +1,4 @@
 using FastEndpoints;
-using NcpAdminBlazor.Domain.AggregatesModel.MenuAggregate;
 using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using NcpAdminBlazor.Web.Application.Commands.RolesManagement;
 
@@ -19,8 +18,7 @@ public sealed class CreateRoleEndpoint(IMediator mediator)
         var command = new CreateRoleCommand(
             req.Name,
             req.Description,
-            req.IsDisabled,
-            req.AssignedMenuIds);
+            req.IsDisabled);
 
         var roleId = await mediator.Send(command, ct);
         await Send.OkAsync(new CreateRoleResponse(roleId).AsResponseData(), ct);
@@ -32,7 +30,6 @@ public sealed class CreateRoleRequest
     public string Name { get; init; } = string.Empty;
     public string Description { get; init; } = string.Empty;
     public bool IsDisabled { get; init; } = false;
-    public List<MenuId> AssignedMenuIds { get; init; } = [];
 }
 
 public sealed record CreateRoleResponse(RoleId RoleId);
@@ -48,8 +45,5 @@ public sealed class CreateRoleRequestValidator : AbstractValidator<CreateRoleReq
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("角色描述不能为空")
             .MaximumLength(200).WithMessage("角色描述不能超过200个字符");
-
-        RuleFor(x => x.AssignedMenuIds)
-            .NotNull().WithMessage("菜单ID列表不能为空");
     }
 }

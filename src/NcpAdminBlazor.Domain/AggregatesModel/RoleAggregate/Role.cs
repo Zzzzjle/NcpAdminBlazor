@@ -20,23 +20,27 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate
         public Deleted IsDeleted { get; private set; } = false;
         public DeletedTime DeletedAt { get; private set; } = new(DateTimeOffset.MinValue);
 
-        public Role(string name, string description, bool isDisabled, ICollection<MenuId> assignedMenuIds)
+        public Role(string name, string description, bool isDisabled)
         {
             CreatedAt = DateTimeOffset.Now;
             Name = name;
             Description = description;
             IsDisabled = isDisabled;
-            AssignedMenuIds = assignedMenuIds;
+            AssignedMenuIds = [];
         }
 
-        public void UpdateRoleInfo(string name, string description, bool isDisabled,
-            ICollection<MenuId> assignedMenuIds)
+        public void UpdateRoleInfo(string name, string description, bool isDisabled)
         {
             Name = name;
             Description = description;
             IsDisabled = isDisabled;
-            AssignedMenuIds = assignedMenuIds;
             AddDomainEvent(new RoleInfoChangedDomainEvent(this));
+        }
+
+        public void UpdateMenus(ICollection<MenuId> menuIds)
+        {
+            AssignedMenuIds = menuIds;
+            AddDomainEvent(new RoleMenusChangedDomainEvent(this));
         }
 
         public void Delete()

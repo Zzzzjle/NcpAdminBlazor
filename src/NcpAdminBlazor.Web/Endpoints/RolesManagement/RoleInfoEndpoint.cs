@@ -1,5 +1,4 @@
 using FastEndpoints;
-using NcpAdminBlazor.Domain.AggregatesModel.MenuAggregate;
 using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using NcpAdminBlazor.Web.Application.Queries.RolesManagement;
 
@@ -31,8 +30,7 @@ public sealed record RoleInfoResponse(
     RoleId RoleId,
     string Name,
     string Description,
-    bool IsDisabled,
-    List<MenuId> AssignedMenuIds);
+    bool IsDisabled);
 
 public sealed class RoleInfoRequestValidator : AbstractValidator<RoleInfoRequest>
 {

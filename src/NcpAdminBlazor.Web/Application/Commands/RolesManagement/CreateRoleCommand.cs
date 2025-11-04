@@ -8,8 +8,7 @@ namespace NcpAdminBlazor.Web.Application.Commands.RolesManagement;
 public record CreateRoleCommand(
     string Name,
     string Description,
-    bool IsDisable,
-    List<MenuId> AssignedMenuIds) : ICommand<RoleId>;
+    bool IsDisable) : ICommand<RoleId>;
 
 public class CreateRoleCommandValidator : AbstractValidator<CreateRoleCommand>
 {
@@ -25,9 +24,6 @@ public class CreateRoleCommandValidator : AbstractValidator<CreateRoleCommand>
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("角色描述不能为空")
             .MaximumLength(200).WithMessage("角色描述不能超过200个字符");
-
-        RuleFor(x => x.AssignedMenuIds)
-            .NotNull().WithMessage("角色菜单列表不能为空");
     }
 }
 
@@ -36,7 +32,7 @@ public class CreateRoleCommandHandler(IRoleRepository roleRepository)
 {
     public async Task<RoleId> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
     {
-        var role = new Role(request.Name, request.Description, request.IsDisable, request.AssignedMenuIds);
+        var role = new Role(request.Name, request.Description, request.IsDisable);
         await roleRepository.AddAsync(role, cancellationToken);
         return role.Id;
     }
