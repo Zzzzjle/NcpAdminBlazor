@@ -3,7 +3,10 @@ using NcpAdminBlazor.Domain.DomainEvents;
 
 namespace NcpAdminBlazor.Domain.AggregatesModel.MenuAggregate;
 
-public partial record MenuId : IGuidStronglyTypedId;
+public partial record MenuId : IGuidStronglyTypedId
+{
+    public static MenuId Root => new(Guid.Empty);
+}
 
 public class Menu : Entity<MenuId>, IAggregateRoot, ISoftDeletable
 {
@@ -11,7 +14,7 @@ public class Menu : Entity<MenuId>, IAggregateRoot, ISoftDeletable
     {
     }
 
-    public MenuId? ParentId { get; private set; }
+    public MenuId ParentId { get; private set; } = MenuId.Root;
     public string Title { get; private set; } = string.Empty;
     public string Icon { get; private set; } = string.Empty;
     public string PageKey { get; private set; } = string.Empty;
@@ -24,7 +27,7 @@ public class Menu : Entity<MenuId>, IAggregateRoot, ISoftDeletable
     public DeletedTime DeletedAt { get; private set; } = new(DateTimeOffset.MinValue);
 
     public Menu(
-        MenuId? parentId,
+        MenuId parentId,
         string title,
         MenuType type,
         int order,
@@ -46,7 +49,7 @@ public class Menu : Entity<MenuId>, IAggregateRoot, ISoftDeletable
     }
 
     public void Update(
-        MenuId? parentId,
+        MenuId parentId,
         string title,
         MenuType type,
         int order,
