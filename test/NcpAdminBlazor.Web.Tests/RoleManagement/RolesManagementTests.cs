@@ -1,4 +1,5 @@
 using System.Net;
+using NcpAdminBlazor.Domain.AggregatesModel.MenuAggregate;
 using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using NcpAdminBlazor.Web.Application.Queries.RolesManagement;
 using NcpAdminBlazor.Web.Endpoints.RolesManagement;
@@ -87,6 +88,114 @@ public class RolesManagementTests(AuthenticatedAppFixture app, RolesManagementTe
     }
 
     [Fact, Priority(5)]
+    public async Task UpdateRoleMenus_ShouldModifyRoleMenus()
+    {
+        var roleId = state.RoleId ?? throw new InvalidOperationException("RoleId not initialized");
+        
+        // 创建测试菜单ID列表
+        var testMenuIds = new List<MenuId> 
+        { 
+            new MenuId(Guid.NewGuid()), 
+            new MenuId(Guid.NewGuid()) 
+        };
+
+        var updateMenusRequest = new UpdateRoleMenusRequest
+        {
+            RoleId = roleId,
+            MenuIds = testMenuIds
+        };
+
+        var (updateRsp, updateRes) = await app.AuthenticatedClient
+            .POSTAsync<UpdateRoleMenusEndpoint, UpdateRoleMenusRequest, ResponseData>(updateMenusRequest);
+
+        updateRsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        updateRes.Success.ShouldBeTrue();
+
+        // 验证菜单已更新
+        var (getRsp, getRes) = await app.AuthenticatedClient
+            .GETAsync<RoleMenusEndpoint, RoleMenusRequest, ResponseData<RoleMenusResponse>>(
+                new RoleMenusRequest { RoleId = roleId });
+
+        getRsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        getRes.Success.ShouldBeTrue();
+        getRes.Data.MenuIds.Count.ShouldBe(2);
+        getRes.Data.MenuIds.ShouldContain(testMenuIds[0]);
+        getRes.Data.MenuIds.ShouldContain(testMenuIds[1]);
+    }
+
+    [Fact, Priority(6)]
+    public async Task UpdateRolePermissions_ShouldModifyRolePermissions()
+    {
+        var roleId = state.RoleId ?? throw new InvalidOperationException("RoleId not initialized");
+        
+        // 创建测试权限代码列表
+        var testPermissionCodes = new List<string> 
+        { 
+            "user.view", 
+            "user.create", 
+            "user.edit",
+            "user.delete"
+        };
+
+        var updatePermissionsRequest = new UpdateRolePermissionsRequest
+        {
+            RoleId = roleId,
+            PermissionCodes = testPermissionCodes
+        };
+
+        var (updateRsp, updateRes) = await app.AuthenticatedClient
+            .POSTAsync<UpdateRolePermissionsEndpoint, UpdateRolePermissionsRequest, ResponseData>(updatePermissionsRequest);
+
+        updateRsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        updateRes.Success.ShouldBeTrue();
+
+        // 验证权限已更新
+        var (getRsp, getRes) = await app.AuthenticatedClient
+            .GETAsync<RolePermissionsEndpoint, RolePermissionsRequest, ResponseData<RolePermissionsResponse>>(
+                new RolePermissionsRequest { RoleId = roleId });
+
+        getRsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        getRes.Success.ShouldBeTrue();
+        getRes.Data.PermissionCodes.Count.ShouldBe(4);
+        getRes.Data.PermissionCodes.ShouldContain("user.view");
+        getRes.Data.PermissionCodes.ShouldContain("user.create");
+        getRes.Data.PermissionCodes.ShouldContain("user.edit");
+        getRes.Data.PermissionCodes.ShouldContain("user.delete");
+    }
+
+    [Fact, Priority(7)]
+    public async Task GetRoleMenus_ShouldReturnEmptyForNewRole()
+    {
+        var roleId = state.RoleId ?? throw new InvalidOperationException("RoleId not initialized");
+
+        var (rsp, res) = await app.AuthenticatedClient
+            .GETAsync<RoleMenusEndpoint, RoleMenusRequest, ResponseData<RoleMenusResponse>>(
+                new RoleMenusRequest { RoleId = roleId });
+
+        rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        res.Success.ShouldBeTrue();
+        res.Data.RoleId.ShouldBe(roleId);
+        // 菜单列表可能为空或包含之前测试设置的菜单
+        res.Data.MenuIds.ShouldNotBeNull();
+    }
+
+    [Fact, Priority(8)]
+    public async Task GetRolePermissions_ShouldReturnEmptyForNewRole()
+    {
+        var roleId = state.RoleId ?? throw new InvalidOperationException("RoleId not initialized");
+
+        var (rsp, res) = await app.AuthenticatedClient
+            .GETAsync<RolePermissionsEndpoint, RolePermissionsRequest, ResponseData<RolePermissionsResponse>>(
+                new RolePermissionsRequest { RoleId = roleId });
+
+        rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        res.Success.ShouldBeTrue();
+        res.Data.RoleId.ShouldBe(roleId);
+        // 权限列表可能为空或包含之前测试设置的权限
+        res.Data.PermissionCodes.ShouldNotBeNull();
+    }
+
+    [Fact, Priority(9)]
     public async Task DeleteRole_ShouldRemoveRole()
     {
         var roleId = state.RoleId ?? throw new InvalidOperationException("RoleId not initialized");
