@@ -40,7 +40,6 @@ public class GetUserListQueryHandler(ApplicationDbContext context)
     public async Task<PagedData<UserListItemDto>> Handle(GetUserListQuery request, CancellationToken cancellationToken)
     {
         var usersQuery = context.Users
-            .Include(u => u.AssignedRoleIds)
             .Where(u => !u.IsDeleted)
             .WhereIf(!string.IsNullOrEmpty(request.Username), u => u.Username.Contains(request.Username!))
             .WhereIf(!string.IsNullOrEmpty(request.Email), u => u.Email.Contains(request.Email!))

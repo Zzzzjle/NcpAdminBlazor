@@ -6,6 +6,7 @@
 @inject ApiWrapper ApiWrapper
 
 <AppFormDrawer @bind-Open="Open"
+               @bind-Open:after="()=>OpenChanged.InvokeAsync(Open)"
                Title="编辑用户"
                OnClose="@CloseDrawerAsync"
                OnPrimaryAction="@HandleSaveAsync"
@@ -61,6 +62,11 @@
         LoadModel();
     }
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+
     async Task HandleSaveAsync()
     {
         if (_saving)
@@ -97,7 +103,7 @@
                 return;
             }
 
-            await CloseDrawerAsync();
+            CloseDrawerAsync();
             if (OnSaved.HasDelegate)
             {
                 await OnSaved.InvokeAsync(editingUserId);
@@ -110,7 +116,7 @@
         }
     }
 
-    async Task CloseDrawerAsync()
+    void CloseDrawerAsync()
     {
         if (!Open)
         {
@@ -118,7 +124,7 @@
         }
 
         Open = false;
-        await OpenChanged.InvokeAsync(Open);
+        OpenChanged.InvokeAsync(Open);
     }
 
     void LoadModel()

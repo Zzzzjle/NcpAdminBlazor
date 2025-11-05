@@ -7,6 +7,7 @@
 @inject ApiWrapper ApiWrapper
 
 <AppFormDrawer @bind-Open="Open"
+               @bind-Open:after="()=>OpenChanged.InvokeAsync(Open)"
                Title="编辑角色"
                OnClose="@CloseDrawerAsync"
                OnPrimaryAction="@HandleSaveAsync"
@@ -22,7 +23,10 @@
                       @bind-Value="_model.Description"
                       Required="true"
                       For="@(() => _model.Description)"/>
-        <MudSwitch T="bool" @bind-Value="_model.IsDisable" Color="Color.Primary">启用</MudSwitch>
+        <MudRadioGroup @bind-Value="_model.IsDisable">
+            <MudRadio Value="false" Color="Color.Primary">启用</MudRadio>
+            <MudRadio Value="true" Color="Color.Default">禁用</MudRadio>
+        </MudRadioGroup>
     </MudForm>
 </AppFormDrawer>
 
@@ -37,7 +41,6 @@
     [Parameter] public required RoleListItemDto? EditingItem { get; set; }
 
     bool _saving;
-    string? _editingRoleId;
     MudForm _form = null!;
     readonly RoleFormModel _model = new();
     readonly RoleEditModelValidator _validator = new();
@@ -55,14 +58,7 @@
             return;
         }
 
-        var roleIdValue = EditingItem.RoleId;
-        if (string.IsNullOrWhiteSpace(roleIdValue) || !long.TryParse(roleIdValue, out _))
-        {
-            Console.WriteLine($"无效的角色ID：{EditingItem.RoleId}");
-            return;
-        }
-
-        await LoadRoleAsync(roleIdValue, EditingItem);
+        await LoadRoleAsync();
     }
 
     async Task HandleSaveAsync()
@@ -78,9 +74,10 @@
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(_editingRoleId))
+        var roleId = EditingItem?.RoleId;
+        if (string.IsNullOrEmpty(roleId))
         {
-            Console.WriteLine("无效的角色ID");
+            Console.WriteLine("编辑角色ID为空");
             return;
         }
 
@@ -96,12 +93,12 @@
                 IsDisabled = _model.IsDisable,
             };
 
-            await ApiWrapper.HandleCallAsync(apiClient => apiClient.Api.Roles[_editingRoleId].Info.PostAsync(infoRequest));
+            await ApiWrapper.HandleCallAsync(apiClient => apiClient.Api.Roles[roleId].Info.PostAsync(infoRequest));
 
             await CloseDrawerAsync();
             if (OnSaved.HasDelegate)
             {
-                await OnSaved.InvokeAsync(_editingRoleId);
+                await OnSaved.InvokeAsync(roleId);
             }
         }
         finally
@@ -111,14 +108,19 @@
         }
     }
 
-    async Task LoadRoleAsync(string roleIdPath, RoleListItemDto item)
+    async Task LoadRoleAsync()
     {
-        _editingRoleId = roleIdPath;
-        _model.Name = item.Name ?? string.Empty;
-        _model.Description = item.Description ?? string.Empty;
-        _model.IsDisable = item.IsDisabled ?? false;
+        if (EditingItem is null)
+        {
+            return;
+        }
+
+        var editingRoleId = EditingItem.RoleId;
+        _model.Name = EditingItem.Name ?? string.Empty;
+        _model.Description = EditingItem.Description ?? string.Empty;
+        _model.IsDisable = EditingItem.IsDisabled ?? false;
         await ApiWrapper.HandleCallAsync(
-            apiClient => apiClient.Api.Roles[roleIdPath].Info.GetAsync(),
+            apiClient => apiClient.Api.Roles[editingRoleId].Info.GetAsync(),
             response =>
             {
                 if (response is not { Data: not null })

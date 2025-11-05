@@ -38,7 +38,7 @@
             <CellTemplate>
                 <MudChip T="string" Color="@(context.Item.IsDisabled is false ? Color.Success : Color.Default)"
                          Size="Size.Small" Variant="Variant.Filled">
-                    @(context.Item.IsDisabled is false ? "启用" : "停用")
+                    @(context.Item.IsDisabled is false ? "启用" : "禁用")
                 </MudChip>
             </CellTemplate>
         </TemplateColumn>

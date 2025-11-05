@@ -94,6 +94,11 @@
         return data;
     }
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+
     private Task OnResetAsync()
     {
         _filter.Username = null;

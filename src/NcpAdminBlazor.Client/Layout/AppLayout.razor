@@ -49,9 +49,9 @@
     </MudDrawer>
     <MudMainContent Class="flex flex-col overflow-hidden">
         <PageTabs @ref="_pageTabs"/>
-        <PageContainer PageTabs="_pageTabs">
+        <MudContainer Class="p-4 overflow-auto grow">
             @Body
-        </PageContainer>
+        </MudContainer>
     </MudMainContent>
 </MudLayout>
 

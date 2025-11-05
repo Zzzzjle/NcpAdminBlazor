@@ -5,6 +5,7 @@
 @inject ApiWrapper ApiWrapper
 
 <AppFormDrawer @bind-Open="Open"
+               @bind-Open:after="()=>OpenChanged.InvokeAsync(Open)"
                Title="新增用户"
                OnClose="@CloseDrawerAsync"
                OnPrimaryAction="@HandleSaveAsync"

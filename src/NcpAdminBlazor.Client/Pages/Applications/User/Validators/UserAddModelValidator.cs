@@ -3,7 +3,7 @@ using NcpAdminBlazor.Client.Models;
 
 namespace NcpAdminBlazor.Client.Pages.Applications.User.Validators;
 
-public class UserAddModelValidator : FormModelValidator<NcpAdminBlazorWebEndpointsUsersCreateUserRequest>
+public class UserAddModelValidator : FormModelValidator<NcpAdminBlazorWebEndpointsUsersManagementCreateUserRequest>
 {
     public UserAddModelValidator()
     {

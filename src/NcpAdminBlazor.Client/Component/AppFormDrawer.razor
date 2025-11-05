@@ -2,6 +2,7 @@
 @namespace NcpAdminBlazor.Client.Component
 
 <MudDrawer @bind-Open="Open"
+           @bind-Open:after="()=>OpenChanged.InvokeAsync(Open)"
            Anchor="Anchor.End"
            Variant="DrawerVariant.Temporary"
            Elevation="1"
@@ -65,9 +66,10 @@
     public string? Title { get; set; }
 
     /// <summary>
-    /// Width of the drawer; defaults to "600px".
+    /// Width of the drawer; defaults to "400px".
     /// </summary>
-    public string? Width { get; set; } = "600px";
+    [Parameter]
+    public string? Width { get; set; } = "400px";
 
     /// <summary>
     /// Main content of the drawer, typically a form for editing entity data.
@@ -156,15 +158,8 @@
             await OnClose.InvokeAsync();
         }
 
-        await SetOpenAsync(false);
-    }
-
-    private async Task SetOpenAsync(bool open)
-    {
-        if (OpenChanged.HasDelegate)
-        {
-            await OpenChanged.InvokeAsync(open);
-        }
+        Open = false;
+        await OpenChanged.InvokeAsync(Open);
     }
 
 }
