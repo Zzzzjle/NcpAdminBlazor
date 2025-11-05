@@ -56,14 +56,14 @@
             {
                 <TemplateColumn Title="@ActionColumnTitle" StickyRight="@ActionColumnStickyRight">
                     <CellTemplate Context="context">
-                        @if (ActionTemplate is not null)
-                        {
-                            @ActionTemplate(context.Item)
-                        }
-                        else
-                        {
-                            <MudStack Row Spacing="1">
-                                @if (ShowEditButton)
+                        <MudStack Row Spacing="1">
+                            @if (ShowEditButton)
+                            {
+                                if (EditActionTemplate is not null)
+                                {
+                                    @EditActionTemplate(context.Item)
+                                }
+                                else
                                 {
                                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                                    Size="Size.Small"
@@ -71,17 +71,17 @@
                                                    Disabled="@EditButtonDisabled"
                                                    OnClick="@CreateEditCallback(context.Item)"/>
                                 }
+                            }
 
-                                @if (ShowDeleteButton)
-                                {
-                                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                                   Size="Size.Small"
-                                                   Color="@Color.Error"
-                                                   Disabled="@DeleteButtonDisabled"
-                                                   OnClick="@CreateDeleteCallback(context.Item)"/>
-                                }
-                            </MudStack>
-                        }
+                            @if (ShowDeleteButton)
+                            {
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                               Size="Size.Small"
+                                               Color="@Color.Error"
+                                               Disabled="@DeleteButtonDisabled"
+                                               OnClick="@CreateDeleteCallback(context.Item)"/>
+                            }
+                        </MudStack>
                     </CellTemplate>
                 </TemplateColumn>
             }
@@ -155,7 +155,7 @@
 
     [Parameter] public EventCallback<T> OnDelete { get; set; }
 
-    [Parameter] public RenderFragment<T>? ActionTemplate { get; set; }
+    [Parameter] public RenderFragment<T>? EditActionTemplate { get; set; }
 
     [Parameter] public bool HidePager { get; set; }
 

@@ -30,33 +30,38 @@
                  ServerData="ServerReload"
                  ActionColumnTitle="操作"
                  OnAdd="@OpenCreateDrawerAsync"
-                 OnEdit="@OnEditRole"
                  @bind-SearchOpen="_searchOpen">
-        <PropertyColumn Property="x => x.Name" Title="角色名称"/>
-        <PropertyColumn Property="x => x.Description" Title="角色描述"/>
-        <TemplateColumn Title="状态">
-            <CellTemplate>
-                <MudChip T="string" Color="@(context.Item.IsDisabled is false ? Color.Success : Color.Default)"
-                         Size="Size.Small" Variant="Variant.Filled">
-                    @(context.Item.IsDisabled is false ? "启用" : "禁用")
-                </MudChip>
-            </CellTemplate>
-        </TemplateColumn>
-        <TemplateColumn Title="创建时间">
-            <CellTemplate>
-                @(context.Item.CreatedAt?.ToLocalTime().ToString("yyyy-MM-dd HH:mm") ?? string.Empty)
-            </CellTemplate>
-        </TemplateColumn>
+        <ChildContent>
+            <PropertyColumn Property="x => x.Name" Title="角色名称"/>
+            <PropertyColumn Property="x => x.Description" Title="角色描述"/>
+            <TemplateColumn Title="状态">
+                <CellTemplate>
+                    <MudChip T="string" Color="@(context.Item.IsDisabled is false ? Color.Success : Color.Default)"
+                             Size="Size.Small" Variant="Variant.Filled">
+                        @(context.Item.IsDisabled is false ? "启用" : "禁用")
+                    </MudChip>
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="创建时间">
+                <CellTemplate>
+                    @(context.Item.CreatedAt?.ToLocalTime().ToString("yyyy-MM-dd HH:mm") ?? string.Empty)
+                </CellTemplate>
+            </TemplateColumn>
+        </ChildContent>
+        <EditActionTemplate Context="row">
+            <MudMenu Icon="@Icons.Material.Filled.Edit" Dense Size="Size.Small" Color="@Color.Primary">
+                <MudMenuItem Label="编辑" OnClick="@(() => OnEditRole(row))"/>
+                <MudMenuItem Label="设置权限"/>
+            </MudMenu>
+        </EditActionTemplate>
     </AppDataGrid>
 
     <RoleEditDrawer
         @bind-Open="_editDrawerOpen"
         EditingItem="_editingItem"
-        PermissionOptions="_permissionOptions"
         OnSaved="HandleRoleUpdatedAsync"/>
     <RoleAddDrawer
         @bind-Open="_addDrawerOpen"
-        PermissionOptions="_permissionOptions"
         OnSaved="HandleRoleCreatedAsync"/>
 </MudStack>
 
@@ -71,8 +76,6 @@
     bool _editDrawerOpen;
     bool _addDrawerOpen;
     RoleListItemDto? _editingItem;
-    readonly List<string> _permissionOptions = AppPermissions.GetAllPermissionKeys().ToList();
-
 
     private async Task<GridData<RoleListItemDto>> ServerReload(GridState<RoleListItemDto> state)
     {
