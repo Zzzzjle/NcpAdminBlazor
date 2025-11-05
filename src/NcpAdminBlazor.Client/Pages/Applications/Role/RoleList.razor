@@ -3,7 +3,7 @@
 @using System.Linq
 @using NcpAdminBlazor.Client.Component
 @using NcpAdminBlazor.Client.HttpClient
-@using RoleListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesRolesRoleListItemDto
+@using RoleListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesRolesManagementRoleListItemDto
 @using NcpAdminBlazor.Client.Pages.Applications.Role.Components
 @using NcpAdminBlazor.Client.Pages.Applications.Role.Models
 @using NcpAdminBlazor.Shared.Auth
@@ -19,12 +19,6 @@
                               Clearable="true"
                               Placeholder="请输入角色名称"
                               @attributes="itemAttrs"/>
-            </QueryFormItem>
-            <QueryFormItem Label="状态">
-                <MudSelect T="int?" @bind-Value="_filter.Status" Clearable="true" @attributes="itemAttrs">
-                    <MudSelectItem T="int?" Value="@(0)">启用</MudSelectItem>
-                    <MudSelectItem T="int?" Value="@(1)">停用</MudSelectItem>
-                </MudSelect>
             </QueryFormItem>
         </QueryForm>
     </ShouldDisplay>
@@ -42,9 +36,9 @@
         <PropertyColumn Property="x => x.Description" Title="角色描述"/>
         <TemplateColumn Title="状态">
             <CellTemplate>
-                <MudChip T="string" Color="@(context.Item.Status is 1 ? Color.Success : Color.Default)"
+                <MudChip T="string" Color="@(context.Item.IsDisabled is false ? Color.Success : Color.Default)"
                          Size="Size.Small" Variant="Variant.Filled">
-                    @(context.Item.Status is 1 ? "启用" : "停用")
+                    @(context.Item.IsDisabled is false ? "启用" : "停用")
                 </MudChip>
             </CellTemplate>
         </TemplateColumn>
@@ -93,7 +87,6 @@
             apiClient => apiClient.Api.Roles.GetAsync(configure =>
             {
                 configure.QueryParameters.Name = _filter.Name;
-                configure.QueryParameters.Status = _filter.Status;
                 configure.QueryParameters.PageIndex = state.Page + 1;
                 configure.QueryParameters.PageSize = pageSize;
                 configure.QueryParameters.CountTotal = true;
@@ -115,7 +108,6 @@
     private Task OnResetAsync()
     {
         _filter.Name = null;
-        _filter.Status = null;
         return Task.CompletedTask;
     }
 
@@ -135,7 +127,7 @@
         _addDrawerOpen = true;
         return Task.CompletedTask;
     }
-    
+
     private Task HandleRoleCreatedAsync()
     {
         return _dataGrid.ReloadServerData();

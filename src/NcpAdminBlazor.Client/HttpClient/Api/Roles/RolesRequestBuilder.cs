@@ -35,7 +35,7 @@ namespace NcpAdminBlazor.Client.Api.Roles
         /// </summary>
         /// <param name="pathParameters">Path parameters for the request</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public RolesRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/api/roles?countTotal={countTotal}&pageIndex={pageIndex}&pageSize={pageSize}{&name*,status*}", pathParameters)
+        public RolesRequestBuilder(Dictionary<string, object> pathParameters, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/api/roles?countTotal={countTotal}&pageIndex={pageIndex}&pageSize={pageSize}{&name*}", pathParameters)
         {
         }
         /// <summary>
@@ -43,7 +43,7 @@ namespace NcpAdminBlazor.Client.Api.Roles
         /// </summary>
         /// <param name="rawUrl">The raw URL to use for the request builder.</param>
         /// <param name="requestAdapter">The request adapter to use to execute the requests.</param>
-        public RolesRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/api/roles?countTotal={countTotal}&pageIndex={pageIndex}&pageSize={pageSize}{&name*,status*}", rawUrl)
+        public RolesRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/api/roles?countTotal={countTotal}&pageIndex={pageIndex}&pageSize={pageSize}{&name*}", rawUrl)
         {
         }
         /// <returns>A <see cref="global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfPagedDataOfRoleListItemDto"/></returns>
@@ -67,11 +67,11 @@ namespace NcpAdminBlazor.Client.Api.Roles
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfCreateRoleResponse?> PostAsync(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesCreateRoleRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfCreateRoleResponse?> PostAsync(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementCreateRoleRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfCreateRoleResponse> PostAsync(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesCreateRoleRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfCreateRoleResponse> PostAsync(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementCreateRoleRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             _ = body ?? throw new ArgumentNullException(nameof(body));
@@ -99,11 +99,11 @@ namespace NcpAdminBlazor.Client.Api.Roles
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesCreateRoleRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementCreateRoleRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesCreateRoleRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementCreateRoleRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             _ = body ?? throw new ArgumentNullException(nameof(body));
@@ -142,8 +142,6 @@ namespace NcpAdminBlazor.Client.Api.Roles
             public int? PageIndex { get; set; }
             [QueryParameter("pageSize")]
             public int? PageSize { get; set; }
-            [QueryParameter("status")]
-            public int? Status { get; set; }
         }
         /// <summary>
         /// Configuration for the request such as headers, query parameters, and middleware options.

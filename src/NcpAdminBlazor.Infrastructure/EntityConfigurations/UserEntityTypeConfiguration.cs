@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using NcpAdminBlazor.Domain.AggregatesModel.UserAggregate;
 
 namespace NcpAdminBlazor.Infrastructure.EntityConfigurations;
@@ -45,13 +46,13 @@ internal sealed class UserEntityTypeConfiguration : IEntityTypeConfiguration<Use
             .HasMaxLength(100)
             .HasComment("邮箱地址");
 
-        builder.HasMany(user => user.AssignedRoleIds)
-            .WithOne()
-            .HasForeignKey("UserId")
-            .IsRequired();
-
-        builder.Navigation(user => user.AssignedRoleIds)
-            .AutoInclude();
+        builder.Property(user => user.AssignedRoleIds)
+            .HasConversion(
+                v => string.Join(',', v.Select(id => id.Id.ToString())),
+                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => new RoleId(Guid.Parse(s)))
+                    .ToList())
+            .HasColumnType("text");
 
         builder.Property(user => user.RefreshToken)
             .IsRequired()

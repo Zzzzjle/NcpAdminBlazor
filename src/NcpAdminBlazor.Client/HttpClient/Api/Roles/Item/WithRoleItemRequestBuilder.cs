@@ -4,6 +4,7 @@ using Microsoft.Kiota.Abstractions.Extensions;
 using Microsoft.Kiota.Abstractions.Serialization;
 using Microsoft.Kiota.Abstractions;
 using NcpAdminBlazor.Client.Api.Roles.Item.Info;
+using NcpAdminBlazor.Client.Api.Roles.Item.Menus;
 using NcpAdminBlazor.Client.Api.Roles.Item.Permissions;
 using NcpAdminBlazor.Client.Models;
 using System.Collections.Generic;
@@ -23,6 +24,11 @@ namespace NcpAdminBlazor.Client.Api.Roles.Item
         public global::NcpAdminBlazor.Client.Api.Roles.Item.Info.InfoRequestBuilder Info
         {
             get => new global::NcpAdminBlazor.Client.Api.Roles.Item.Info.InfoRequestBuilder(PathParameters, RequestAdapter);
+        }
+        /// <summary>The menus property</summary>
+        public global::NcpAdminBlazor.Client.Api.Roles.Item.Menus.MenusRequestBuilder Menus
+        {
+            get => new global::NcpAdminBlazor.Client.Api.Roles.Item.Menus.MenusRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>The permissions property</summary>
         public global::NcpAdminBlazor.Client.Api.Roles.Item.Permissions.PermissionsRequestBuilder Permissions

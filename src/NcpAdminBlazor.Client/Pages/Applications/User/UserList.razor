@@ -2,7 +2,7 @@
 @attribute [Authorize]
 @using NcpAdminBlazor.Client.Component
 @using NcpAdminBlazor.Client.HttpClient
-@using UserListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUserListItemDto
+@using UserListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUsersManagementUserListItemDto
 @using NcpAdminBlazor.Client.Pages.Applications.User.Models
 @using NcpAdminBlazor.Client.Pages.Applications.User.Components
 
@@ -52,14 +52,6 @@
         <PropertyColumn Property="x => x.Email"/>
         <PropertyColumn Property="x => x.Phone"/>
         <PropertyColumn Property="x => x.RealName"/>
-        <TemplateColumn>
-            <CellTemplate>
-                @foreach (var role in context.Item?.RoleNames ?? [])
-                {
-                    <MudChip T="string" Color="Color.Info" Size="Size.Small" Class="ma-1">@role</MudChip>
-                }
-            </CellTemplate>
-        </TemplateColumn>
         <PropertyColumn Property="x => x.CreatedAt"/>
     </AppDataGrid>
     <UserEditDrawer @bind-Open="_editDrawerOpen"

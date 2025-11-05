@@ -33,20 +33,20 @@ namespace NcpAdminBlazor.Client.Api.Roles.Item.Permissions
         public PermissionsRequestBuilder(string rawUrl, IRequestAdapter requestAdapter) : base(requestAdapter, "{+baseurl}/api/roles/{roleId}/permissions", rawUrl)
         {
         }
-        /// <returns>A <see cref="global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfRolePermissionsDto"/></returns>
+        /// <returns>A <see cref="global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfRolePermissionsResponse"/></returns>
         /// <param name="cancellationToken">Cancellation token to use when cancelling requests</param>
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfRolePermissionsDto?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfRolePermissionsResponse?> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfRolePermissionsDto> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfRolePermissionsResponse> GetAsync(Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             var requestInfo = ToGetRequestInformation(requestConfiguration);
-            return await RequestAdapter.SendAsync<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfRolePermissionsDto>(requestInfo, global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfRolePermissionsDto.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
+            return await RequestAdapter.SendAsync<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfRolePermissionsResponse>(requestInfo, global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfRolePermissionsResponse.CreateFromDiscriminatorValue, default, cancellationToken).ConfigureAwait(false);
         }
         /// <returns>A <see cref="global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseData"/></returns>
         /// <param name="body">The request body</param>
@@ -54,11 +54,11 @@ namespace NcpAdminBlazor.Client.Api.Roles.Item.Permissions
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseData?> PostAsync(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesUpdateRolePermissionsRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseData?> PostAsync(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementUpdateRolePermissionsRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #nullable restore
 #else
-        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseData> PostAsync(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesUpdateRolePermissionsRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
+        public async Task<global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseData> PostAsync(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementUpdateRolePermissionsRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default, CancellationToken cancellationToken = default)
         {
 #endif
             _ = body ?? throw new ArgumentNullException(nameof(body));
@@ -86,11 +86,11 @@ namespace NcpAdminBlazor.Client.Api.Roles.Item.Permissions
         /// <param name="requestConfiguration">Configuration for the request such as headers, query parameters, and middleware options.</param>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public RequestInformation ToPostRequestInformation(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesUpdateRolePermissionsRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementUpdateRolePermissionsRequest body, Action<RequestConfiguration<DefaultQueryParameters>>? requestConfiguration = default)
         {
 #nullable restore
 #else
-        public RequestInformation ToPostRequestInformation(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesUpdateRolePermissionsRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
+        public RequestInformation ToPostRequestInformation(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementUpdateRolePermissionsRequest body, Action<RequestConfiguration<DefaultQueryParameters>> requestConfiguration = default)
         {
 #endif
             _ = body ?? throw new ArgumentNullException(nameof(body));

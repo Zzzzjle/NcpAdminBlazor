@@ -2,9 +2,8 @@
 @using NcpAdminBlazor.Client.Pages.Applications.Role.Models
 @using NcpAdminBlazor.Client.Pages.Applications.Role.Validators
 @using NcpAdminBlazor.Client.HttpClient
-@using RoleListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesRolesRoleListItemDto
-@using UpdateRoleInfoRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesUpdateRoleInfoRequest
-@using UpdateRolePermissionsRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesUpdateRolePermissionsRequest
+@using RoleListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesRolesManagementRoleListItemDto
+@using UpdateRoleInfoRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementUpdateRoleInfoRequest
 @inject ApiWrapper ApiWrapper
 
 <AppFormDrawer @bind-Open="Open"
@@ -23,16 +22,7 @@
                       @bind-Value="_model.Description"
                       Required="true"
                       For="@(() => _model.Description)"/>
-        <MudSwitch T="int" @bind-Value="_model.Status" Color="Color.Primary">启用</MudSwitch>
-        <MudSelect T="string"
-                   MultiSelection="true"
-                   @bind-SelectedValues="_model.PermissionCodes"
-                   Label="分配权限">
-            @foreach (var permission in PermissionOptions)
-            {
-                <MudSelectItem T="string" Value="@permission">@permission</MudSelectItem>
-            }
-        </MudSelect>
+        <MudSwitch T="bool" @bind-Value="_model.IsDisable" Color="Color.Primary">启用</MudSwitch>
     </MudForm>
 </AppFormDrawer>
 
@@ -103,31 +93,10 @@
             {
                 Name = _model.Name,
                 Description = _model.Description,
-                Status = _model.Status
+                IsDisabled = _model.IsDisable,
             };
 
-            var infoUpdated = await ApiWrapper.HandleCallAsync(
-                apiClient => apiClient.Api.Roles[_editingRoleId].Info.PostAsync(infoRequest));
-            if (!infoUpdated)
-            {
-                return;
-            }
-
-            var permissionsRequest = new UpdateRolePermissionsRequest
-            {
-                PermissionCodes = _model.PermissionCodes
-                    .Where(code => !string.IsNullOrWhiteSpace(code))
-                    .Select(code => code.Trim())
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .ToList()
-            };
-
-            var permissionsUpdated = await ApiWrapper.HandleCallAsync(
-                apiClient => apiClient.Api.Roles[_editingRoleId].Permissions.PostAsync(permissionsRequest));
-            if (!permissionsUpdated)
-            {
-                return;
-            }
+            await ApiWrapper.HandleCallAsync(apiClient => apiClient.Api.Roles[_editingRoleId].Info.PostAsync(infoRequest));
 
             await CloseDrawerAsync();
             if (OnSaved.HasDelegate)
@@ -147,7 +116,7 @@
         _editingRoleId = roleIdPath;
         _model.Name = item.Name ?? string.Empty;
         _model.Description = item.Description ?? string.Empty;
-        _model.Status = item.Status ?? 1;
+        _model.IsDisable = item.IsDisabled ?? false;
         await ApiWrapper.HandleCallAsync(
             apiClient => apiClient.Api.Roles[roleIdPath].Info.GetAsync(),
             response =>
@@ -159,23 +128,7 @@
 
                 _model.Name = response.Data.Name ?? _model.Name;
                 _model.Description = response.Data.Description ?? _model.Description;
-                _model.Status = response.Data.Status ?? _model.Status;
-            });
-
-        await ApiWrapper.HandleCallAsync(
-            apiClient => apiClient.Api.Roles[roleIdPath].Permissions.GetAsync(),
-            response =>
-            {
-                if (response is not { Data.PermissionCodes: { } permissionCodes })
-                {
-                    return;
-                }
-
-                _model.PermissionCodes = new HashSet<string>(
-                    permissionCodes
-                        .Where(code => !string.IsNullOrWhiteSpace(code))
-                        .Select(code => code.Trim()),
-                    StringComparer.OrdinalIgnoreCase);
+                _model.IsDisable = response.Data.IsDisabled ?? _model.IsDisable;
             });
     }
 

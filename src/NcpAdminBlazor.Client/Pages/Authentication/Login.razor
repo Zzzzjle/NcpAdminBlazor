@@ -76,7 +76,7 @@
             NcpAdminBlazorWebAspNetCoreMyTokenResponse? tokenData = null;
             var loginSucceeded = await ApiWrapper.HandleCallAsync(
                 apiClient => apiClient.Api.User.Login.PostAsync(
-                    new NcpAdminBlazorWebEndpointsUsersLoginRequest
+                    new NcpAdminBlazorWebEndpointsUsersManagementLoginRequest
                     {
                         Username = _model.LoginName,
                         Password = _model.Password

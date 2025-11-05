@@ -1,7 +1,7 @@
 @using NcpAdminBlazor.Client.Component
 @using NcpAdminBlazor.Client.Pages.Applications.User.Validators
 @using NcpAdminBlazor.Client.HttpClient
-@using CreateUserRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersCreateUserRequest
+@using CreateUserRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersManagementCreateUserRequest
 @inject ApiWrapper ApiWrapper
 
 <AppFormDrawer @bind-Open="Open"
@@ -32,7 +32,6 @@
                       @bind-Value="_model.RealName"
                       Required="true"
                       For="@(() => _model.RealName)"/>
-        <MudSwitch @bind-Value="_model.Status" Color="Color.Primary">启用</MudSwitch>
     </MudForm>
 </AppFormDrawer>
 
@@ -44,7 +43,7 @@
 
     bool _saving;
     MudForm? _form;
-    CreateUserRequest _model = new() { Status = 1, Password = string.Empty };
+    CreateUserRequest _model = new() { Password = string.Empty };
     readonly UserAddModelValidator _validator = new();
 
 
@@ -74,12 +73,10 @@
                 Password = _model.Password?.Trim(),
                 Email = _model.Email?.Trim(),
                 Phone = _model.Phone?.Trim(),
-                RealName = _model.RealName?.Trim(),
-                Status = _model.Status ?? 1
+                RealName = _model.RealName?.Trim()
             };
 
-            var created = await ApiWrapper.HandleCallAsync(
-                apiClient => apiClient.Api.User.PostAsync(request));
+            var created = await ApiWrapper.HandleCallAsync(apiClient => apiClient.Api.Users.PostAsync(request));
             if (!created)
             {
                 return;
@@ -114,7 +111,6 @@
     {
         _model = new CreateUserRequest
         {
-            Status = 1,
             Password = string.Empty
         };
     }

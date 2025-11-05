@@ -2,7 +2,7 @@
 @using NcpAdminBlazor.Client.Pages.Applications.Role.Models
 @using NcpAdminBlazor.Client.Pages.Applications.Role.Validators
 @using NcpAdminBlazor.Client.HttpClient
-@using CreateRoleRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesCreateRoleRequest
+@using CreateRoleRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementCreateRoleRequest
 @inject ApiWrapper ApiWrapper
 
 <AppFormDrawer @bind-Open="Open"
@@ -21,16 +21,7 @@
                       @bind-Value="_model.Description"
                       Required="true"
                       For="@(() => _model.Description)"/>
-        <MudSwitch T="int" @bind-Value="_model.Status" Color="Color.Primary">启用</MudSwitch>
-        <MudSelect T="string"
-                   MultiSelection="true"
-                   @bind-SelectedValues="_model.PermissionCodes"
-                   Label="分配权限">
-            @foreach (var permission in PermissionOptions)
-            {
-                <MudSelectItem T="string" Value="@permission">@permission</MudSelectItem>
-            }
-        </MudSelect>
+        <MudSwitch T="bool" @bind-Value="_model.IsDisable" Color="Color.Primary">禁用</MudSwitch>
     </MudForm>
 </AppFormDrawer>
 
@@ -69,16 +60,10 @@
             {
                 Name = _model.Name.Trim(),
                 Description = _model.Description.Trim(),
-                Status = _model.Status,
-                PermissionCodes = _model.PermissionCodes
-                    .Where(code => !string.IsNullOrWhiteSpace(code))
-                    .Select(code => code.Trim())
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .ToList()
+                IsDisabled = _model.IsDisable,
             };
 
-            var created = await ApiWrapper.HandleCallAsync(
-                apiClient => apiClient.Api.Roles.PostAsync(request));
+            var created = await ApiWrapper.HandleCallAsync(apiClient => apiClient.Api.Roles.PostAsync(request));
             if (!created)
             {
                 return;
@@ -97,7 +82,7 @@
             await InvokeAsync(StateHasChanged);
         }
     }
-    
+
     async Task CloseDrawerAsync()
     {
         if (!Open)
@@ -115,8 +100,7 @@
         {
             Name = string.Empty,
             Description = string.Empty,
-            Status = 1,
-            PermissionCodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            IsDisable = false
         };
     }
 

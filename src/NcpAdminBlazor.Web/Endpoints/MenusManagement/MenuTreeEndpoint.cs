@@ -5,7 +5,7 @@ using NcpAdminBlazor.Web.Application.Queries.MenusManagement;
 namespace NcpAdminBlazor.Web.Endpoints.MenusManagement;
 
 public sealed class MenuTreeEndpoint(IMediator mediator)
-    : Endpoint<MenuTreeRequest, ResponseData<List<MenuTreeNodeResponse>>>
+    : EndpointWithoutRequest<ResponseData<List<MenuTreeNodeResponse>>>
 {
     public override void Configure()
     {
@@ -13,22 +13,11 @@ public sealed class MenuTreeEndpoint(IMediator mediator)
         Description(d => d.WithTags("Menu"));
     }
 
-    public override async Task HandleAsync(MenuTreeRequest req, CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
         var query = new GetMenuTreeQuery();
         var tree = await mediator.Send(query, ct);
         await Send.OkAsync(tree.ToList().AsResponseData(), ct);
-    }
-}
-
-public sealed class MenuTreeRequest
-{
-}
-
-public sealed class MenuTreeRequestValidator : AbstractValidator<MenuTreeRequest>
-{
-    public MenuTreeRequestValidator()
-    {
     }
 }
 

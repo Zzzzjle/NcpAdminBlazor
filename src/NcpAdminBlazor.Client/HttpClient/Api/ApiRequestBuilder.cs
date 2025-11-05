@@ -2,8 +2,11 @@
 #pragma warning disable CS0618
 using Microsoft.Kiota.Abstractions.Extensions;
 using Microsoft.Kiota.Abstractions;
+using NcpAdminBlazor.Client.Api.Menus;
+using NcpAdminBlazor.Client.Api.Permissions;
 using NcpAdminBlazor.Client.Api.Roles;
 using NcpAdminBlazor.Client.Api.User;
+using NcpAdminBlazor.Client.Api.Users;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -16,6 +19,16 @@ namespace NcpAdminBlazor.Client.Api
     [global::System.CodeDom.Compiler.GeneratedCode("Kiota", "1.0.0")]
     public partial class ApiRequestBuilder : BaseRequestBuilder
     {
+        /// <summary>The menus property</summary>
+        public global::NcpAdminBlazor.Client.Api.Menus.MenusRequestBuilder Menus
+        {
+            get => new global::NcpAdminBlazor.Client.Api.Menus.MenusRequestBuilder(PathParameters, RequestAdapter);
+        }
+        /// <summary>The permissions property</summary>
+        public global::NcpAdminBlazor.Client.Api.Permissions.PermissionsRequestBuilder Permissions
+        {
+            get => new global::NcpAdminBlazor.Client.Api.Permissions.PermissionsRequestBuilder(PathParameters, RequestAdapter);
+        }
         /// <summary>The roles property</summary>
         public global::NcpAdminBlazor.Client.Api.Roles.RolesRequestBuilder Roles
         {
@@ -25,6 +38,11 @@ namespace NcpAdminBlazor.Client.Api
         public global::NcpAdminBlazor.Client.Api.User.UserRequestBuilder User
         {
             get => new global::NcpAdminBlazor.Client.Api.User.UserRequestBuilder(PathParameters, RequestAdapter);
+        }
+        /// <summary>The users property</summary>
+        public global::NcpAdminBlazor.Client.Api.Users.UsersRequestBuilder Users
+        {
+            get => new global::NcpAdminBlazor.Client.Api.Users.UsersRequestBuilder(PathParameters, RequestAdapter);
         }
         /// <summary>
         /// Instantiates a new <see cref="global::NcpAdminBlazor.Client.Api.ApiRequestBuilder"/> and sets the default values.

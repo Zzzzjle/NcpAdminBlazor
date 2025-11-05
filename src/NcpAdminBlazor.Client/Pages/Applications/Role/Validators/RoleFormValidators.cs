@@ -15,10 +15,6 @@ public class RoleAddModelValidator : FormModelValidator<RoleFormModel>
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("角色描述不能为空")
             .MaximumLength(200).WithMessage("角色描述长度不能超过200个字符");
-
-        RuleFor(x => x.Status)
-            .Must(status => status is 0 or 1)
-            .WithMessage("角色状态必须是0或1");
     }
 }
 
@@ -33,9 +29,5 @@ public class RoleEditModelValidator : FormModelValidator<RoleFormModel>
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("角色描述不能为空")
             .MaximumLength(200).WithMessage("角色描述长度不能超过200个字符");
-
-        RuleFor(x => x.Status)
-            .Must(status => status is 0 or 1)
-            .WithMessage("角色状态必须是0或1");
     }
 }

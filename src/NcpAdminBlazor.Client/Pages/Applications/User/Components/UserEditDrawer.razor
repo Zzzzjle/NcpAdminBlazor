@@ -1,8 +1,8 @@
 @using NcpAdminBlazor.Client.Component
 @using NcpAdminBlazor.Client.Pages.Applications.User.Validators
 @using NcpAdminBlazor.Client.HttpClient
-@using UpdateUserRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersUpdateUserRequest
-@using UserListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUserListItemDto
+@using UpdateUserRequest = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsUsersManagementUpdateUserRequest
+@using UserListItemDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUsersManagementUserListItemDto
 @inject ApiWrapper ApiWrapper
 
 <AppFormDrawer @bind-Open="Open"
@@ -41,7 +41,6 @@
     [Parameter] public EventCallback<bool> OpenChanged { get; set; }
 
     bool _saving;
-    string? _editingUserId;
     MudForm? _form;
     UpdateUserRequest _model = new() { Status = 1 };
     readonly UserEditModelValidator _validator = new();
@@ -78,11 +77,7 @@
             }
         }
 
-        if (string.IsNullOrWhiteSpace(_editingUserId) || !long.TryParse(_editingUserId, out var userId))
-        {
-            Console.WriteLine($"无效的用户ID：{_editingUserId}");
-            return;
-        }
+        var editingUserId = EditingItem?.Id;
 
         _saving = true;
         StateHasChanged();
@@ -94,11 +89,9 @@
                 Email = _model.Email?.Trim(),
                 Phone = _model.Phone?.Trim(),
                 RealName = _model.RealName?.Trim(),
-                Status = _model.Status ?? 1
             };
 
-            var updated = await ApiWrapper.HandleCallAsync(
-                apiClient => apiClient.Api.User[userId].Update.PostAsync(request));
+            var updated = await ApiWrapper.HandleCallAsync(apiClient => apiClient.Api.User[editingUserId].Update.PostAsync(request));
             if (!updated)
             {
                 return;
@@ -107,7 +100,7 @@
             await CloseDrawerAsync();
             if (OnSaved.HasDelegate)
             {
-                await OnSaved.InvokeAsync(_editingUserId);
+                await OnSaved.InvokeAsync(editingUserId);
             }
         }
         finally
@@ -136,14 +129,12 @@
             return;
         }
 
-        _editingUserId = EditingItem.Id;
         _model = new UpdateUserRequest
         {
             Username = EditingItem.Username,
             Email = EditingItem.Email,
             Phone = EditingItem.Phone,
             RealName = EditingItem.RealName,
-            Status = EditingItem.Status ?? 1
         };
     }
 
