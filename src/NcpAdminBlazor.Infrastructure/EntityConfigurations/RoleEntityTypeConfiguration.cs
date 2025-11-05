@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NcpAdminBlazor.Domain.AggregatesModel.MenuAggregate;
 using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 
 namespace NcpAdminBlazor.Infrastructure.EntityConfigurations;
@@ -33,15 +32,6 @@ internal sealed class RoleEntityTypeConfiguration : IEntityTypeConfiguration<Rol
         builder.Property(role => role.CreatedAt)
             .IsRequired()
             .HasComment("创建时间");
-
-        builder.Property(role => role.AssignedMenuIds)
-            .HasConversion(
-                v => string.Join(',', v.Select(id => id.Id.ToString())),
-                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(s => new MenuId(Guid.Parse(s)))
-                    .ToList())
-            .HasColumnType("text")
-            .HasComment("分配的菜单ID(逗号分隔)");
 
         builder.Property(role => role.AssignedPermissionCodes)
             .HasConversion(

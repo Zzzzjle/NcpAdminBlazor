@@ -1,5 +1,4 @@
-﻿using NcpAdminBlazor.Domain.AggregatesModel.MenuAggregate;
-using NcpAdminBlazor.Domain.Common;
+﻿using NcpAdminBlazor.Domain.Common;
 using NcpAdminBlazor.Domain.DomainEvents;
 
 namespace NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate
@@ -15,7 +14,6 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate
         public string Name { get; private set; } = string.Empty;
         public string Description { get; private set; } = string.Empty;
         public bool IsDisabled { get; private set; } = false;
-        public ICollection<MenuId> AssignedMenuIds { get; private set; } = [];
         public ICollection<string> AssignedPermissionCodes { get; private set; } = [];
         public DateTimeOffset CreatedAt { get; init; }
         public Deleted IsDeleted { get; private set; } = false;
@@ -27,7 +25,6 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate
             Name = name;
             Description = description;
             IsDisabled = isDisabled;
-            AssignedMenuIds = [];
             AssignedPermissionCodes = [];
         }
 
@@ -37,12 +34,6 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate
             Description = description;
             IsDisabled = isDisabled;
             AddDomainEvent(new RoleInfoChangedDomainEvent(this));
-        }
-
-        public void UpdateMenus(ICollection<MenuId> menuIds)
-        {
-            AssignedMenuIds = menuIds;
-            AddDomainEvent(new RoleMenusChangedDomainEvent(this));
         }
 
         public void UpdatePermissions(ICollection<string> permissionCodes)

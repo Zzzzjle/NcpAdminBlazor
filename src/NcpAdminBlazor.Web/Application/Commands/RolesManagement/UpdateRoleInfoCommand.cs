@@ -1,4 +1,3 @@
-using NcpAdminBlazor.Domain.AggregatesModel.MenuAggregate;
 using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using NcpAdminBlazor.Infrastructure.Repositories;
 using NcpAdminBlazor.Web.Application.Queries.RolesManagement;
