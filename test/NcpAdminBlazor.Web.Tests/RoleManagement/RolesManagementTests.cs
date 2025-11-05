@@ -219,6 +219,33 @@ public class RolesManagementTests(AuthenticatedAppFixture app, RolesManagementTe
         listResponse.Data.Items.ShouldNotContain(r => r.Name == state.RoleName);
     }
 
+    [Fact, Priority(10)]
+    public async Task GetAllPermissions_ShouldReturnPermissionTree()
+    {
+        var (rsp, res) = await app.AuthenticatedClient
+            .GETAsync<AllPermissionsEndpoint, EmptyRequest, ResponseData<AllPermissionsResponse>>(new EmptyRequest());
+
+        rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        res.Success.ShouldBeTrue();
+        res.Data.Groups.ShouldNotBeEmpty();
+        
+        // 验证树形结构 - 应该有System根节点
+        var systemGroup = res.Data.Groups.ShouldHaveSingleItem();
+        systemGroup.Key.ShouldBe("System");
+        systemGroup.SubGroups.Count.ShouldBe(3); // Users, Roles, Menus
+        
+        // 验证System.Users子节点
+        var usersGroup = systemGroup.SubGroups.FirstOrDefault(g => g.Key == "System_Users");
+        usersGroup.ShouldNotBeNull();
+        usersGroup.Permissions.Count.ShouldBe(4); // View, Create, Edit, Delete
+        
+        // 验证权限项
+        var viewPermission = usersGroup.Permissions.FirstOrDefault(p => p.Key == "System_Users_View");
+        viewPermission.ShouldNotBeNull();
+        viewPermission.LogicalName.ShouldBe("View");
+        viewPermission.GroupKey.ShouldBe("System_Users");
+    }
+
     public sealed class RoleState : StateFixture
     {
         public string RoleName { get; } = $"role_{Guid.NewGuid():N}";

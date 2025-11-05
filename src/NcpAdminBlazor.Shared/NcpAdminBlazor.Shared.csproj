@@ -10,8 +10,4 @@
         <PackageReference Include="FluentPermissions" Version="1.0.0-preview.1.2509210917" />
         <PackageReference Include="NetCorePal.Extensions.Dto" Version="$(NetCorePalVersion)" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Auth\" />
-    </ItemGroup>
 </Project>
