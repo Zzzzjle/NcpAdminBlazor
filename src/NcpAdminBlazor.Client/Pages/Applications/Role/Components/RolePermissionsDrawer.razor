@@ -1,0 +1,185 @@
+@using System.Linq
+@using NcpAdminBlazor.Client.HttpClient
+@using NcpAdminBlazor.Client.Component
+@using PermissionGroupDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementPermissionGroupDto
+@inject ApiWrapper ApiWrapper
+
+<AppFormDrawer @bind-Open="Open"
+               Title="设置权限"
+               OnClose="@CloseDrawerAsync"
+               OnPrimaryAction="@HandleSaveAsync"
+               OnCancel="@CloseDrawerAsync"
+               PrimaryActionLoading="_saving">
+    @if (_loading)
+    {
+        <MudProgressCircular Indeterminate="true"/>
+    }
+    else
+    {
+        <MudTreeView Items="@TreeItems"
+                     SelectionMode="SelectionMode.MultiSelection"
+                     @bind-SelectedValues="SelectedValues">
+            <ItemTemplate>
+                <MudTreeViewItem @bind-Expanded="@context.Expanded"
+                                 Items="@context.Children"
+                                 Value="@context.Value"
+                                 Icon="@context.Icon"
+                                 Text="@context.Text"/>
+            </ItemTemplate>
+        </MudTreeView>
+    }
+</AppFormDrawer>
+
+@code {
+    [Parameter] public EventCallback OnSaved { get; set; }
+
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
+
+    [Parameter] public required NcpAdminBlazorWebApplicationQueriesRolesManagementRoleListItemDto? EditingItem { get; set; }
+
+    private IReadOnlyCollection<string> SelectedValues { get; set; } = new HashSet<string>();
+    private List<TreeItemData<string>> TreeItems { get; set; } = [];
+
+    bool _loading;
+    bool _saving;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!Open)
+            return;
+
+        if (EditingItem is null)
+            return;
+
+        await LoadAsync();
+    }
+
+    async Task LoadAsync()
+    {
+        _loading = true;
+        TreeItems = [];
+        SelectedValues = new HashSet<string>();
+        await InvokeAsync(StateHasChanged);
+
+        List<PermissionGroupDto> groups = [];
+        await ApiWrapper.HandleCallAsync(
+            api => api.Api.Permissions.GetAsync(),
+            result =>
+            {
+                if (result is { Data: not null })
+                {
+                    groups = result.Data.Groups ?? [];
+                }
+            });
+
+        HashSet<string> selectedCodes = [];
+        var roleId = EditingItem?.RoleId;
+        if (!string.IsNullOrEmpty(roleId))
+        {
+            await ApiWrapper.HandleCallAsync(
+                api => api.Api.Roles[roleId].Permissions.GetAsync(),
+                result =>
+                {
+                    if (result is not { Data: not null }) return;
+                    var codes = result.Data.PermissionCodes ?? new List<string>();
+                    selectedCodes = codes.ToHashSet();
+                });
+        }
+
+        // 构建树形结构
+        TreeItems = BuildTreeItems(groups);
+        SelectedValues = selectedCodes;
+
+        _loading = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    static List<TreeItemData<string>> BuildTreeItems(List<PermissionGroupDto> groups)
+    {
+        var items = new List<TreeItemData<string>>();
+
+        foreach (var group in groups)
+        {
+            var groupItem = new TreeItemData<string>
+            {
+                Value = group.Key ?? string.Empty,
+                Text = group.DisplayName ?? string.Empty,
+                Icon = Icons.Material.Filled.Folder,
+                Expanded = true
+            };
+
+            var children = new List<TreeItemData<string>>();
+
+            // 添加子组
+            if (group.SubGroups is not null && group.SubGroups.Any())
+            {
+                children.AddRange(BuildTreeItems(group.SubGroups));
+            }
+
+            // 添加权限项
+            if (group.Permissions is not null)
+            {
+                children.AddRange(group.Permissions.Select(permission =>
+                    new TreeItemData<string>
+                    {
+                        Value = permission.Key ?? string.Empty,
+                        Text = permission.DisplayName ?? string.Empty,
+                        Icon = Icons.Material.Filled.VpnKey
+                    }));
+            }
+
+            groupItem.Children = children;
+            items.Add(groupItem);
+        }
+
+        return items;
+    }
+
+    async Task HandleSaveAsync()
+    {
+        if (_saving)
+            return;
+
+        if (EditingItem is null || string.IsNullOrEmpty(EditingItem.RoleId))
+            return;
+
+        _saving = true;
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            // 保存所有选中的值，包括分组节点
+            var permissionCodes = SelectedValues.ToList();
+
+            var req = new NcpAdminBlazorWebEndpointsRolesManagementUpdateRolePermissionsRequest
+            {
+                PermissionCodes = permissionCodes
+            };
+
+            await ApiWrapper.HandleCallAsync(api => api.Api.Roles[EditingItem.RoleId].Permissions.PostAsync(req));
+
+            await CloseDrawerAsync();
+            if (OnSaved.HasDelegate)
+            {
+                await OnSaved.InvokeAsync();
+            }
+        }
+        finally
+        {
+            _saving = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    async Task CloseDrawerAsync()
+    {
+        if (!Open)
+            return;
+
+        Open = false;
+        if (OpenChanged.HasDelegate)
+            await OpenChanged.InvokeAsync(Open);
+    }
+
+}

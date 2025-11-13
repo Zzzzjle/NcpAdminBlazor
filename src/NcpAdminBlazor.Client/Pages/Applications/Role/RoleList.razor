@@ -51,7 +51,7 @@
         <EditActionTemplate Context="row">
             <MudMenu Icon="@Icons.Material.Filled.Edit" Dense Size="Size.Small" Color="@Color.Primary">
                 <MudMenuItem Label="编辑" OnClick="@(() => OnEditRole(row))"/>
-                <MudMenuItem Label="设置权限"/>
+                <MudMenuItem Label="设置权限" OnClick="@(() => OnSetPermissions(row))"/>
             </MudMenu>
         </EditActionTemplate>
     </AppDataGrid>
@@ -63,6 +63,10 @@
     <RoleAddDrawer
         @bind-Open="_addDrawerOpen"
         OnSaved="HandleRoleCreatedAsync"/>
+    <RolePermissionsDrawer
+        @bind-Open="_permissionsDrawerOpen"
+        EditingItem="_editingItem"
+        OnSaved="HandlePermissionsUpdatedAsync"/>
 </MudStack>
 
 @code {
@@ -75,6 +79,7 @@
     bool _searchOpen = true;
     bool _editDrawerOpen;
     bool _addDrawerOpen;
+    bool _permissionsDrawerOpen;
     RoleListItemDto? _editingItem;
 
     private async Task<GridData<RoleListItemDto>> ServerReload(GridState<RoleListItemDto> state)
@@ -125,6 +130,12 @@
         _editingItem = item;
     }
 
+    private void OnSetPermissions(RoleListItemDto item)
+    {
+        _permissionsDrawerOpen = true;
+        _editingItem = item;
+    }
+
     private Task OpenCreateDrawerAsync()
     {
         _addDrawerOpen = true;
@@ -139,6 +150,11 @@
     private Task HandleRoleUpdatedAsync(string? _)
     {
         return _dataGrid.ReloadServerData();
+    }
+
+    private Task HandlePermissionsUpdatedAsync()
+    {
+        return Task.CompletedTask;
     }
 
 }
