@@ -15,9 +15,9 @@
 		<GenerateAssemblyProductAttribute>True</GenerateAssemblyProductAttribute>
 		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<HotReloadAutoRestart>true</HotReloadAutoRestart>
-		<NoWarn>$(NoWarn);CS1591;</NoWarn>
+		<NoWarn>$(NoWarn);CS1591;NU1507;S125;</NoWarn>
 	</PropertyGroup>
+
 
 	<PropertyGroup Condition="$(IsTestProject) != 'true'">
 		<LangVersion>preview</LangVersion>
@@ -26,7 +26,7 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="$(IsTestProject) != 'true'">
-		<PackageReference Include="SonarAnalyzer.CSharp" Version="10.15.0.120848">
+		<PackageReference Include="SonarAnalyzer.CSharp">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>

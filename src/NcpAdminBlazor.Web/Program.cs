@@ -10,29 +10,28 @@ using Hangfire.Redis.StackExchange;
 using Kiota.Builder;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using MudBlazor.Services;
 using NcpAdminBlazor.Client.Stores;
-using NcpAdminBlazor.Web.Application.IntegrationEventHandlers;
-using NcpAdminBlazor.Web.Application.Queries;
 using NcpAdminBlazor.Web.AspNetCore;
 using NcpAdminBlazor.Web.AspNetCore.Middlewares;
 using NcpAdminBlazor.Web.AspNetCore.ApiKey;
 using NcpAdminBlazor.Web.AspNetCore.Permission;
 using NcpAdminBlazor.Web.Clients;
 using NcpAdminBlazor.Web.Components;
+using NcpAdminBlazor.Web.Extensions;
+using NetCorePal.Extensions.CodeAnalysis;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Prometheus;
 using Refit;
 using Serilog;
-using StackExchange.Redis;
-using SystemClock = NetCorePal.Extensions.Primitives.SystemClock;
+using Serilog.Formatting.Json;
 
+// Create a minimal logger for startup
 Log.Logger = new LoggerConfiguration()
     .Enrich.WithClientIp()
     .WriteTo.Console( /*new JsonFormatter()*/)
@@ -40,7 +39,47 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     var builder = WebApplication.CreateBuilder(args);
-    builder.Host.UseSerilog();
+
+    // Add service defaults & Aspire client integrations.
+    builder.AddServiceDefaults();
+
+    // Configure Serilog to send logs to OpenTelemetry when Aspire is enabled
+    builder.Host.UseSerilog((context, services, loggerConfiguration) =>
+    {
+        loggerConfiguration
+            .ReadFrom.Configuration(context.Configuration)
+            .ReadFrom.Services(services)
+            .Enrich.WithClientIp()
+            .Enrich.FromLogContext();
+
+        var otlpEndpoint = context.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+        if (!string.IsNullOrWhiteSpace(otlpEndpoint))
+        {
+            // Send logs to OpenTelemetry when OTLP endpoint is configured (Aspire Dashboard)
+            loggerConfiguration.WriteTo.OpenTelemetry(options =>
+            {
+                options.Endpoint = otlpEndpoint;
+                // Aspire uses HTTP/Protobuf for logs by default
+                var protocol = context.Configuration["OTEL_EXPORTER_OTLP_PROTOCOL"];
+                options.Protocol = protocol?.ToLowerInvariant() switch
+                {
+                    "grpc" => Serilog.Sinks.OpenTelemetry.OtlpProtocol.Grpc,
+                    "http/protobuf" => Serilog.Sinks.OpenTelemetry.OtlpProtocol.HttpProtobuf,
+                    _ => Serilog.Sinks.OpenTelemetry.OtlpProtocol.HttpProtobuf // Default to HTTP/Protobuf
+                };
+                options.ResourceAttributes = new Dictionary<string, object>
+                {
+                    ["service.name"] = context.Configuration["OTEL_SERVICE_NAME"] ??
+                                       context.HostingEnvironment.ApplicationName
+                };
+            });
+        }
+        else
+        {
+            // Fallback to console logging when OTLP is not configured
+            loggerConfiguration.WriteTo.Console(new JsonFormatter());
+        }
+    });
 
     #region SignalR
 
@@ -63,11 +102,13 @@ try
 
     #region 身份认证
 
-    var redis = await ConnectionMultiplexer.ConnectAsync(builder.Configuration.GetConnectionString("Redis")!);
-    builder.Services.AddSingleton<IConnectionMultiplexer>(_ => redis);
-    builder.Services.AddDataProtection()
-        .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
+    // When using Aspire, Redis connection is managed by Aspire and injected automatically
+    builder.AddRedisClient("Redis");
 
+    // DataProtection - use custom extension that resolves IConnectionMultiplexer from DI
+    builder.Services.AddDataProtection()
+        .PersistKeysToStackExchangeRedis("DataProtection-Keys");
+    
     builder.Services.AddScoped<ICurrentUser, CurrentUser>();
     builder.Services.AddTransient<UserTokenService>();
     builder.Services.AddTransient<UserPermissionService>(); // 获取用户权限
@@ -112,32 +153,16 @@ try
     #region Controller
 
     builder.Services.AddControllers().AddNetCorePalSystemTextJson();
+    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
-    // builder.Services.AddSwaggerGen(c => c.AddEntityIdSchemaMap()); //强类型id swagger schema 映射
-    builder.Services.SwaggerDocument(o =>
-    {
-        o.DocumentSettings = s => s.DocumentName = "v1"; //must match doc name below
-    });
 
     #endregion
 
     #region FastEndpoints
 
-    builder.Services.AddFastEndpoints();
+    builder.Services.AddFastEndpoints(o => o.IncludeAbstractValidators = true);
     builder.Services.Configure<JsonOptions>(o =>
         o.SerializerOptions.AddNetCorePalJsonConverters());
-
-    #endregion
-
-    #region 公共服务
-
-    builder.Services.AddSingleton<IClock, SystemClock>();
-
-    #endregion
-
-    #region 集成事件
-
-    builder.Services.AddTransient<OrderPaidIntegrationEventHandler>();
 
     #endregion
 
@@ -153,32 +178,68 @@ try
 
     builder.Services.AddRepositories(typeof(ApplicationDbContext).Assembly);
 
+    // When using Aspire, database connection is managed by Aspire
+    // Use AddDbContext instead of AddMySqlDbContext/AddSqlServerDbContext/AddNpgsqlDbContext
+    // to avoid ExecutionStrategy issues with user-initiated transactions
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
     {
         options.UseMySql(builder.Configuration.GetConnectionString("MySql"),
-            new MySqlServerVersion(new Version(9, 4, 0)));
-        options.LogTo(Console.WriteLine, LogLevel.Information)
-            .EnableSensitiveDataLogging()
-            .EnableDetailedErrors();
+            new MySqlServerVersion(new Version(8, 0, 34)));
+        // 仅在开发环境启用敏感数据日志，防止生产环境泄露敏感信息
+        if (builder.Environment.IsDevelopment())
+        {
+            options.EnableSensitiveDataLogging();
+        }
+
+        options.EnableDetailedErrors();
     });
     builder.Services.AddUnitOfWork<ApplicationDbContext>();
+    // Redis locks use the Aspire-managed Redis connection
     builder.Services.AddRedisLocks();
     builder.Services.AddContext().AddEnvContext().AddCapContextProcessor();
     builder.Services.AddNetCorePalServiceDiscoveryClient();
-    builder.Services.AddIntegrationEvents(typeof(NcpAdminBlazor.Web.Program))
+    builder.Services.AddIntegrationEvents(typeof(Program))
         .UseCap<ApplicationDbContext>(b =>
         {
-            b.RegisterServicesFromAssemblies(typeof(NcpAdminBlazor.Web.Program));
+            b.RegisterServicesFromAssemblies(typeof(Program));
             b.AddContextIntegrationFilters();
-            b.UseMySql();
         });
 
 
     builder.Services.AddCap(x =>
     {
+        x.UseNetCorePalStorage<ApplicationDbContext>();
         x.JsonSerializerOptions.AddNetCorePalJsonConverters();
-        x.UseEntityFramework<ApplicationDbContext>();
-        x.UseRabbitMQ(p => builder.Configuration.GetSection("RabbitMQ").Bind(p));
+        // When using Aspire, RabbitMQ connection is managed by Aspire
+        x.UseRabbitMQ(p =>
+        {
+            var connectionString = builder.Configuration.GetConnectionString("rabbitmq");
+            if (!string.IsNullOrEmpty(connectionString))
+            {
+                // Parse Aspire-provided connection string
+                var uri = new Uri(connectionString);
+                p.HostName = uri.Host;
+                p.Port = uri.Port;
+                if (!string.IsNullOrEmpty(uri.UserInfo))
+                {
+                    var userInfo = uri.UserInfo.Split(':');
+                    p.UserName = userInfo[0];
+                    if (userInfo.Length > 1)
+                    {
+                        p.Password = userInfo[1];
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(uri.AbsolutePath) && uri.AbsolutePath != "/")
+                {
+                    p.VirtualHost = uri.AbsolutePath.TrimStart('/');
+                }
+            }
+            else
+            {
+                builder.Configuration.GetSection("RabbitMQ").Bind(p);
+            }
+        });
         x.UseDashboard(); //CAP Dashboard  path：  /cap
     });
 
@@ -195,7 +256,6 @@ try
     builder.Services.AddMultiEnv(envOption => envOption.ServiceName = "Abc.Template")
         .UseMicrosoftServiceDiscovery();
     builder.Services.AddConfigurationServiceEndpointProvider();
-    builder.Services.AddEnvFixedConnectionChannelPool();
 
     #endregion
 
@@ -220,6 +280,7 @@ try
 
     #region Jobs
 
+    // When using Aspire, Redis connection is managed by Aspire
     builder.Services.AddHangfire(x => { x.UseRedisStorage(builder.Configuration.GetConnectionString("Redis")); });
     builder.Services.AddHangfireServer(); //hangfire dashboard  path：  /hangfire
 
@@ -272,6 +333,17 @@ try
         app.UseSwaggerGen(); //add this
     }
 
+    // Code analysis endpoint
+    app.MapGet("/code-analysis", () =>
+    {
+        var html = VisualizationHtmlBuilder.GenerateVisualizationHtml(
+            CodeFlowAnalysisHelper.GetResultFromAssemblies(typeof(Program).Assembly,
+                typeof(ApplicationDbContext).Assembly,
+                typeof(NcpAdminBlazor.Domain.AggregatesModel.OrderAggregate.Order).Assembly)
+        );
+        return Results.Content(html, "text/html; charset=utf-8");
+    });
+
 
     #region SignalR
 
@@ -280,8 +352,8 @@ try
     #endregion
 
     app.UseHttpMetrics();
-    app.MapHealthChecks("/health");
-    app.MapMetrics("/metrics"); // 通过   /metrics  访问指标
+    app.MapMetrics(); // 通过   /metrics  访问指标
+    app.MapDefaultEndpoints();
     app.UseHangfireDashboard();
 
     await app.GenerateApiClientsAndExitAsync(c =>
@@ -308,6 +380,8 @@ finally
 #pragma warning disable S1118
 namespace NcpAdminBlazor.Web
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
+    // ReSharper disable once PartialTypeWithSinglePart
     public partial class Program
 #pragma warning restore S1118
     {

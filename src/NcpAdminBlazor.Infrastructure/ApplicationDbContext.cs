@@ -1,11 +1,12 @@
 ﻿using NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate;
 using MediatR;
 using NcpAdminBlazor.Domain.AggregatesModel.UserAggregate;
+using NetCorePal.Extensions.DistributedTransactions.CAP.Persistence;
 
 namespace NcpAdminBlazor.Infrastructure;
 
 public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IMediator mediator)
-    : AppDbContextBase(options, mediator)
+    : AppDbContextBase(options, mediator), IMySqlCapDataStorage
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

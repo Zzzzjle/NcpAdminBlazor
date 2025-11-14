@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Testcontainers.MySql;
 using Testcontainers.RabbitMq;
 using Testcontainers.Redis;
@@ -29,13 +31,17 @@ public class WebAppFixture : AppFixture<Program>
 
     protected override void ConfigureApp(IWebHostBuilder a)
     {
+        // Configure Redis connection string for Aspire
         a.UseSetting("ConnectionStrings:Redis", _redisContainer.GetConnectionString());
         a.UseSetting("ConnectionStrings:MySql", _mySqlContainer.GetConnectionString());
-        a.UseSetting("RabbitMQ:Port", _rabbitMqContainer.GetMappedPublicPort(5672).ToString());
-        a.UseSetting("RabbitMQ:UserName", "guest");
-        a.UseSetting("RabbitMQ:Password", "guest");
-        a.UseSetting("RabbitMQ:VirtualHost", "/");
-        a.UseSetting("RabbitMQ:HostName", _rabbitMqContainer.Hostname);
+        a.UseSetting("ConnectionStrings:rabbitmq",
+            $"amqp://guest:guest@{_rabbitMqContainer.Hostname}:{_rabbitMqContainer.GetMappedPublicPort(5672)}/");
+        
         a.UseEnvironment("Development");
+    }
+    
+    protected override void ConfigureServices(IServiceCollection s)
+    {
+        // Additional service configuration for tests if needed
     }
 }

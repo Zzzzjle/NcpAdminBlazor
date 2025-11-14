@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		NuGet.config = NuGet.config
 		README.md = README.md
 		eng\versions.props = eng\versions.props
+		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5C6B3693-7A37-4ABF-A217-8EDA0B51F742}"
@@ -32,6 +33,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NcpAdminBlazor.Client", "src\NcpAdminBlazor.Client\NcpAdminBlazor.Client.csproj", "{57556BBE-AB61-41F6-911B-DFBD9391E000}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NcpAdminBlazor.Shared", "src\NcpAdminBlazor.Shared\NcpAdminBlazor.Shared.csproj", "{0225CA60-C132-4919-8346-A1C0E778624A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NcpAdminBlazor.AppHost", "src\NcpAdminBlazor.AppHost\NcpAdminBlazor.AppHost.csproj", "{287B7FDA-B666-4ED6-A342-FA46B2F147A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NcpAdminBlazor.ServiceDefaults", "src\NcpAdminBlazor.ServiceDefaults\NcpAdminBlazor.ServiceDefaults.csproj", "{A205A130-F640-4213-8F98-F5EA60371846}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +76,14 @@ Global
 		{0225CA60-C132-4919-8346-A1C0E778624A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0225CA60-C132-4919-8346-A1C0E778624A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0225CA60-C132-4919-8346-A1C0E778624A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{287B7FDA-B666-4ED6-A342-FA46B2F147A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{287B7FDA-B666-4ED6-A342-FA46B2F147A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{287B7FDA-B666-4ED6-A342-FA46B2F147A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{287B7FDA-B666-4ED6-A342-FA46B2F147A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A205A130-F640-4213-8F98-F5EA60371846}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A205A130-F640-4213-8F98-F5EA60371846}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A205A130-F640-4213-8F98-F5EA60371846}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A205A130-F640-4213-8F98-F5EA60371846}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +97,8 @@ Global
 		{64AD4028-B7DA-4858-964D-26977C1A5EA9} = {5C6B3693-7A37-4ABF-A217-8EDA0B51F742}
 		{57556BBE-AB61-41F6-911B-DFBD9391E000} = {D8FA34CE-25DA-4E6F-AD50-1EAD1F33F9F1}
 		{0225CA60-C132-4919-8346-A1C0E778624A} = {D8FA34CE-25DA-4E6F-AD50-1EAD1F33F9F1}
+		{287B7FDA-B666-4ED6-A342-FA46B2F147A6} = {D8FA34CE-25DA-4E6F-AD50-1EAD1F33F9F1}
+		{A205A130-F640-4213-8F98-F5EA60371846} = {D8FA34CE-25DA-4E6F-AD50-1EAD1F33F9F1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E6FD5C45-63B8-458D-8CFA-7ACFD729624C}

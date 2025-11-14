@@ -1,27 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FastEndpoints.Testing" Version="7.0.1" />
-    <PackageReference Include="Moq" Version="4.20.72" />
-    <PackageReference Include="NetCorePal.Extensions.NewtonsoftJson" Version="$(NetCorePalVersion)" />
-    <PackageReference Include="Shouldly" Version="4.3.0" />
-    <PackageReference Include="Testcontainers" Version="$(TestcontainersVersion)" />
-    <PackageReference Include="Testcontainers.MySql" Version="$(TestcontainersVersion)" />
-    <PackageReference Include="Testcontainers.PostgreSql" Version="$(TestcontainersVersion)" />
-    <PackageReference Include="Testcontainers.RabbitMq" Version="$(TestcontainersVersion)" />
-    <PackageReference Include="Testcontainers.Redis" Version="$(TestcontainersVersion)" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.12.0" />
-    <PackageReference Include="xunit.v3" Version="3.0.0"/>
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.3" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"/>
-    <PackageReference Include="coverlet.collector" Version="6.0.2">
+    <PackageReference Include="FastEndpoints.Testing" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="NetCorePal.Extensions.NewtonsoftJson" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="Testcontainers" />
+    <PackageReference Include="Testcontainers.MySql" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="Testcontainers.RabbitMq" />
+    <PackageReference Include="Testcontainers.Redis" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Microsoft.CodeAnalysis" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"/>
+    <PackageReference Include="coverlet.collector">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
