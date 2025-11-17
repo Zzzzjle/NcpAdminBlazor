@@ -6,7 +6,7 @@
 @using NcpAdminBlazor.Client.Providers
 @using NcpAdminBlazor.Client.Services
 
-<MudForm @bind-IsValid="@_success" @bind-Errors="@_errors">
+<MudForm @ref="_form" @bind-Errors="@_errors">
     <MudText Typo="Typo.h4" GutterBottom="true" Class="mt-4">Sign In</MudText>
     <MudText>Don't have an account?
         <MudLink Href="@Register.PageUri">Sign Up</MudLink>
@@ -28,7 +28,7 @@
         <MudLink Href="/pages/authentication/forgot-password">forget password?</MudLink>
     </div>
 
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!_success || _isBusy)" Size="Size.Large"
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(_isBusy)" Size="Size.Large"
                FullWidth="true" OnClick="@HandleSubmit">
         @if (_isBusy)
         {
@@ -54,10 +54,10 @@
     [Inject] TokenAuthenticationStateProvider AuthStateProvider { get; set; } = null!;
     [Inject] ISnackbar Snackbar { get; set; } = null!;
     [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
+    MudForm _form = null!;
     private bool _isBusy;
     private readonly InputModel _model = new();
     private bool _rememberMe;
-    private bool _success;
     private string[] _errors = [];
 
     bool _passwordVisibility;
@@ -67,6 +67,11 @@
     private async Task HandleSubmit()
     {
         if (_isBusy) return;
+        await _form.Validate();
+        if (!_form.IsValid)
+        {
+            return;
+        }
 
         _isBusy = true;
         StateHasChanged();
@@ -141,8 +146,8 @@
 
     class InputModel
     {
-        public string LoginName { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
+        public string LoginName { get; set; } = "admin";
+        public string Password { get; set; } = "admin123456";
     }
 
 }

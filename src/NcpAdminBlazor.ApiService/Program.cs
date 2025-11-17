@@ -292,6 +292,9 @@ try
         await dbContext.Database.EnsureCreatedAsync();
     }
 
+    // seed initial data
+    await app.Services.SeedAsync();
+
     app.UseKnownExceptionHandler();
     // Configure the HTTP request pipeline.
 
