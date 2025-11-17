@@ -1,8 +1,7 @@
 using MudBlazor.Services;
-using NcpAdminBlazor.Client.Stores;
+using NcpAdminBlazor.Client.Extensions;
 using NcpAdminBlazor.Web.Components;
-using Yarp.ReverseProxy;
-using Yarp.ReverseProxy.Forwarder;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,11 +16,19 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddScoped<LayoutStore>();
+builder.Services.AddHttpClient("ApiService", client => { client.BaseAddress = new("https+http://apiservice"); });
+builder.Services.AddScoped<HttpClient>(sp =>
+{
+    var factory = sp.GetRequiredService<IHttpClientFactory>();
+    return factory.CreateClient("ApiService");
+});
+
+builder.Services.AddKiotaClient();
+
+builder.Services.AddAuthenticationAndLocalization();
+builder.Services.AddClientServices();
 
 builder.Services.AddOutputCache();
-
-builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new("https+http://apiservice") });
 
 builder.Services.AddHttpForwarder();
 

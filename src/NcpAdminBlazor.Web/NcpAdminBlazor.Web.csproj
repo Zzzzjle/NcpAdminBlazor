@@ -17,6 +17,11 @@
         <PackageReference Include="Yarp.ReverseProxy"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Layout\ReconnectModal.razor" />
+    </ItemGroup>
+
     <Target Name="TailwindCliBuild" BeforeTargets="Compile">
         <Exec Command="npm run build:css" />
     </Target>
