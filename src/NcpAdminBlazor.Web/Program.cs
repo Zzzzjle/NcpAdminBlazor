@@ -108,7 +108,7 @@ try
     // DataProtection - use custom extension that resolves IConnectionMultiplexer from DI
     builder.Services.AddDataProtection()
         .PersistKeysToStackExchangeRedis("DataProtection-Keys");
-    
+
     builder.Services.AddScoped<ICurrentUser, CurrentUser>();
     builder.Services.AddTransient<UserTokenService>();
     builder.Services.AddTransient<UserPermissionService>(); // 获取用户权限
@@ -160,7 +160,8 @@ try
 
     #region FastEndpoints
 
-    builder.Services.AddFastEndpoints(o => o.IncludeAbstractValidators = true);
+    builder.Services.AddFastEndpoints(o => o.IncludeAbstractValidators = true)
+        .SwaggerDocument();
     builder.Services.Configure<JsonOptions>(o =>
         o.SerializerOptions.AddNetCorePalJsonConverters());
 
