@@ -1,5 +1,5 @@
 ---
-applyTo: "src/NcpAdminBlazor.Web/Application/Queries/**/*.cs"
+applyTo: "src/NcpAdminBlazor.ApiService/Application/Queries/**/*.cs"
 ---
 
 # 查询开发指南
@@ -23,7 +23,7 @@ applyTo: "src/NcpAdminBlazor.Web/Application/Queries/**/*.cs"
 ## 文件与目录
 
 类文件命名应遵循以下规则：
-- 应放置在 `src/NcpAdminBlazor.Web/Application/Queries/{Module}/` 目录下
+- 应放置在 `src/NcpAdminBlazor.ApiService/Application/Queries/{Module}/` 目录下
 - 查询文件名格式为 `{Action}{Entity}Query.cs`
 - 查询、验证器、处理器和DTO定义在同一文件中
 
@@ -179,14 +179,14 @@ using Microsoft.EntityFrameworkCore; // 用于EF Core扩展方法(FirstOrDefault
 
 ## 代码示例
 
-**文件**: `src/NcpAdminBlazor.Web/Application/Queries/User/GetUserQuery.cs`
+**文件**: `src/NcpAdminBlazor.ApiService/Application/Queries/User/GetUserQuery.cs`
 
 ```csharp
 using NcpAdminBlazor.Domain.AggregatesModel.UserAggregate;
 using NcpAdminBlazor.Infrastructure;
 using Microsoft.EntityFrameworkCore; // 必需：用于EF Core扩展方法
 
-namespace NcpAdminBlazor.Web.Application.Queries.User;
+namespace NcpAdminBlazor.ApiService.Application.Queries.User;
 
 public record GetUserQuery(UserId UserId) : IQuery<UserDto>;
 
@@ -217,14 +217,14 @@ public class GetUserQueryHandler(ApplicationDbContext context) : IQueryHandler<G
 public record UserDto(UserId Id, string Name, string Email);
 ```
 
-**分页查询示例**: `src/NcpAdminBlazor.Web/Application/Queries/User/GetUserListQuery.cs`
+**分页查询示例**: `src/NcpAdminBlazor.ApiService/Application/Queries/User/GetUserListQuery.cs`
 
 ```csharp
 using NcpAdminBlazor.Domain.AggregatesModel.UserAggregate;
 using NcpAdminBlazor.Infrastructure;
 using Microsoft.EntityFrameworkCore; // 必需：用于EF Core扩展方法
 
-namespace NcpAdminBlazor.Web.Application.Queries.User;
+namespace NcpAdminBlazor.ApiService.Application.Queries.User;
 
 public record GetUserListQuery(int PageIndex = 1, int PageSize = 20, string? SearchName = null, string? SortBy = null, bool Desc = false) : IQuery<PagedData<UserListItemDto>>;
 

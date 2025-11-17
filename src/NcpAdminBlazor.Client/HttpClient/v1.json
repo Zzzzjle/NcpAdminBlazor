@@ -2,7 +2,7 @@
   "x-generator": "NSwag v14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))",
   "openapi": "3.0.0",
   "info": {
-    "title": "NcpAdminBlazor.Web",
+    "title": "NcpAdminBlazor.ApiService",
     "version": "1.0.0"
   },
   "paths": {
@@ -14,14 +14,14 @@
         ],
         "summary": "创建用户",
         "description": "创建一个新的后台用户",
-        "operationId": "NcpAdminBlazorWebEndpointsUsersManagementCreateUserEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsUsersManagementCreateUserEndpoint",
         "requestBody": {
           "x-name": "CreateUserRequest",
           "description": "",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsUsersManagementCreateUserRequest"
+                "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsUsersManagementCreateUserRequest"
               }
             }
           },
@@ -58,7 +58,7 @@
         ],
         "summary": "删除用户",
         "description": "",
-        "operationId": "NcpAdminBlazorWebEndpointsUsersManagementDeleteUserEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsUsersManagementDeleteUserEndpoint",
         "parameters": [
           {
             "name": "userId",
@@ -102,14 +102,14 @@
         ],
         "summary": "用户登录",
         "description": "Description text goes here...",
-        "operationId": "NcpAdminBlazorWebEndpointsUsersManagementLoginEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsUsersManagementLoginEndpoint",
         "requestBody": {
           "x-name": "LoginRequest",
           "description": "",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsUsersManagementLoginRequest"
+                "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsUsersManagementLoginRequest"
               }
             }
           },
@@ -138,7 +138,7 @@
         ],
         "summary": "获取当前用户信息",
         "description": "返回当前登录用户的详细资料",
-        "operationId": "NcpAdminBlazorWebEndpointsUsersManagementProfileEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsUsersManagementProfileEndpoint",
         "responses": {
           "200": {
             "description": "Success",
@@ -167,7 +167,7 @@
           "User",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsUsersManagementRefreshEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsUsersManagementRefreshEndpoint",
         "requestBody": {
           "x-name": "TokenRequest",
           "description": "",
@@ -202,14 +202,14 @@
           "Api"
         ],
         "summary": "创建用户",
-        "operationId": "NcpAdminBlazorWebEndpointsUsersManagementRegisterUserEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsUsersManagementRegisterUserEndpoint",
         "requestBody": {
           "x-name": "RegisterUserRequest",
           "description": "",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsUsersManagementRegisterUserRequest"
+                "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsUsersManagementRegisterUserRequest"
               }
             }
           },
@@ -247,7 +247,7 @@
         ],
         "summary": "更新用户信息",
         "description": "更新指定用户的基础信息",
-        "operationId": "NcpAdminBlazorWebEndpointsUsersManagementUpdateUserEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsUsersManagementUpdateUserEndpoint",
         "parameters": [
           {
             "name": "userId",
@@ -265,7 +265,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsUsersManagementUpdateUserRequest"
+                "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsUsersManagementUpdateUserRequest"
               }
             }
           },
@@ -309,7 +309,7 @@
         ],
         "summary": "获取指定用户信息",
         "description": "根据用户ID获取详细资料，包括角色与权限",
-        "operationId": "NcpAdminBlazorWebEndpointsUsersManagementUserInfoEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsUsersManagementUserInfoEndpoint",
         "parameters": [
           {
             "name": "userId",
@@ -350,7 +350,7 @@
         ],
         "summary": "获取用户列表",
         "description": "按条件分页查询用户",
-        "operationId": "NcpAdminBlazorWebEndpointsUsersManagementUserListEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsUsersManagementUserListEndpoint",
         "parameters": [
           {
             "name": "username",
@@ -439,7 +439,7 @@
           "Role",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsRolesManagementAllPermissionsEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsRolesManagementAllPermissionsEndpoint",
         "responses": {
           "200": {
             "description": "Success",
@@ -468,14 +468,14 @@
           "Role",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsRolesManagementCreateRoleEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsRolesManagementCreateRoleEndpoint",
         "requestBody": {
           "x-name": "CreateRoleRequest",
           "description": "",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesManagementCreateRoleRequest"
+                "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsRolesManagementCreateRoleRequest"
               }
             }
           },
@@ -508,7 +508,7 @@
           "Role",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsRolesManagementRoleListEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsRolesManagementRoleListEndpoint",
         "parameters": [
           {
             "name": "name",
@@ -573,7 +573,7 @@
           "Role",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsRolesManagementDeleteRoleEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsRolesManagementDeleteRoleEndpoint",
         "parameters": [
           {
             "name": "roleId",
@@ -612,7 +612,7 @@
           "Role",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsRolesManagementRoleInfoEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsRolesManagementRoleInfoEndpoint",
         "parameters": [
           {
             "name": "roleId",
@@ -649,7 +649,7 @@
           "Role",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsRolesManagementUpdateRoleInfoEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsRolesManagementUpdateRoleInfoEndpoint",
         "parameters": [
           {
             "name": "roleId",
@@ -666,7 +666,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesManagementUpdateRoleInfoRequest"
+                "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsRolesManagementUpdateRoleInfoRequest"
               }
             }
           },
@@ -701,7 +701,7 @@
           "Role",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsRolesManagementRoleMenusEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsRolesManagementRoleMenusEndpoint",
         "parameters": [
           {
             "name": "roleId",
@@ -738,7 +738,7 @@
           "Role",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsRolesManagementUpdateRoleMenusEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsRolesManagementUpdateRoleMenusEndpoint",
         "parameters": [
           {
             "name": "roleId",
@@ -755,7 +755,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesManagementUpdateRoleMenusRequest"
+                "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsRolesManagementUpdateRoleMenusRequest"
               }
             }
           },
@@ -790,7 +790,7 @@
           "Role",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsRolesManagementRolePermissionsEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsRolesManagementRolePermissionsEndpoint",
         "parameters": [
           {
             "name": "roleId",
@@ -827,7 +827,7 @@
           "Role",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsRolesManagementUpdateRolePermissionsEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsRolesManagementUpdateRolePermissionsEndpoint",
         "parameters": [
           {
             "name": "roleId",
@@ -844,7 +844,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesManagementUpdateRolePermissionsRequest"
+                "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsRolesManagementUpdateRolePermissionsRequest"
               }
             }
           },
@@ -879,14 +879,14 @@
           "Menu",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsMenusManagementCreateMenuEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsMenusManagementCreateMenuEndpoint",
         "requestBody": {
           "x-name": "CreateMenuRequest",
           "description": "",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsMenusManagementCreateMenuRequest"
+                "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsMenusManagementCreateMenuRequest"
               }
             }
           },
@@ -921,7 +921,7 @@
           "Menu",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsMenusManagementDeleteMenuEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsMenusManagementDeleteMenuEndpoint",
         "parameters": [
           {
             "name": "menuId",
@@ -958,7 +958,7 @@
           "Menu",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsMenusManagementUpdateMenuEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsMenusManagementUpdateMenuEndpoint",
         "parameters": [
           {
             "name": "menuId",
@@ -975,7 +975,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsMenusManagementUpdateMenuRequest"
+                "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsMenusManagementUpdateMenuRequest"
               }
             }
           },
@@ -1010,7 +1010,7 @@
           "Menu",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsMenusManagementMenuInfoEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsMenusManagementMenuInfoEndpoint",
         "parameters": [
           {
             "name": "menuId",
@@ -1049,7 +1049,7 @@
           "Menu",
           "Api"
         ],
-        "operationId": "NcpAdminBlazorWebEndpointsMenusManagementMenuTreeEndpoint",
+        "operationId": "NcpAdminBlazorApiServiceEndpointsMenusManagementMenuTreeEndpoint",
         "responses": {
           "200": {
             "description": "Success",
@@ -1088,7 +1088,7 @@
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsUsersManagementCreateUserResponse"
+                    "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsUsersManagementCreateUserResponse"
                   }
                 ]
               }
@@ -1096,7 +1096,7 @@
           }
         ]
       },
-      "NcpAdminBlazorWebEndpointsUsersManagementCreateUserResponse": {
+      "NcpAdminBlazorApiServiceEndpointsUsersManagementCreateUserResponse": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1125,7 +1125,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsUsersManagementCreateUserRequest": {
+      "NcpAdminBlazorApiServiceEndpointsUsersManagementCreateUserRequest": {
         "type": "object",
         "example": {
           "username": "admin",
@@ -1166,7 +1166,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsUsersManagementDeleteUserRequest": {
+      "NcpAdminBlazorApiServiceEndpointsUsersManagementDeleteUserRequest": {
         "type": "object",
         "additionalProperties": false
       },
@@ -1183,7 +1183,7 @@
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/NcpAdminBlazorWebAspNetCoreMyTokenResponse"
+                    "$ref": "#/components/schemas/NcpAdminBlazorApiServiceAspNetCoreMyTokenResponse"
                   }
                 ]
               }
@@ -1191,7 +1191,7 @@
           }
         ]
       },
-      "NcpAdminBlazorWebAspNetCoreMyTokenResponse": {
+      "NcpAdminBlazorApiServiceAspNetCoreMyTokenResponse": {
         "allOf": [
           {
             "$ref": "#/components/schemas/FastEndpointsSecurityTokenResponse"
@@ -1245,7 +1245,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsUsersManagementLoginRequest": {
+      "NcpAdminBlazorApiServiceEndpointsUsersManagementLoginRequest": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1270,7 +1270,7 @@
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/NcpAdminBlazorWebApplicationQueriesUsersManagementUserInfoDto"
+                    "$ref": "#/components/schemas/NcpAdminBlazorApiServiceApplicationQueriesUsersManagementUserInfoDto"
                   }
                 ]
               }
@@ -1278,7 +1278,7 @@
           }
         ]
       },
-      "NcpAdminBlazorWebApplicationQueriesUsersManagementUserInfoDto": {
+      "NcpAdminBlazorApiServiceApplicationQueriesUsersManagementUserInfoDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1304,12 +1304,12 @@
           "roles": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/NcpAdminBlazorWebApplicationQueriesUsersManagementUserRoleSummaryDto"
+              "$ref": "#/components/schemas/NcpAdminBlazorApiServiceApplicationQueriesUsersManagementUserRoleSummaryDto"
             }
           }
         }
       },
-      "NcpAdminBlazorWebApplicationQueriesUsersManagementUserRoleSummaryDto": {
+      "NcpAdminBlazorApiServiceApplicationQueriesUsersManagementUserRoleSummaryDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1337,7 +1337,7 @@
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsUsersManagementRegisterUserResponse"
+                    "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsUsersManagementRegisterUserResponse"
                   }
                 ]
               }
@@ -1345,7 +1345,7 @@
           }
         ]
       },
-      "NcpAdminBlazorWebEndpointsUsersManagementRegisterUserResponse": {
+      "NcpAdminBlazorApiServiceEndpointsUsersManagementRegisterUserResponse": {
         "type": "object",
         "description": "创建用户的响应数据",
         "additionalProperties": false,
@@ -1356,7 +1356,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsUsersManagementRegisterUserRequest": {
+      "NcpAdminBlazorApiServiceEndpointsUsersManagementRegisterUserRequest": {
         "type": "object",
         "description": "创建用户请求Payload",
         "example": {
@@ -1377,7 +1377,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsUsersManagementUpdateUserRequest": {
+      "NcpAdminBlazorApiServiceEndpointsUsersManagementUpdateUserRequest": {
         "type": "object",
         "example": {
           "username": "admin",
@@ -1419,7 +1419,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsUsersManagementUserInfoRequest": {
+      "NcpAdminBlazorApiServiceEndpointsUsersManagementUserInfoRequest": {
         "type": "object",
         "additionalProperties": false
       },
@@ -1453,7 +1453,7 @@
             "type": "array",
             "description": "分页数据",
             "items": {
-              "$ref": "#/components/schemas/NcpAdminBlazorWebApplicationQueriesUsersManagementUserListItemDto"
+              "$ref": "#/components/schemas/NcpAdminBlazorApiServiceApplicationQueriesUsersManagementUserListItemDto"
             }
           },
           "total": {
@@ -1473,7 +1473,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebApplicationQueriesUsersManagementUserListItemDto": {
+      "NcpAdminBlazorApiServiceApplicationQueriesUsersManagementUserListItemDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1504,7 +1504,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsUsersManagementGetUserListRequest": {
+      "NcpAdminBlazorApiServiceEndpointsUsersManagementGetUserListRequest": {
         "type": "object",
         "additionalProperties": false
       },
@@ -1521,7 +1521,7 @@
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesManagementAllPermissionsResponse"
+                    "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsRolesManagementAllPermissionsResponse"
                   }
                 ]
               }
@@ -1529,19 +1529,19 @@
           }
         ]
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementAllPermissionsResponse": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementAllPermissionsResponse": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "groups": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesManagementPermissionGroupDto"
+              "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsRolesManagementPermissionGroupDto"
             }
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementPermissionGroupDto": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementPermissionGroupDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1564,18 +1564,18 @@
           "subGroups": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesManagementPermissionGroupDto"
+              "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsRolesManagementPermissionGroupDto"
             }
           },
           "permissions": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesManagementPermissionItemDto"
+              "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsRolesManagementPermissionItemDto"
             }
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementPermissionItemDto": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementPermissionItemDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1609,7 +1609,7 @@
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesManagementCreateRoleResponse"
+                    "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsRolesManagementCreateRoleResponse"
                   }
                 ]
               }
@@ -1617,7 +1617,7 @@
           }
         ]
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementCreateRoleResponse": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementCreateRoleResponse": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1626,7 +1626,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementCreateRoleRequest": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementCreateRoleRequest": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1641,7 +1641,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementDeleteRoleRequest": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementDeleteRoleRequest": {
         "type": "object",
         "additionalProperties": false
       },
@@ -1658,7 +1658,7 @@
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesManagementRoleInfoResponse"
+                    "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsRolesManagementRoleInfoResponse"
                   }
                 ]
               }
@@ -1666,7 +1666,7 @@
           }
         ]
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementRoleInfoResponse": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementRoleInfoResponse": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1684,7 +1684,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementRoleInfoRequest": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementRoleInfoRequest": {
         "type": "object",
         "additionalProperties": false
       },
@@ -1718,7 +1718,7 @@
             "type": "array",
             "description": "分页数据",
             "items": {
-              "$ref": "#/components/schemas/NcpAdminBlazorWebApplicationQueriesRolesManagementRoleListItemDto"
+              "$ref": "#/components/schemas/NcpAdminBlazorApiServiceApplicationQueriesRolesManagementRoleListItemDto"
             }
           },
           "total": {
@@ -1738,7 +1738,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebApplicationQueriesRolesManagementRoleListItemDto": {
+      "NcpAdminBlazorApiServiceApplicationQueriesRolesManagementRoleListItemDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1760,7 +1760,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementGetRoleListRequest": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementGetRoleListRequest": {
         "type": "object",
         "additionalProperties": false
       },
@@ -1777,7 +1777,7 @@
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesManagementRoleMenusResponse"
+                    "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsRolesManagementRoleMenusResponse"
                   }
                 ]
               }
@@ -1785,7 +1785,7 @@
           }
         ]
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementRoleMenusResponse": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementRoleMenusResponse": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1800,7 +1800,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementRoleMenusRequest": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementRoleMenusRequest": {
         "type": "object",
         "additionalProperties": false
       },
@@ -1817,7 +1817,7 @@
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsRolesManagementRolePermissionsResponse"
+                    "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsRolesManagementRolePermissionsResponse"
                   }
                 ]
               }
@@ -1825,7 +1825,7 @@
           }
         ]
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementRolePermissionsResponse": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementRolePermissionsResponse": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1840,11 +1840,11 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementRolePermissionsRequest": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementRolePermissionsRequest": {
         "type": "object",
         "additionalProperties": false
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementUpdateRoleInfoRequest": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementUpdateRoleInfoRequest": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1859,7 +1859,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementUpdateRoleMenusRequest": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementUpdateRoleMenusRequest": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1871,7 +1871,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsRolesManagementUpdateRolePermissionsRequest": {
+      "NcpAdminBlazorApiServiceEndpointsRolesManagementUpdateRolePermissionsRequest": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1896,7 +1896,7 @@
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsMenusManagementCreateMenuResponse"
+                    "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsMenusManagementCreateMenuResponse"
                   }
                 ]
               }
@@ -1904,7 +1904,7 @@
           }
         ]
       },
-      "NcpAdminBlazorWebEndpointsMenusManagementCreateMenuResponse": {
+      "NcpAdminBlazorApiServiceEndpointsMenusManagementCreateMenuResponse": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1913,7 +1913,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsMenusManagementCreateMenuRequest": {
+      "NcpAdminBlazorApiServiceEndpointsMenusManagementCreateMenuRequest": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1959,7 +1959,7 @@
           1
         ]
       },
-      "NcpAdminBlazorWebEndpointsMenusManagementDeleteMenuRequest": {
+      "NcpAdminBlazorApiServiceEndpointsMenusManagementDeleteMenuRequest": {
         "type": "object",
         "additionalProperties": false
       },
@@ -1976,7 +1976,7 @@
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsMenusManagementMenuInfoResponse"
+                    "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsMenusManagementMenuInfoResponse"
                   }
                 ]
               }
@@ -1984,7 +1984,7 @@
           }
         ]
       },
-      "NcpAdminBlazorWebEndpointsMenusManagementMenuInfoResponse": {
+      "NcpAdminBlazorApiServiceEndpointsMenusManagementMenuInfoResponse": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2021,7 +2021,7 @@
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsMenusManagementMenuInfoRequest": {
+      "NcpAdminBlazorApiServiceEndpointsMenusManagementMenuInfoRequest": {
         "type": "object",
         "additionalProperties": false
       },
@@ -2038,14 +2038,14 @@
                 "type": "array",
                 "nullable": true,
                 "items": {
-                  "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsMenusManagementMenuTreeNodeResponse"
+                  "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsMenusManagementMenuTreeNodeResponse"
                 }
               }
             }
           }
         ]
       },
-      "NcpAdminBlazorWebEndpointsMenusManagementMenuTreeNodeResponse": {
+      "NcpAdminBlazorApiServiceEndpointsMenusManagementMenuTreeNodeResponse": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2083,12 +2083,12 @@
           "children": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/NcpAdminBlazorWebEndpointsMenusManagementMenuTreeNodeResponse"
+              "$ref": "#/components/schemas/NcpAdminBlazorApiServiceEndpointsMenusManagementMenuTreeNodeResponse"
             }
           }
         }
       },
-      "NcpAdminBlazorWebEndpointsMenusManagementUpdateMenuRequest": {
+      "NcpAdminBlazorApiServiceEndpointsMenusManagementUpdateMenuRequest": {
         "type": "object",
         "additionalProperties": false,
         "properties": {

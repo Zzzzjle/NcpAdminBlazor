@@ -1,5 +1,5 @@
 ---
-applyTo: "src/NcpAdminBlazor.Web/Application/IntegrationEvents/*.cs"
+applyTo: "src/NcpAdminBlazor.ApiService/Application/IntegrationEvents/*.cs"
 ---
 
 # 集成事件开发指南
@@ -11,7 +11,7 @@ applyTo: "src/NcpAdminBlazor.Web/Application/IntegrationEvents/*.cs"
 ## 文件与目录
 
 类文件命名应遵循以下规则：
-- 应放置在 `src/NcpAdminBlazor.Web/Application/IntegrationEvents/` 目录下
+- 应放置在 `src/NcpAdminBlazor.ApiService/Application/IntegrationEvents/` 目录下
 - 文件名格式为 `{Entity}{Action}IntegrationEvent.cs`
 - 每个集成事件一个文件
 
@@ -28,13 +28,13 @@ applyTo: "src/NcpAdminBlazor.Web/Application/IntegrationEvents/*.cs"
 
 ## 代码示例
 
-**文件**: `src/NcpAdminBlazor.Web/Application/IntegrationEvents/UserCreatedIntegrationEvent.cs`
+**文件**: `src/NcpAdminBlazor.ApiService/Application/IntegrationEvents/UserCreatedIntegrationEvent.cs`
 
 ```csharp
 using NetCorePal.Extensions.Domain;
 using NcpAdminBlazor.Domain.AggregatesModel.UserAggregate;
 
-namespace NcpAdminBlazor.Web.Application.IntegrationEvents;
+namespace NcpAdminBlazor.ApiService.Application.IntegrationEvents;
 
 public record UserCreatedIntegrationEvent(
     UserId UserId, 

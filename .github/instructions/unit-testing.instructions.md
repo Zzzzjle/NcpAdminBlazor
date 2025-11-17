@@ -12,7 +12,7 @@ applyTo: "test/**/*.cs"
 
 测试文件命名应遵循以下规则：
 - 领域层测试：`test/NcpAdminBlazor.Domain.Tests/{EntityName}Tests.cs`
-- Web层测试：`test/NcpAdminBlazor.Web.Tests/{Feature}Tests.cs`
+- Web层测试：`test/NcpAdminBlazor.ApiService.Tests/{Feature}Tests.cs`
 - 基础设施层测试：`test/NcpAdminBlazor.Infrastructure.Tests/{Component}Tests.cs`
 
 ## 开发规则

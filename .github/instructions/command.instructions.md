@@ -1,5 +1,5 @@
 ---
-applyTo: "src/NcpAdminBlazor.Web/Application/Commands/**/*.cs"
+applyTo: "src/NcpAdminBlazor.ApiService/Application/Commands/**/*.cs"
 ---
 
 # 命令开发指南
@@ -11,7 +11,7 @@ applyTo: "src/NcpAdminBlazor.Web/Application/Commands/**/*.cs"
 ## 文件与目录
 
 类文件命名应遵循以下规则：
-- 应放置在 `src/NcpAdminBlazor.Web/Application/Commands/{Module}/` 目录下
+- 应放置在 `src/NcpAdminBlazor.ApiService/Application/Commands/{Module}/` 目录下
 - 命令文件名格式为 `{Action}{Entity}Command.cs`
 - 同一个命令及其对应的验证器和处理器定义在同一文件中
 - 不同的命令放在不同文件中
@@ -58,13 +58,13 @@ applyTo: "src/NcpAdminBlazor.Web/Application/Commands/**/*.cs"
 
 ## 代码示例
 
-**文件**: `src/NcpAdminBlazor.Web/Application/Commands/CreateUserCommand.cs`
+**文件**: `src/NcpAdminBlazor.ApiService/Application/Commands/CreateUserCommand.cs`
 
 ```csharp
 using NcpAdminBlazor.Domain.AggregatesModel.UserAggregate;
 using NcpAdminBlazor.Infrastructure.Repositories;
 
-namespace NcpAdminBlazor.Web.Application.Commands;
+namespace NcpAdminBlazor.ApiService.Application.Commands;
 
 public record CreateUserCommand(string Name, string Email) : ICommand<UserId>;
 

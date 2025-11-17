@@ -16,10 +16,10 @@ namespace NcpAdminBlazor.Client.Models
         /// <summary>分页数据</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public List<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUsersManagementUserListItemDto>? Items { get; set; }
+        public List<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceApplicationQueriesUsersManagementUserListItemDto>? Items { get; set; }
 #nullable restore
 #else
-        public List<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUsersManagementUserListItemDto> Items { get; set; }
+        public List<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceApplicationQueriesUsersManagementUserListItemDto> Items { get; set; }
 #endif
         /// <summary>当前页码，从1开始</summary>
         public int? PageIndex { get; set; }
@@ -45,7 +45,7 @@ namespace NcpAdminBlazor.Client.Models
         {
             return new Dictionary<string, Action<IParseNode>>
             {
-                { "items", n => { Items = n.GetCollectionOfObjectValues<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUsersManagementUserListItemDto>(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUsersManagementUserListItemDto.CreateFromDiscriminatorValue)?.AsList(); } },
+                { "items", n => { Items = n.GetCollectionOfObjectValues<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceApplicationQueriesUsersManagementUserListItemDto>(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceApplicationQueriesUsersManagementUserListItemDto.CreateFromDiscriminatorValue)?.AsList(); } },
                 { "pageIndex", n => { PageIndex = n.GetIntValue(); } },
                 { "pageSize", n => { PageSize = n.GetIntValue(); } },
                 { "total", n => { Total = n.GetIntValue(); } },
@@ -58,7 +58,7 @@ namespace NcpAdminBlazor.Client.Models
         public virtual void Serialize(ISerializationWriter writer)
         {
             _ = writer ?? throw new ArgumentNullException(nameof(writer));
-            writer.WriteCollectionOfObjectValues<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebApplicationQueriesUsersManagementUserListItemDto>("items", Items);
+            writer.WriteCollectionOfObjectValues<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceApplicationQueriesUsersManagementUserListItemDto>("items", Items);
             writer.WriteIntValue("pageIndex", PageIndex);
             writer.WriteIntValue("pageSize", PageSize);
             writer.WriteIntValue("total", Total);

@@ -13,7 +13,7 @@ var rabbitmq = builder.AddRabbitMQ("rabbitmq")
     .WithManagementPlugin();
 
 // Add web project with infrastructure dependencies
-builder.AddProject<Projects.NcpAdminBlazor_Web>("web")
+builder.AddProject<Projects.NcpAdminBlazor_ApiService>("web")
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health")
     .WithReference(redis)

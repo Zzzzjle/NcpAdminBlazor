@@ -1,4 +1,4 @@
-﻿@page "/account/login"
+@page "/account/login"
 @layout LoginLayout
 @using NcpAdminBlazor.Client.HttpClient
 @using NcpAdminBlazor.Client.HttpClient.Auth
@@ -73,10 +73,10 @@
 
         try
         {
-            NcpAdminBlazorWebAspNetCoreMyTokenResponse? tokenData = null;
+            NcpAdminBlazorApiServiceAspNetCoreMyTokenResponse? tokenData = null;
             var loginSucceeded = await ApiWrapper.HandleCallAsync(
                 apiClient => apiClient.Api.User.Login.PostAsync(
-                    new NcpAdminBlazorWebEndpointsUsersManagementLoginRequest
+                    new NcpAdminBlazorApiServiceEndpointsUsersManagementLoginRequest
                     {
                         Username = _model.LoginName,
                         Password = _model.Password

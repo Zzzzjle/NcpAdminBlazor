@@ -1,5 +1,5 @@
 ---
-applyTo: "src/NcpAdminBlazor.Web/Application/DomainEventHandlers/*.cs"
+applyTo: "src/NcpAdminBlazor.ApiService/Application/DomainEventHandlers/*.cs"
 ---
 
 # 领域事件处理器开发指南
@@ -11,7 +11,7 @@ applyTo: "src/NcpAdminBlazor.Web/Application/DomainEventHandlers/*.cs"
 ## 文件与目录
 
 类文件命名应遵循以下规则：
-- 应放置在 `src/NcpAdminBlazor.Web/Application/DomainEventHandlers/` 目录下
+- 应放置在 `src/NcpAdminBlazor.ApiService/Application/DomainEventHandlers/` 目录下
 - 文件名格式为 `{DomainEvent}HandlerFor{Action}.cs` ,其中{Action}需要准确描述该Handler的目的
 - 每个领域事件对应一个处理器文件
 
@@ -37,13 +37,13 @@ applyTo: "src/NcpAdminBlazor.Web/Application/DomainEventHandlers/*.cs"
 
 ## 代码示例
 
-**文件**: `src/NcpAdminBlazor.Web/Application/DomainEventHandlers/UserCreatedDomainEventHandlerForCreateScoreAccount.cs`
+**文件**: `src/NcpAdminBlazor.ApiService/Application/DomainEventHandlers/UserCreatedDomainEventHandlerForCreateScoreAccount.cs`
 
 ```csharp
 using NcpAdminBlazor.Domain.DomainEvents;
-using NcpAdminBlazor.Web.Application.Commands;
+using NcpAdminBlazor.ApiService.Application.Commands;
 
-namespace NcpAdminBlazor.Web.Application.DomainEventHandlers;
+namespace NcpAdminBlazor.ApiService.Application.DomainEventHandlers;
 
 public class UserCreatedDomainEventHandlerForCreateScoreAccount(
     ILogger<UserCreatedDomainEventHandlerForCreateScoreAccount> logger,

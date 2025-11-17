@@ -30,11 +30,11 @@ NcpAdminBlazor.sln
 ├── src/
 │   ├── NcpAdminBlazor.Domain/         # 领域层 - 聚合根、实体、领域事件
 │   ├── NcpAdminBlazor.Infrastructure/ # 基础设施层 - EF配置、仓储接口、仓储实现
-│   └── NcpAdminBlazor.Web/           # 表现层 - API、应用服务
+│   └── NcpAdminBlazor.ApiService/           # 表现层 - API、应用服务
 └── test/                            # 测试项目
     ├── NcpAdminBlazor.Domain.UnitTests/         # 领域层测试项目
     ├── NcpAdminBlazor.Infrastructure.UnitTests/ # 基础设施层测试项目
-    └── NcpAdminBlazor.Web.UnitTests/           # 表现层测试项目
+    └── NcpAdminBlazor.ApiService.UnitTests/           # 表现层测试项目
 ```
 
 **分层依赖关系：** Web → Infrastructure → Domain (严格单向依赖)
@@ -78,13 +78,13 @@ NcpAdminBlazor.sln
 - **领域事件** → `src/NcpAdminBlazor.Domain/DomainEvents/`
 - **仓储** → `src/NcpAdminBlazor.Infrastructure/Repositories/`
 - **实体配置** → `src/NcpAdminBlazor.Infrastructure/EntityConfigurations/`
-- **命令与命令处理器** → `src/NcpAdminBlazor.Web/Application/Commands/`
-- **查询与查询处理器** → `src/NcpAdminBlazor.Web/Application/Queries/`
-- **API端点** → `src/NcpAdminBlazor.Web/Endpoints/`
-- **领域事件处理器** → `src/NcpAdminBlazor.Web/Application/DomainEventHandlers/`
-- **集成事件** → `src/NcpAdminBlazor.Web/Application/IntegrationEvents/`
-- **集成事件转换器** → `src/NcpAdminBlazor.Web/Application/IntegrationEventConverters/`
-- **集成事件处理器** → `src/NcpAdminBlazor.Web/Application/IntegrationEventHandlers/`
+- **命令与命令处理器** → `src/NcpAdminBlazor.ApiService/Application/Commands/`
+- **查询与查询处理器** → `src/NcpAdminBlazor.ApiService/Application/Queries/`
+- **API端点** → `src/NcpAdminBlazor.ApiService/Endpoints/`
+- **领域事件处理器** → `src/NcpAdminBlazor.ApiService/Application/DomainEventHandlers/`
+- **集成事件** → `src/NcpAdminBlazor.ApiService/Application/IntegrationEvents/`
+- **集成事件转换器** → `src/NcpAdminBlazor.ApiService/Application/IntegrationEventConverters/`
+- **集成事件处理器** → `src/NcpAdminBlazor.ApiService/Application/IntegrationEventHandlers/`
 
 ### 强制性要求
 - ✅ 所有聚合根使用强类型ID，且**不手动赋值ID**（依赖EF值生成器）
@@ -140,7 +140,7 @@ public async Task<OrderId> Handle(OrderPaidCommand request, CancellationToken ca
 ### GlobalUsings.cs配置
 各层的常用引用已在GlobalUsings.cs中全局定义：
 
-**Web层** (`src/NcpAdminBlazor.Web/GlobalUsings.cs`):
+**Web层** (`src/NcpAdminBlazor.ApiService/GlobalUsings.cs`):
 - `global using FluentValidation;` - 验证器
 - `global using MediatR;` - 命令处理器  
 - `global using NetCorePal.Extensions.Primitives;` - KnownException等
@@ -178,6 +178,6 @@ using NcpAdminBlazor.Domain.AggregatesModel.{AggregateFolder};
 **端点**:
 ```csharp
 using NcpAdminBlazor.Domain.AggregatesModel.{AggregateFolder};
-using NcpAdminBlazor.Web.Application.Commands.{FeatureFolder};
-using NcpAdminBlazor.Web.Application.Queries.{FeatureFolder};
+using NcpAdminBlazor.ApiService.Application.Commands.{FeatureFolder};
+using NcpAdminBlazor.ApiService.Application.Queries.{FeatureFolder};
 ```

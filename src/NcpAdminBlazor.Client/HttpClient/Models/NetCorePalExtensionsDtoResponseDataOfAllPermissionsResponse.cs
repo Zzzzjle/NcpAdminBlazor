@@ -17,10 +17,10 @@ namespace NcpAdminBlazor.Client.Models
         /// <summary>The data property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementAllPermissionsResponse? Data { get; set; }
+        public global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceEndpointsRolesManagementAllPermissionsResponse? Data { get; set; }
 #nullable restore
 #else
-        public global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementAllPermissionsResponse Data { get; set; }
+        public global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceEndpointsRolesManagementAllPermissionsResponse Data { get; set; }
 #endif
         /// <summary>
         /// Instantiates a new <see cref="global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfAllPermissionsResponse"/> and sets the default values.
@@ -47,7 +47,7 @@ namespace NcpAdminBlazor.Client.Models
         {
             return new Dictionary<string, Action<IParseNode>>(base.GetFieldDeserializers())
             {
-                { "data", n => { Data = n.GetObjectValue<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementAllPermissionsResponse>(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementAllPermissionsResponse.CreateFromDiscriminatorValue); } },
+                { "data", n => { Data = n.GetObjectValue<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceEndpointsRolesManagementAllPermissionsResponse>(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceEndpointsRolesManagementAllPermissionsResponse.CreateFromDiscriminatorValue); } },
             };
         }
         /// <summary>
@@ -58,7 +58,7 @@ namespace NcpAdminBlazor.Client.Models
         {
             _ = writer ?? throw new ArgumentNullException(nameof(writer));
             base.Serialize(writer);
-            writer.WriteObjectValue<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementAllPermissionsResponse>("data", Data);
+            writer.WriteObjectValue<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceEndpointsRolesManagementAllPermissionsResponse>("data", Data);
             writer.WriteAdditionalData(AdditionalData);
         }
     }

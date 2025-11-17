@@ -1,4 +1,4 @@
-﻿@page "/account/register"
+@page "/account/register"
 @using NcpAdminBlazor.Client.HttpClient
 @using NcpAdminBlazor.Client.Models
 @layout LoginLayout
@@ -83,7 +83,7 @@
         }
 
         var registered = await ApiWrapper.HandleCallAsync(
-            apiClient => apiClient.Api.User.Create.PostAsync(new NcpAdminBlazorWebEndpointsUsersManagementRegisterUserRequest
+            apiClient => apiClient.Api.User.Create.PostAsync(new NcpAdminBlazorApiServiceEndpointsUsersManagementRegisterUserRequest
             {
                 Username = _model.Username,
                 Password = _model.Password

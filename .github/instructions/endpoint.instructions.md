@@ -1,5 +1,5 @@
 ---
-applyTo: "src/NcpAdminBlazor.Web/Endpoints/**/*.cs"
+applyTo: "src/NcpAdminBlazor.ApiService/Endpoints/**/*.cs"
 ---
 
 # Endpoint 开发指南
@@ -11,7 +11,7 @@ FastEndpoints 是推荐的 API 端点实现方式，提供了比传统 MVC Contr
 ## 文件与目录
 
 类文件命名应遵循以下规则：
-- 应放置在 `src/NcpAdminBlazor.Web/Endpoints/{Module}/` 目录下
+- 应放置在 `src/NcpAdminBlazor.ApiService/Endpoints/{Module}/` 目录下
 - 端点文件名格式为 `{Action}{Entity}Endpoint.cs`
 - 请求DTO、响应DTO与端点定义在同一文件中
 
@@ -56,14 +56,14 @@ FastEndpoints 是推荐的 API 端点实现方式，提供了比传统 MVC Contr
 
 ## 代码示例
 
-**文件**: `src/NcpAdminBlazor.Web/Endpoints/User/CreateUserEndpoint.cs`
+**文件**: `src/NcpAdminBlazor.ApiService/Endpoints/User/CreateUserEndpoint.cs`
 
 ```csharp
 using FastEndpoints;
-using NcpAdminBlazor.Web.Application.Commands;
+using NcpAdminBlazor.ApiService.Application.Commands;
 using NcpAdminBlazor.Domain.AggregatesModel.UserAggregate;
 
-namespace NcpAdminBlazor.Web.Endpoints.User;
+namespace NcpAdminBlazor.ApiService.Endpoints.User;
 
 public record CreateUserRequestDto(string Name, string Email);
 

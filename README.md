@@ -111,7 +111,7 @@ dotnet ef migrations add InitialCreate -p src/NcpAdminBlazor.Infrastructure
 dotnet tool install -g NetCorePal.Extensions.CodeAnalysis.Tools
 
 # 进入项目目录并生成可视化文件
-cd src/NcpAdminBlazor.Web
+cd src/NcpAdminBlazor.ApiService
 netcorepal-codeanalysis generate --output architecture.html
 ```
 

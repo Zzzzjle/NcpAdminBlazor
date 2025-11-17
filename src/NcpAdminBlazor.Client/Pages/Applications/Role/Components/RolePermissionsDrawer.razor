@@ -1,7 +1,7 @@
 @using System.Linq
 @using NcpAdminBlazor.Client.HttpClient
 @using NcpAdminBlazor.Client.Component
-@using PermissionGroupDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsRolesManagementPermissionGroupDto
+@using PermissionGroupDto = NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceEndpointsRolesManagementPermissionGroupDto
 @inject ApiWrapper ApiWrapper
 
 <AppFormDrawer @bind-Open="Open"
@@ -36,7 +36,7 @@
     [Parameter] public bool Open { get; set; }
     [Parameter] public EventCallback<bool> OpenChanged { get; set; }
 
-    [Parameter] public required NcpAdminBlazorWebApplicationQueriesRolesManagementRoleListItemDto? EditingItem { get; set; }
+    [Parameter] public required NcpAdminBlazorApiServiceApplicationQueriesRolesManagementRoleListItemDto? EditingItem { get; set; }
 
     private IReadOnlyCollection<string> SelectedValues { get; set; } = new HashSet<string>();
     private List<TreeItemData<string>> TreeItems { get; set; } = [];
@@ -152,7 +152,7 @@
             // 保存所有选中的值，包括分组节点
             var permissionCodes = SelectedValues.ToList();
 
-            var req = new NcpAdminBlazorWebEndpointsRolesManagementUpdateRolePermissionsRequest
+            var req = new NcpAdminBlazorApiServiceEndpointsRolesManagementUpdateRolePermissionsRequest
             {
                 PermissionCodes = permissionCodes
             };

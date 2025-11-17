@@ -17,10 +17,10 @@ namespace NcpAdminBlazor.Client.Models
         /// <summary>The data property</summary>
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
 #nullable enable
-        public List<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsMenusManagementMenuTreeNodeResponse>? Data { get; set; }
+        public List<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceEndpointsMenusManagementMenuTreeNodeResponse>? Data { get; set; }
 #nullable restore
 #else
-        public List<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsMenusManagementMenuTreeNodeResponse> Data { get; set; }
+        public List<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceEndpointsMenusManagementMenuTreeNodeResponse> Data { get; set; }
 #endif
         /// <summary>
         /// Instantiates a new <see cref="global::NcpAdminBlazor.Client.Models.NetCorePalExtensionsDtoResponseDataOfListOfMenuTreeNodeResponse"/> and sets the default values.
@@ -47,7 +47,7 @@ namespace NcpAdminBlazor.Client.Models
         {
             return new Dictionary<string, Action<IParseNode>>(base.GetFieldDeserializers())
             {
-                { "data", n => { Data = n.GetCollectionOfObjectValues<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsMenusManagementMenuTreeNodeResponse>(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsMenusManagementMenuTreeNodeResponse.CreateFromDiscriminatorValue)?.AsList(); } },
+                { "data", n => { Data = n.GetCollectionOfObjectValues<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceEndpointsMenusManagementMenuTreeNodeResponse>(global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceEndpointsMenusManagementMenuTreeNodeResponse.CreateFromDiscriminatorValue)?.AsList(); } },
             };
         }
         /// <summary>
@@ -58,7 +58,7 @@ namespace NcpAdminBlazor.Client.Models
         {
             _ = writer ?? throw new ArgumentNullException(nameof(writer));
             base.Serialize(writer);
-            writer.WriteCollectionOfObjectValues<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorWebEndpointsMenusManagementMenuTreeNodeResponse>("data", Data);
+            writer.WriteCollectionOfObjectValues<global::NcpAdminBlazor.Client.Models.NcpAdminBlazorApiServiceEndpointsMenusManagementMenuTreeNodeResponse>("data", Data);
             writer.WriteAdditionalData(AdditionalData);
         }
     }
