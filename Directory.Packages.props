@@ -2,7 +2,6 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
-
   <PropertyGroup>
     <!-- Third-party package versions -->
     <NetCorePalVersion>3.0.0</NetCorePalVersion>
@@ -11,14 +10,12 @@
     <AspireVersion>9.5.2</AspireVersion>
     <OpenTelemetryVersion>1.12.0</OpenTelemetryVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="9.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0" />
     <PackageVersion Include="AspNet.Security.OAuth.Feishu" Version="9.0.0" />
     <PackageVersion Include="AspNet.Security.OAuth.Weixin" Version="9.0.0" />
-
     <!-- Database providers - framework specific versions -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.0" />
@@ -32,7 +29,6 @@
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis" Version="4.12.0" />
-
     <!-- CAP packages for .NET 9.0+ -->
     <PackageVersion Include="DotNetCore.CAP.Dashboard" Version="8.4.1" />
     <PackageVersion Include="DotNetCore.CAP.RabbitMQ" Version="8.4.1" />
@@ -43,7 +39,6 @@
     <PackageVersion Include="DotNetCore.CAP.RedisStreams" Version="8.4.1" />
     <PackageVersion Include="DotNetCore.CAP.Pulsar" Version="8.4.1" />
     <PackageVersion Include="DotNetCore.CAP.OpenTelemetry" Version="8.4.1" />
-
     <!-- FastEndpoints -->
     <PackageVersion Include="FastEndpoints" Version="$(FastEndpointsVersion)" />
     <PackageVersion Include="FastEndpoints.Swagger" Version="$(FastEndpointsVersion)" />
@@ -52,7 +47,6 @@
     <PackageVersion Include="FastEndpoints.Generator" Version="$(FastEndpointsVersion)" />
     <PackageVersion Include="FastEndpoints.Security" Version="$(FastEndpointsVersion)" />
     <PackageVersion Include="FastEndpoints.Testing" Version="$(FastEndpointsVersion)" />
-    
     <!-- Other packages -->
     <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageVersion Include="FluentPermissions" Version="1.0.0-preview.1.2509210917" />
@@ -79,7 +73,6 @@
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="StackExchange.Redis" Version="2.9.11" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.2.0" />
-
     <!-- Aspire packages -->
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.MySql" Version="$(AspireVersion)" />
@@ -102,7 +95,6 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="$(OpenTelemetryVersion)" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.SqlClient" Version="1.13.0-beta.1" />
     <PackageVersion Include="Npgsql.OpenTelemetry" Version="8.0.8" />
-
     <!-- NetCorePal packages -->
     <PackageVersion Include="NetCorePal.Context.AspNetCore" Version="$(NetCorePalVersion)" />
     <PackageVersion Include="NetCorePal.Context.CAP" Version="$(NetCorePalVersion)" />
@@ -123,7 +115,6 @@
     <PackageVersion Include="NetCorePal.Extensions.Repository.EntityFrameworkCore" Version="$(NetCorePalVersion)" />
     <PackageVersion Include="NetCorePal.Extensions.Repository.EntityFrameworkCore.Snowflake" Version="$(NetCorePalVersion)" />
     <PackageVersion Include="NetCorePal.OpenTelemetry.Diagnostics" Version="$(NetCorePalVersion)" />
-
     <!-- Testing packages -->
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="Testcontainers" Version="$(TestcontainersVersion)" />
@@ -137,8 +128,8 @@
     <PackageVersion Include="xunit.v3" Version="3.0.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.3" />
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
-
     <!-- Code analysis -->
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.3.0.106239" />
+    <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
   </ItemGroup>
 </Project>

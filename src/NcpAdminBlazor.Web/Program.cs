@@ -1,10 +1,30 @@
+using MudBlazor.Services;
+using NcpAdminBlazor.Client.Stores;
 using NcpAdminBlazor.Web.Components;
+using Yarp.ReverseProxy;
+using Yarp.ReverseProxy.Forwarder;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add service defaults & Aspire client integrations.
+builder.AddServiceDefaults();
+
+// Add MudBlazor services
+builder.Services.AddMudServices();
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddScoped<LayoutStore>();
+
+builder.Services.AddOutputCache();
+
+builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new("https+http://apiservice") });
+
+builder.Services.AddHttpForwarder();
+
 
 var app = builder.Build();
 
@@ -16,13 +36,24 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// Forward API requests to the API service
+app.MapForwarder("/api/{**catch-all}", "http+https://apiservice/");
+
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
 app.UseAntiforgery();
 
-app.MapStaticAssets();
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+app.UseOutputCache();
 
-app.Run();
+app.MapStaticAssets();
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(NcpAdminBlazor.Client._Imports).Assembly)
+    .AllowAnonymous();
+
+app.MapDefaultEndpoints();
+
+await app.RunAsync();

@@ -13,7 +13,7 @@ var rabbitmq = builder.AddRabbitMQ("rabbitmq")
     .WithManagementPlugin();
 
 // Add web project with infrastructure dependencies
-builder.AddProject<Projects.NcpAdminBlazor_ApiService>("web")
+var apiService = builder.AddProject<Projects.NcpAdminBlazor_ApiService>("apiservice")
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health")
     .WithReference(redis)
@@ -21,7 +21,12 @@ builder.AddProject<Projects.NcpAdminBlazor_ApiService>("web")
     .WithReference(mysql)
     .WaitFor(mysql)
     .WithReference(rabbitmq)
-    .WaitFor(rabbitmq)
-    ;
+    .WaitFor(rabbitmq);
+
+builder.AddProject<Projects.NcpAdminBlazor_Web>("webfrontend")
+    .WithExternalHttpEndpoints()
+    .WithHttpHealthCheck("/health")
+    .WithReference(apiService)
+    .WaitFor(apiService);
 
 await builder.Build().RunAsync();

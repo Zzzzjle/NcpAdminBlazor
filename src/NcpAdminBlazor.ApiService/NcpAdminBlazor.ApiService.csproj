@@ -53,7 +53,6 @@
     <PackageReference Include="Serilog.Enrichers.ClientInfo" />
     <PackageReference Include="Serilog.Sinks.OpenTelemetry" />
     <PackageReference Include="StackExchange.Redis" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,7 +63,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NcpAdminBlazor.Client\NcpAdminBlazor.Client.csproj" />
     <ProjectReference Include="..\NcpAdminBlazor.Domain\NcpAdminBlazor.Domain.csproj" />
     <ProjectReference Include="..\NcpAdminBlazor.Infrastructure\NcpAdminBlazor.Infrastructure.csproj" />
     <ProjectReference Include="..\NcpAdminBlazor.ServiceDefaults\NcpAdminBlazor.ServiceDefaults.csproj" />
@@ -73,6 +71,7 @@
 
   <ItemGroup>
     <Folder Include="Application\Jobs\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <Target Name="ClientGen" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">
@@ -80,10 +79,6 @@
             Command="$(RunCommand) --generateclients true"
             EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"
       />
-  </Target>
-
-  <Target Name="TailwindCliBuild" BeforeTargets="Compile">
-      <Exec Command="npm run build:css" />
   </Target>
 
 </Project>

@@ -8,7 +8,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\NcpAdminBlazor.Client\NcpAdminBlazor.Client.csproj" />
+        <ProjectReference Include="..\NcpAdminBlazor.Client\NcpAdminBlazor.Client.csproj"/>
+        <ProjectReference Include="..\NcpAdminBlazor.ServiceDefaults\NcpAdminBlazor.ServiceDefaults.csproj"/>
     </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server"/>
+        <PackageReference Include="Yarp.ReverseProxy"/>
+    </ItemGroup>
+
+    <Target Name="TailwindCliBuild" BeforeTargets="Compile">
+        <Exec Command="npm run build:css" />
+    </Target>
 
 </Project>

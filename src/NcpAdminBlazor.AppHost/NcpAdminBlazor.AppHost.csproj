@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NcpAdminBlazor.ApiService\NcpAdminBlazor.ApiService.csproj" />
+    <ProjectReference Include="..\NcpAdminBlazor.Web\NcpAdminBlazor.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

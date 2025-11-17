@@ -12,8 +12,7 @@
     "NcpAdminBlazor.ApiService": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "",
-      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7058;http://localhost:5058",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

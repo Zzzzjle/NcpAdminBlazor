@@ -14,14 +14,11 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using MudBlazor.Services;
-using NcpAdminBlazor.Client.Stores;
 using NcpAdminBlazor.ApiService.AspNetCore;
 using NcpAdminBlazor.ApiService.AspNetCore.Middlewares;
 using NcpAdminBlazor.ApiService.AspNetCore.ApiKey;
 using NcpAdminBlazor.ApiService.AspNetCore.Permission;
 using NcpAdminBlazor.ApiService.Clients;
-using NcpAdminBlazor.ApiService.Components;
 using NcpAdminBlazor.ApiService.Extensions;
 using NetCorePal.Extensions.CodeAnalysis;
 using Newtonsoft.Json;
@@ -287,20 +284,6 @@ try
 
     #endregion
 
-    #region Blazor
-
-    // Add MudBlazor services
-    builder.Services.AddMudServices();
-
-    // Add services to the container.
-    builder.Services.AddRazorComponents()
-        .AddInteractiveWebAssemblyComponents();
-
-    builder.Services.AddScoped<LayoutStore>();
-
-    #endregion
-
-
     var app = builder.Build();
     if (app.Environment.IsDevelopment())
     {
@@ -318,14 +301,6 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
     app.UseMiddleware<CurrentUserMiddleware>();
-
-    app.UseAntiforgery();
-
-    app.MapStaticAssets();
-    app.MapRazorComponents<App>()
-        .AddInteractiveWebAssemblyRenderMode()
-        .AddAdditionalAssemblies(typeof(NcpAdminBlazor.Client._Imports).Assembly)
-        .AllowAnonymous();
 
     app.MapControllers();
     app.UseFastEndpoints(c => c.Binding.UseDefaultValuesForNullableProps = false);
