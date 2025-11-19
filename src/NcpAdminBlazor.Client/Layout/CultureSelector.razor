@@ -41,6 +41,14 @@
         if (!CultureInfo.CurrentCulture.Equals(_selectedCulture))
         {
             await LocalStorageService.SetItemAsync(_localStorageKey, _selectedCulture!.Name);
+            var uri = new Uri(Navigation.Uri)
+                .GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
+            var cultureEscaped = Uri.EscapeDataString(_selectedCulture.Name);
+            var uriEscaped = Uri.EscapeDataString(uri);
+
+            Navigation.NavigateTo(
+                $"Culture/Set?culture={cultureEscaped}&redirectUri={uriEscaped}",
+                forceLoad: true);
             Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
         }
     }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Localization;
 using MudBlazor.Services;
 using NcpAdminBlazor.Client.Extensions;
 using NcpAdminBlazor.Web.Components;
@@ -55,6 +56,14 @@ app.UseOutputCache();
 
 app.MapStaticAssets();
 
+string[] supportedCultures = ["zh-CN", "en-US"];
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+app.UseRequestLocalization(localizationOptions);
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
@@ -62,5 +71,18 @@ app.MapRazorComponents<App>()
     .AllowAnonymous();
 
 app.MapDefaultEndpoints();
+
+app.MapGet("/Culture/Set", (string? culture, string redirectUri, HttpContext httpContext) =>
+{
+    if (!string.IsNullOrEmpty(culture))
+    {
+        httpContext.Response.Cookies.Append(
+            CookieRequestCultureProvider.DefaultCookieName,
+            CookieRequestCultureProvider.MakeCookieValue(
+                new RequestCulture(culture, culture)));
+    }
+
+    return Results.LocalRedirect(redirectUri);
+});
 
 await app.RunAsync();
