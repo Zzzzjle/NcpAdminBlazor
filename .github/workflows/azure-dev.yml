@@ -47,7 +47,7 @@ jobs:
 
       - name: Provision Infrastructure
         run: azd provision --no-prompt
-        working-directory: ./NcpAdminBlazor.AppHost.AppHost
+        working-directory: ./NcpAdminBlazor.AppHost
         env:
           AZURE_RABBITMQ_PASSWORD: ${{ secrets.AZURE_RABBITMQ_PASSWORD }}
           AZURE_REDIS_PASSWORD: ${{ secrets.AZURE_REDIS_PASSWORD }}
@@ -55,7 +55,7 @@ jobs:
 
       - name: Deploy Application
         run: azd deploy --no-prompt
-        working-directory: ./NcpAdminBlazor.AppHost.AppHost
+        working-directory: ./NcpAdminBlazor.AppHost
         env:
           AZURE_RABBITMQ_PASSWORD: ${{ secrets.AZURE_RABBITMQ_PASSWORD }}
           AZURE_REDIS_PASSWORD: ${{ secrets.AZURE_REDIS_PASSWORD }}
