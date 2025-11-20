@@ -7,7 +7,7 @@
     <NetCorePalVersion>3.0.0</NetCorePalVersion>
     <FastEndpointsVersion>7.0.1</FastEndpointsVersion>
     <TestcontainersVersion>4.1.0</TestcontainersVersion>
-    <AspireVersion>9.5.2</AspireVersion>
+    <AspireVersion>13.0.0</AspireVersion>
     <OpenTelemetryVersion>1.12.0</OpenTelemetryVersion>
   </PropertyGroup>
   <ItemGroup>
@@ -71,7 +71,7 @@
     <PackageVersion Include="Serilog.Enrichers.ClientInfo" Version="2.1.2" />
     <PackageVersion Include="Serilog.Sinks.OpenTelemetry" Version="4.1.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
-    <PackageVersion Include="StackExchange.Redis" Version="2.9.11" />
+    <PackageVersion Include="StackExchange.Redis" Version="2.9.32" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.2.0" />
     <!-- Aspire packages -->
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="$(AspireVersion)" />
@@ -85,9 +85,9 @@
     <PackageVersion Include="Aspire.Pomelo.EntityFrameworkCore.MySql" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(AspireVersion)" />
-    <PackageVersion Include="Aspire.RabbitMQ.Client.v7" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.RabbitMQ.Client.v7" Version="9.5.2" />
     <PackageVersion Include="Aspire.Confluent.Kafka" Version="$(AspireVersion)" />
-    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="$(AspireVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.0.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="$(OpenTelemetryVersion)" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="$(OpenTelemetryVersion)" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="$(OpenTelemetryVersion)" />
