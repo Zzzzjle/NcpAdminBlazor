@@ -36,9 +36,12 @@ jobs:
             9.x
             10.x
 
-      - uses: actions/setup-node@v4
-      - run: npm install
-
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+      - name: Install npm deps
+        working-directory: src/NcpAdminBlazor.Web
+        run: npm ci
+      
       - name: Log in with Azure (Federated Credentials)
         run: |
           azd auth login `
