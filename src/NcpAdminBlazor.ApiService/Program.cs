@@ -181,8 +181,8 @@ try
     // to avoid ExecutionStrategy issues with user-initiated transactions
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
     {
-        options.UseMySql(builder.Configuration.GetConnectionString("MySql"),
-            new MySqlServerVersion(new Version(8, 0, 34)));
+        var connectionString = builder.Configuration.GetConnectionString("MySql");
+        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
         // 仅在开发环境启用敏感数据日志，防止生产环境泄露敏感信息
         if (builder.Environment.IsDevelopment())
         {

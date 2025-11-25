@@ -1,5 +1,13 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
+//Enable Docker pubilsher
+builder.AddDockerComposeEnvironment("docker-env")
+          .WithDashboard(dashboard =>
+          {
+              dashboard.WithHostPort(8080)
+                       .WithForwardedHeaders(enabled: true);
+          });
+
 // Add Redis infrastructure
 var redis = builder.AddRedis("redis");
 
@@ -26,12 +34,19 @@ var apiService = builder.AddProject<Projects.NcpAdminBlazor_ApiService>("apiserv
     .WithReference(mysql)
     .WaitFor(mysql)
     .WithReference(rabbitmq)
-    .WaitFor(rabbitmq);
+    .WaitFor(rabbitmq)
+    .PublishAsDockerComposeService((_, service) =>
+     {
+         service.Restart = "always";
+     });
 
 builder.AddProject<Projects.NcpAdminBlazor_Web>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health")
     .WithReference(apiService)
-    .WaitFor(apiService);
+    .WaitFor(apiService).PublishAsDockerComposeService((_, service) =>
+    {
+        service.Restart = "always";
+    });
 
 await builder.Build().RunAsync();
