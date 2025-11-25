@@ -34,7 +34,7 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.UserAggregate
             string phone,
             ICollection<RoleId> assignedRoleIds)
         {
-            CreatedAt = DateTimeOffset.Now;
+            CreatedAt = DateTimeOffset.UtcNow;
             Username = username;
             RealName = realName;
             Email = email;

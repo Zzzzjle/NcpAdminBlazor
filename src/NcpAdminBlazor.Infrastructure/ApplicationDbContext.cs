@@ -6,7 +6,7 @@ using NetCorePal.Extensions.DistributedTransactions.CAP.Persistence;
 namespace NcpAdminBlazor.Infrastructure;
 
 public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IMediator mediator)
-    : AppDbContextBase(options, mediator), IMySqlCapDataStorage
+    : AppDbContextBase(options, mediator), IPostgreSqlCapDataStorage
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

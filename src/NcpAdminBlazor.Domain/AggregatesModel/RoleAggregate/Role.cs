@@ -21,7 +21,7 @@ namespace NcpAdminBlazor.Domain.AggregatesModel.RoleAggregate
 
         public Role(string name, string description, bool isDisabled)
         {
-            CreatedAt = DateTimeOffset.Now;
+            CreatedAt = DateTimeOffset.UtcNow;
             Name = name;
             Description = description;
             IsDisabled = isDisabled;

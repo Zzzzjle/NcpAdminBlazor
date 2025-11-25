@@ -1,30 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql.Json.Microsoft" />
-    <PackageReference Include="NetCorePal.Extensions.DistributedTransactions.CAP.MySql" />
-    <PackageReference Include="NetCorePal.Extensions.Repository.EntityFrameworkCore" />
-    <PackageReference Include="NetCorePal.Extensions.Repository.EntityFrameworkCore.Snowflake" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
+        <PackageReference Include="NetCorePal.Extensions.DistributedTransactions.CAP.PostgreSQL"/>
+        <PackageReference Include="NetCorePal.Extensions.Repository.EntityFrameworkCore"/>
+        <PackageReference Include="NetCorePal.Extensions.Repository.EntityFrameworkCore.Snowflake"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\NcpAdminBlazor.Domain\NcpAdminBlazor.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Migrations\20250305084524_InitialCreate.Designer.cs" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\NcpAdminBlazor.Domain\NcpAdminBlazor.Domain.csproj"/>
+    </ItemGroup>
 
 </Project>

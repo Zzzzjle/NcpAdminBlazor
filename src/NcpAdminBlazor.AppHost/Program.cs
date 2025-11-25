@@ -2,24 +2,25 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 //Enable Docker pubilsher
 builder.AddDockerComposeEnvironment("docker-env")
-          .WithDashboard(dashboard =>
-          {
-              dashboard.WithHostPort(8080)
-                       .WithForwardedHeaders(enabled: true);
-          });
+    .WithDashboard(dashboard =>
+    {
+        dashboard.WithHostPort(8080)
+            .WithForwardedHeaders(enabled: true);
+    });
 
 // Add Redis infrastructure
 var redis = builder.AddRedis("redis");
 
-var mysqlPassword = builder.AddParameter("mysql-password", secret: true);
-// Add MySQL database infrastructure
-var mysql = builder.AddMySql("database", password: mysqlPassword)
+// Add PostgreSQL database infrastructure
+var postgreSqlPassword = builder.AddParameter("postgreSql-password", secret: true);
+var postgres = builder.AddPostgres("database", password: postgreSqlPassword)
     // Configure the container to store data in a volume so that it persists across instances.
-    .WithDataVolume()
+    .WithDataVolume(isReadOnly: false)
     // Keep the container running between app host sessions.
     .WithLifetime(ContainerLifetime.Persistent)
-    .WithPhpMyAdmin()
-    .AddDatabase("MySql", "dev");
+    .WithPgAdmin();
+
+var postgresdb = postgres.AddDatabase("PostgreSQL", "dev");
 
 // Add RabbitMQ message queue infrastructure
 var rabbitmq = builder.AddRabbitMQ("rabbitmq")
@@ -31,22 +32,16 @@ var apiService = builder.AddProject<Projects.NcpAdminBlazor_ApiService>("apiserv
     .WithHttpHealthCheck("/health")
     .WithReference(redis)
     .WaitFor(redis)
-    .WithReference(mysql)
-    .WaitFor(mysql)
+    .WithReference(postgresdb)
+    .WaitFor(postgresdb)
     .WithReference(rabbitmq)
     .WaitFor(rabbitmq)
-    .PublishAsDockerComposeService((_, service) =>
-     {
-         service.Restart = "always";
-     });
+    .PublishAsDockerComposeService((_, service) => { service.Restart = "always"; });
 
 builder.AddProject<Projects.NcpAdminBlazor_Web>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health")
     .WithReference(apiService)
-    .WaitFor(apiService).PublishAsDockerComposeService((_, service) =>
-    {
-        service.Restart = "always";
-    });
+    .WaitFor(apiService).PublishAsDockerComposeService((_, service) => { service.Restart = "always"; });
 
 await builder.Build().RunAsync();
