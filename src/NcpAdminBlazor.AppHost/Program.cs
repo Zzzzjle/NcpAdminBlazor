@@ -11,20 +11,24 @@ builder.AddDockerComposeEnvironment("docker-env")
 // Add Redis infrastructure
 var redis = builder.AddRedis("redis");
 
+// Add RabbitMQ message queue infrastructure
+var rabbitmq = builder.AddRabbitMQ("rabbitmq")
+    .WithManagementPlugin();
+
 // Add PostgreSQL database infrastructure
-var postgreSqlPassword = builder.AddParameter("postgreSql-password", secret: true);
-var postgres = builder.AddPostgres("database", password: postgreSqlPassword)
+var postgresPassword = builder.AddParameter("postgres-password", secret: true);
+var postgres = builder.AddPostgres("database", password: postgresPassword)
     // Configure the container to store data in a volume so that it persists across instances.
     .WithDataVolume(isReadOnly: false)
     // Keep the container running between app host sessions.
     .WithLifetime(ContainerLifetime.Persistent)
     .WithPgAdmin();
 
-var postgresdb = postgres.AddDatabase("PostgreSQL", "dev");
+var postgresDb = postgres.AddDatabase("PostgreSQL", "dev");
 
-// Add RabbitMQ message queue infrastructure
-var rabbitmq = builder.AddRabbitMQ("rabbitmq")
-    .WithManagementPlugin();
+var migrationService = builder.AddProject<Projects.NcpAdminBlazor_MigrationService>("migration")
+    .WithReference(postgresDb)
+    .WaitFor(postgresDb);
 
 // Add web project with infrastructure dependencies
 var apiService = builder.AddProject<Projects.NcpAdminBlazor_ApiService>("apiservice")
@@ -32,10 +36,10 @@ var apiService = builder.AddProject<Projects.NcpAdminBlazor_ApiService>("apiserv
     .WithHttpHealthCheck("/health")
     .WithReference(redis)
     .WaitFor(redis)
-    .WithReference(postgresdb)
-    .WaitFor(postgresdb)
     .WithReference(rabbitmq)
     .WaitFor(rabbitmq)
+    .WithReference(postgresDb)
+    .WaitForCompletion(migrationService)
     .PublishAsDockerComposeService((_, service) => { service.Restart = "always"; });
 
 builder.AddProject<Projects.NcpAdminBlazor_Web>("webfrontend")

@@ -284,12 +284,12 @@ try
     #endregion
 
     var app = builder.Build();
-    if (app.Environment.IsDevelopment())
-    {
-        using var scope = app.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-    }
+    // if (app.Environment.IsDevelopment())
+    // {
+    //     using var scope = app.Services.CreateScope();
+    //     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    //     await dbContext.Database.EnsureCreatedAsync();
+    // }
 
     // seed initial data
     await app.Services.SeedAsync();
