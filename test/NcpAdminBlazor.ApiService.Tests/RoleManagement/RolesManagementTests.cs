@@ -6,9 +6,9 @@ using NcpAdminBlazor.ApiService.Tests.Fixtures;
 
 namespace NcpAdminBlazor.ApiService.Tests.RoleManagement;
 
-[Collection(AuthenticatedTestCollection.Name)]
-public class RolesManagementTests(AuthenticatedAppFixture app, RolesManagementTests.RoleState state)
-    : TestBase<AuthenticatedAppFixture, RolesManagementTests.RoleState>
+[Collection(WebAppTestCollection.Name)]
+public class RolesManagementTests(WebAppFixture app, RolesManagementTests.RoleState state)
+    : TestBase<WebAppFixture, RolesManagementTests.RoleState>
 {
     [Fact, Priority(1)]
     public async Task CreateRole_ShouldReturnRoleId()
@@ -90,12 +90,12 @@ public class RolesManagementTests(AuthenticatedAppFixture app, RolesManagementTe
     public async Task UpdateRolePermissions_ShouldModifyRolePermissions()
     {
         var roleId = state.RoleId ?? throw new InvalidOperationException("RoleId not initialized");
-        
+
         // 创建测试权限代码列表
-        var testPermissionCodes = new List<string> 
-        { 
-            "user.view", 
-            "user.create", 
+        var testPermissionCodes = new List<string>
+        {
+            "user.view",
+            "user.create",
             "user.edit",
             "user.delete"
         };
@@ -107,7 +107,8 @@ public class RolesManagementTests(AuthenticatedAppFixture app, RolesManagementTe
         };
 
         var (updateRsp, updateRes) = await app.AuthenticatedClient
-            .POSTAsync<UpdateRolePermissionsEndpoint, UpdateRolePermissionsRequest, ResponseData>(updatePermissionsRequest);
+            .POSTAsync<UpdateRolePermissionsEndpoint, UpdateRolePermissionsRequest, ResponseData>(
+                updatePermissionsRequest);
 
         updateRsp.StatusCode.ShouldBe(HttpStatusCode.OK);
         updateRes.Success.ShouldBeTrue();
@@ -125,7 +126,7 @@ public class RolesManagementTests(AuthenticatedAppFixture app, RolesManagementTe
         getRes.Data.PermissionCodes.ShouldContain("user.edit");
         getRes.Data.PermissionCodes.ShouldContain("user.delete");
     }
-    
+
 
     [Fact, Priority(8)]
     public async Task GetRolePermissions_ShouldReturnEmptyForNewRole()
@@ -176,17 +177,17 @@ public class RolesManagementTests(AuthenticatedAppFixture app, RolesManagementTe
         rsp.StatusCode.ShouldBe(HttpStatusCode.OK);
         res.Success.ShouldBeTrue();
         res.Data.Groups.ShouldNotBeEmpty();
-        
+
         // 验证树形结构 - 应该有System根节点
         var systemGroup = res.Data.Groups.ShouldHaveSingleItem();
         systemGroup.Key.ShouldBe("System");
         systemGroup.SubGroups.Count.ShouldBe(3); // Users, Roles, Menus
-        
+
         // 验证System.Users子节点
         var usersGroup = systemGroup.SubGroups.FirstOrDefault(g => g.Key == "System_Users");
         usersGroup.ShouldNotBeNull();
         usersGroup.Permissions.Count.ShouldBe(4); // View, Create, Edit, Delete
-        
+
         // 验证权限项
         var viewPermission = usersGroup.Permissions.FirstOrDefault(p => p.Key == "System_Users_View");
         viewPermission.ShouldNotBeNull();

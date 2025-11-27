@@ -1,6 +1,9 @@
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Net.Http.Headers;
 using NcpAdminBlazor.Infrastructure;
 using Testcontainers.PostgreSql;
 using Testcontainers.RabbitMq;
@@ -14,6 +17,8 @@ public class WebAppFixture : AppFixture<Program>
     private RedisContainer _redisContainer = null!;
     private RabbitMqContainer _rabbitMqContainer = null!;
     private PostgreSqlContainer _npgSqlContainer = null!;
+    private const string TestEnvAuthPolicyScheme = "TestEnvAuthPolicyScheme";
+    public HttpClient AuthenticatedClient { get; private set; } = null!;
 
     protected override async ValueTask PreSetupAsync()
     {
@@ -45,7 +50,36 @@ public class WebAppFixture : AppFixture<Program>
 
     protected override void ConfigureServices(IServiceCollection s)
     {
-        // Additional service configuration for tests if needed
+        //set "TestEnvAuthPolicyScheme" scheme as the default scheme and register the test handler
+        s.PostConfigure<AuthenticationOptions>(options =>
+        {
+            options.DefaultAuthenticateScheme = TestEnvAuthPolicyScheme;
+            options.DefaultChallengeScheme = TestEnvAuthPolicyScheme;
+        });
+        s.AddAuthentication(TestAuthHandler.SchemeName)
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.SchemeName, null)
+            .AddPolicyScheme(TestEnvAuthPolicyScheme, TestEnvAuthPolicyScheme, o =>
+            {
+                o.ForwardDefaultSelector = ctx =>
+                {
+                    if (ctx.Request.Headers.TryGetValue(HeaderNames.Authorization, out var authHeader) &&
+                        authHeader.FirstOrDefault()?.Equals(TestAuthHandler.SchemeName) is true)
+                    {
+                        return TestAuthHandler.SchemeName;
+                    }
+
+                    return "Jwt_Or_ApiKey";
+                };
+            });
+    }
+
+    protected override ValueTask SetupAsync()
+    {
+        AuthenticatedClient = CreateClient(c =>
+        {
+            c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TestAuthHandler.SchemeName);
+        });
+        return ValueTask.CompletedTask;
     }
 
     private static async Task CreateDatabaseAsync(string connectionString)

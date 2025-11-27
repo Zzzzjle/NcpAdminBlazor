@@ -145,6 +145,8 @@ try
             };
         });
 
+    builder.Services.AddAuthorization();
+
     #endregion
 
     #region Controller

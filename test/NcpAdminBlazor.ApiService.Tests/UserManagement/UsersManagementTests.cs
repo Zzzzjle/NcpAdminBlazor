@@ -8,9 +8,9 @@ using NcpAdminBlazor.ApiService.Tests.Fixtures;
 
 namespace NcpAdminBlazor.ApiService.Tests.UserManagement;
 
-[Collection(AuthenticatedTestCollection.Name)]
-public class UsersManagementTests(AuthenticatedAppFixture app, UsersManagementTests.UserState state)
-    : TestBase<AuthenticatedAppFixture, UsersManagementTests.UserState>
+[Collection(WebAppTestCollection.Name)]
+public class UsersManagementTests(WebAppFixture app, UsersManagementTests.UserState state)
+    : TestBase<WebAppFixture, UsersManagementTests.UserState>
 {
     [Fact, Priority(1)]
     public async Task RegisterUser_ShouldReturn200_AndUserId()
@@ -51,7 +51,7 @@ public class UsersManagementTests(AuthenticatedAppFixture app, UsersManagementTe
         res.Success.ShouldBeTrue();
 
         // Verify user no longer appears in list
-        var (_, listResponse) = await app.Client
+        var (_, listResponse) = await app.AuthenticatedClient
             .GETAsync<UserListEndpoint, GetUserListRequest, ResponseData<PagedData<UserListItemDto>>>(
                 new GetUserListRequest { Username = UserState.Username, PageSize = 20 });
 
@@ -132,7 +132,8 @@ public class UsersManagementTests(AuthenticatedAppFixture app, UsersManagementTe
         var userId = state.CreatedUserId ?? throw new InvalidOperationException("Created user not initialized");
         var username = state.CreatedUsername ?? throw new InvalidOperationException("Created username not initialized");
         var roleId = state.CreatedRoleId ?? throw new InvalidOperationException("Created role not initialized");
-        var roleName = state.CreatedRoleName ?? throw new InvalidOperationException("Created role name not initialized");
+        var roleName = state.CreatedRoleName ??
+                       throw new InvalidOperationException("Created role name not initialized");
         var updatedRealName = "Updated Auto User";
         var updatedEmail = $"{username}+updated@example.com";
         var updatedPhone = $"1{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds():0000000000000}"[..11];
