@@ -388,3 +388,4 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 /.vs
+.azure
