@@ -1,7 +1,7 @@
 using MudBlazor;
 using NcpAdminBlazor.Client.Models;
 
-namespace NcpAdminBlazor.Client.HttpClient;
+namespace NcpAdminBlazor.Client.Kiota;
 
 public class ApiWrapper(ApiClient apiClient, ILogger<ApiWrapper> logger, ISnackbar snackbar)
 {

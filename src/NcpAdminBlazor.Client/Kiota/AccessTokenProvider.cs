@@ -1,7 +1,7 @@
 using Microsoft.Kiota.Abstractions.Authentication;
 using NcpAdminBlazor.Client.Services;
 
-namespace NcpAdminBlazor.Client.HttpClient.Auth;
+namespace NcpAdminBlazor.Client.Kiota;
 
 public sealed class AccessTokenProvider(IAuthTokenService tokenService) : IAccessTokenProvider
 {

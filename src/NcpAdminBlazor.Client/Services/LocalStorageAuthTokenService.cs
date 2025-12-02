@@ -1,5 +1,5 @@
 using Blazored.LocalStorage;
-using NcpAdminBlazor.Client.HttpClient.Auth;
+using NcpAdminBlazor.Client.Kiota;
 using NcpAdminBlazor.Client.Models;
 
 namespace NcpAdminBlazor.Client.Services;

@@ -1,7 +1,7 @@
 using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Abstractions.Authentication;
 
-namespace NcpAdminBlazor.Client.HttpClient.Auth;
+namespace NcpAdminBlazor.Client.Kiota;
 
 public class BearerTokenAuthenticationProvider(IAuthenticationProvider authenticationProvider)
     : IAuthenticationProvider

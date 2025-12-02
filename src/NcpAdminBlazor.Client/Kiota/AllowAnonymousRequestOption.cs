@@ -1,5 +1,5 @@
 using Microsoft.Kiota.Abstractions;
 
-namespace NcpAdminBlazor.Client.HttpClient.Auth;
+namespace NcpAdminBlazor.Client.Kiota;
 
 public class AllowAnonymousRequestOption : IRequestOption;
