@@ -1,5 +1,4 @@
 using FluentValidation;
-using NcpAdminBlazor.Client.Models;
 using NcpAdminBlazor.Client.Pages.Applications.Role.Models;
 
 namespace NcpAdminBlazor.Client.Pages.Applications.Role.Validators;

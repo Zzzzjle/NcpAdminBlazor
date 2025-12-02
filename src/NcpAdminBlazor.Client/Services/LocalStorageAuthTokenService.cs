@@ -1,6 +1,5 @@
 using Blazored.LocalStorage;
 using NcpAdminBlazor.Client.Kiota;
-using NcpAdminBlazor.Client.Models;
 
 namespace NcpAdminBlazor.Client.Services;
 

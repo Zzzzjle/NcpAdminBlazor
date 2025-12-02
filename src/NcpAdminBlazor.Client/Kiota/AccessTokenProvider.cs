@@ -1,5 +1,4 @@
 using Microsoft.Kiota.Abstractions.Authentication;
-using NcpAdminBlazor.Client.Services;
 
 namespace NcpAdminBlazor.Client.Kiota;
 

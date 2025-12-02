@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using MudBlazor;
-using NcpAdminBlazor.Client.Models;
-using NcpAdminBlazor.Client.Providers;
 
 namespace NcpAdminBlazor.Client.Stores;
 

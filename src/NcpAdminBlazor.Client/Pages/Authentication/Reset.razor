@@ -1,11 +1,14 @@
 ﻿@page "/pages/authentication/reset-password"
-@layout LoginLayout
 
-    <MudText Typo="Typo.h4" GutterBottom="true">Set new password</MudText>
+<MudText Typo="Typo.h4" GutterBottom="true">Set new password</MudText>
 
-    <MudTextField @bind-Value="@Password" Label="New Password" Variant="Variant.Outlined" InputType="@_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Class="my-4" />
+<MudTextField @bind-Value="@Password" Label="New Password" Variant="Variant.Outlined" InputType="@_passwordInput"
+              Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility"
+              Class="my-4"/>
 
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/pages/authentication/login" Size="Size.Large" FullWidth="true" Class="mt-2">Set New Password</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/pages/authentication/login" Size="Size.Large"
+           FullWidth="true" Class="mt-2">Set New Password
+</MudButton>
 
 @code {
     string Password { get; set; } = string.Empty;
@@ -29,4 +32,5 @@
             _passwordInput = InputType.Text;
         }
     }
+
 }

@@ -5,8 +5,6 @@ using Microsoft.Kiota.Abstractions.Authentication;
 using Microsoft.Kiota.Http.HttpClientLibrary;
 using MudBlazor.Translations;
 using NcpAdminBlazor.Client.Kiota;
-using NcpAdminBlazor.Client.Providers;
-using NcpAdminBlazor.Client.Services;
 using NcpAdminBlazor.Client.Stores;
 
 namespace NcpAdminBlazor.Client.Extensions;

@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components.Authorization;
-using NcpAdminBlazor.Client.Services;
 
 namespace NcpAdminBlazor.Client.Providers;
 

@@ -1,9 +1,9 @@
 using FluentValidation;
-using NcpAdminBlazor.Client.Models;
 
 namespace NcpAdminBlazor.Client.Pages.Applications.User.Validators;
 
-public class UserAddModelValidator : FormModelValidator<NcpAdminBlazorApiServiceEndpointsUsersManagementCreateUserRequest>
+public class
+    UserAddModelValidator : FormModelValidator<NcpAdminBlazorApiServiceEndpointsUsersManagementCreateUserRequest>
 {
     public UserAddModelValidator()
     {
