@@ -14,16 +14,29 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server"/>
+        <PackageReference Include="Tailwind.Hosting"/>
+        <PackageReference Include="Tailwind.Hosting.Build">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Yarp.ReverseProxy"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor" />
-      <_ContentIncludedByDefault Remove="Components\Layout\ReconnectModal.razor" />
-    </ItemGroup>
+    <PropertyGroup Label="Tailwind.Hosting.Build Props">
+        <TailwindVersion>latest</TailwindVersion>
+        <TailwindWatch>true</TailwindWatch>
 
-    <Target Name="TailwindCliBuild" BeforeTargets="Compile">
-        <Exec Command="npm run build:css" />
+        <TailwindInputCssFile>wwwroot/app.css</TailwindInputCssFile>
+        <TailwindOutputCssFile>wwwroot/tailwind.css</TailwindOutputCssFile>
+
+        <TailwindMinifyOnPublish>true</TailwindMinifyOnPublish>
+        <TailwindExcludeInputFileOnPublish>true</TailwindExcludeInputFileOnPublish>
+    </PropertyGroup>
+    
+    <Target Name="CleanUpTailwindStaticCache" BeforeTargets="PrepareForBuild">
+        <ItemGroup>
+            <Content Remove="$(TailwindOutputCssFile)"/>
+        </ItemGroup>
     </Target>
 
 </Project>

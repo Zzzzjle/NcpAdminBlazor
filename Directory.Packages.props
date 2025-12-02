@@ -16,7 +16,6 @@
         <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.0"/>
         <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0"/>
         <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.0.0"/>
-
         <!-- Aspire hosting & related -->
         <PackageVersion Include="Aspire.Hosting.AppHost" Version="$(AspireVersion)"/>
         <PackageVersion Include="Aspire.Hosting.Docker" Version="13.0.0-preview.1.25560.3"/>
@@ -31,14 +30,11 @@
         <PackageVersion Include="Aspire.RabbitMQ.Client.v7" Version="9.5.2"/>
         <PackageVersion Include="Aspire.StackExchange.Redis" Version="$(AspireVersion)"/>
         <PackageVersion Include="Aspire.Confluent.Kafka" Version="$(AspireVersion)"/>
-
         <!-- Authentication / OAuth -->
         <PackageVersion Include="AspNet.Security.OAuth.Feishu" Version="10.0.0"/>
         <PackageVersion Include="AspNet.Security.OAuth.Weixin" Version="10.0.0"/>
-
         <!-- Data Protection -->
         <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="10.0.0"/>
-
         <!-- EF Core (tools, providers) -->
         <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0"/>
         <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0"/>
@@ -49,7 +45,6 @@
         <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0"/>
         <PackageVersion Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0"/>
         <PackageVersion Include="Pomelo.EntityFrameworkCore.MySql.Json.Microsoft" Version="9.0.0"/>
-
         <!-- NetCorePal packages -->
         <PackageVersion Include="NetCorePal.Context.AspNetCore" Version="$(NetCorePalVersion)"/>
         <PackageVersion Include="NetCorePal.Context.CAP" Version="$(NetCorePalVersion)"/>
@@ -71,7 +66,6 @@
         <PackageVersion Include="NetCorePal.Extensions.Repository.EntityFrameworkCore" Version="$(NetCorePalVersion)"/>
         <PackageVersion Include="NetCorePal.Extensions.Repository.EntityFrameworkCore.Snowflake" Version="$(NetCorePalVersion)"/>
         <PackageVersion Include="NetCorePal.OpenTelemetry.Diagnostics" Version="$(NetCorePalVersion)"/>
-
         <!-- FastEndpoints stack -->
         <PackageVersion Include="FastEndpoints" Version="$(FastEndpointsVersion)"/>
         <PackageVersion Include="FastEndpoints.ClientGen.Kiota" Version="$(FastEndpointsVersion)"/>
@@ -80,16 +74,13 @@
         <PackageVersion Include="FastEndpoints.Swagger" Version="$(FastEndpointsVersion)"/>
         <PackageVersion Include="FastEndpoints.Swagger.Swashbuckle" Version="2.3.0"/>
         <PackageVersion Include="FastEndpoints.Testing" Version="$(FastEndpointsVersion)"/>
-
         <!-- FluentValidation / permissions -->
         <PackageVersion Include="FluentPermissions" Version="1.0.0-preview.1.2509210917"/>
         <PackageVersion Include="FluentValidation" Version="12.1.0"/>
         <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.1"/>
-
         <!-- Hangfire -->
         <PackageVersion Include="Hangfire.AspNetCore" Version="1.8.22"/>
         <PackageVersion Include="Hangfire.Redis.StackExchange" Version="1.12.0"/>
-
         <!-- CAP packages (.NET 9.0+) -->
         <PackageVersion Include="DotNetCore.CAP.AzureServiceBus" Version="8.4.1"/>
         <PackageVersion Include="DotNetCore.CAP.AmazonSQS" Version="8.4.1"/>
@@ -100,7 +91,6 @@
         <PackageVersion Include="DotNetCore.CAP.Pulsar" Version="8.4.1"/>
         <PackageVersion Include="DotNetCore.CAP.RabbitMQ" Version="8.4.1"/>
         <PackageVersion Include="DotNetCore.CAP.RedisStreams" Version="8.4.1"/>
-
         <!-- OpenTelemetry -->
         <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="$(OpenTelemetryVersion)"/>
         <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="$(OpenTelemetryVersion)"/>
@@ -109,37 +99,35 @@
         <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="$(OpenTelemetryVersion)"/>
         <PackageVersion Include="OpenTelemetry.Instrumentation.SqlClient" Version="1.13.0-beta.1"/>
         <PackageVersion Include="Npgsql.OpenTelemetry" Version="8.0.8"/>
-
         <!-- Redis / Messaging / Proxy -->
         <PackageVersion Include="StackExchange.Redis" Version="2.10.1"/>
         <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0"/>
-
         <!-- Refit -->
         <PackageVersion Include="Refit.HttpClientFactory" Version="8.0.0"/>
         <PackageVersion Include="Refit.Newtonsoft.Json" Version="8.0.0"/>
-
         <!-- Serilog -->
         <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0"/>
         <PackageVersion Include="Serilog.Enrichers.ClientInfo" Version="2.7.0"/>
         <PackageVersion Include="Serilog.Sinks.OpenTelemetry" Version="4.2.0"/>
-
-        <!-- Blazor / UI / Kiota-->
-        <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0"/>
+        <!-- Blazor Components -->
         <PackageVersion Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.0"/>
         <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0"/>
         <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.0"/>
+        <!-- Blazor Libraries -->
+        <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0"/>
         <PackageVersion Include="MudBlazor" Version="8.15.0"/>
         <PackageVersion Include="MudBlazor.Translations" Version="2.7.0"/>
         <PackageVersion Include="PodNet.Blazor.TypedRoutes" Version="1.0.0"/>
+        <!-- Kiota -->
         <PackageVersion Include="Microsoft.Kiota.Bundle" Version="1.21.0"/>
-
+        <!-- Tailwind -->
+        <PackageVersion Include="Tailwind.Hosting" Version="1.2.4"/>
+        <PackageVersion Include="Tailwind.Hosting.Build" Version="1.2.4"/>
         <!-- Swagger -->
         <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.2.0"/>
-
         <!-- Analysis / Code quality -->
         <PackageVersion Include="Microsoft.CodeAnalysis" Version="5.0.0"/>
         <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.16.0.128591"/>
-
         <!-- Testing -->
         <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0"/>
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1"/>
@@ -156,10 +144,8 @@
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5"/>
         <PackageVersion Include="xunit.v3" Version="3.2.0"/>
         <PackageVersion Include="coverlet.collector" Version="6.0.4"/>
-
         <!-- Containers tooling -->
         <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1"/>
-
         <!-- Prometheus -->
         <PackageVersion Include="prometheus-net.AspNetCore" Version="8.2.1"/>
         <PackageVersion Include="prometheus-net.AspNetCore.HealthChecks" Version="8.2.1"/>
