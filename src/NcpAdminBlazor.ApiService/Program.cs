@@ -279,26 +279,22 @@ try
 
     #region Jobs
 
+    // this flag indicates whether we are generating API clients,
+    // when true, we use InMemory database and skip some services that are not needed for client generation
+    var isGenerateClients = args.Contains("--generateclients");
     // When using Aspire, Redis connection is managed by Aspire
-    builder.Services.AddHangfire(x => { x.UseRedisStorage(builder.Configuration.GetConnectionString("Redis")); });
-    builder.Services.AddHangfireServer(); //hangfire dashboard  path：  /hangfire
+    if (!isGenerateClients)
+    {
+        builder.Services.AddHangfire(x => { x.UseRedisStorage(builder.Configuration.GetConnectionString("Redis")); });
+        builder.Services.AddHangfireServer(); //hangfire dashboard  path：  /hangfire
+    }
 
     #endregion
 
     var app = builder.Build();
-    // if (app.Environment.IsDevelopment())
-    // {
-    //     using var scope = app.Services.CreateScope();
-    //     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    //     await dbContext.Database.EnsureCreatedAsync();
-    // }
-
-    // seed initial data
-    await app.Services.SeedAsync();
 
     app.UseKnownExceptionHandler();
     // Configure the HTTP request pipeline.
-
     app.UseStaticFiles();
     app.UseHttpsRedirection();
     app.UseRouting();
@@ -313,6 +309,16 @@ try
         app.UseSwaggerGen(); //add this
     }
 
+    await app.GenerateApiClientsAndExitAsync(c =>
+    {
+        c.SwaggerDocumentName = "v1"; //must match doc name above
+        c.Language = GenerationLanguage.CSharp;
+        c.OutputPath = "../NcpAdminBlazor.Client/HttpClient";
+        c.ClientNamespaceName = "NcpAdminBlazor.Client";
+        c.ClientClassName = "ApiClient";
+        // c.CreateZipArchive = true; //if you'd like a zip file as well
+    });
+
     // Code analysis endpoint
     app.MapGet("/code-analysis", () =>
     {
@@ -323,7 +329,6 @@ try
         );
         return Results.Content(html, "text/html; charset=utf-8");
     });
-
 
     #region SignalR
 
@@ -336,15 +341,8 @@ try
     app.MapDefaultEndpoints();
     app.UseHangfireDashboard();
 
-    await app.GenerateApiClientsAndExitAsync(c =>
-    {
-        c.SwaggerDocumentName = "v1"; //must match doc name above
-        c.Language = GenerationLanguage.CSharp;
-        c.OutputPath = "../NcpAdminBlazor.Client/HttpClient";
-        c.ClientNamespaceName = "NcpAdminBlazor.Client";
-        c.ClientClassName = "ApiClient";
-        // c.CreateZipArchive = true; //if you'd like a zip file as well
-    });
+    // seed initial data
+    await app.Services.SeedAsync();
 
     await app.RunAsync();
 }
