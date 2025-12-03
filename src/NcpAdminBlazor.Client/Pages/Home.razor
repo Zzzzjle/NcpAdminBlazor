@@ -2,6 +2,7 @@
 @inject IStringLocalizer<Home> L
 
 <PageTitle>Home</PageTitle>
+<h1>Render @(OperatingSystem.IsBrowser() ? "Wasm" : "Server")</h1>
 
 <MudText Typo="Typo.h3" GutterBottom="true">@L["Hello, world!"]</MudText>
 <MudText Class="mb-8">Welcome to your new app, powered by MudBlazor and the .NET 9 Template!</MudText>

@@ -32,10 +32,12 @@
         <TailwindMinifyOnPublish>true</TailwindMinifyOnPublish>
         <TailwindExcludeInputFileOnPublish>true</TailwindExcludeInputFileOnPublish>
     </PropertyGroup>
-    
-    <Target Name="CleanUpTailwindStaticCache" BeforeTargets="PrepareForBuild">
+
+    <Target Name="CleanUpTailwindStaticCache"
+            BeforeTargets="PrepareForBuild"
+            Condition="'$(OS)' == 'Windows_NT'">
         <ItemGroup>
-            <Content Remove="$(TailwindOutputCssFile)"/>
+            <Content Remove="$(TailwindOutputCssFile)" />
         </ItemGroup>
     </Target>
 
