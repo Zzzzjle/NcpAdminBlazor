@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Localization;
 using MudBlazor.Services;
 using NcpAdminBlazor.Client.Extensions;
 using NcpAdminBlazor.Web.Components;
-
+using NcpAdminBlazor.Web.MockApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,12 +17,35 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddHttpClient("ApiService", client => { client.BaseAddress = new("https+http://apiservice"); });
+// 配置 Demo 模式
+var demoModeEnabled = builder.Configuration.GetValue<bool>("DemoMode:Enabled");
+if (!demoModeEnabled)
+{
+    // 生产模式：使用真实的 API 服务
+    builder.Services.AddHttpClient("ApiService", client => { client.BaseAddress = new("https+http://apiservice"); });
+}
+
 builder.Services.AddScoped<HttpClient>(sp =>
 {
+    if (demoModeEnabled)
+    {
+        // Demo 模式：使用本地 HttpClient
+        var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+        var request = httpContextAccessor.HttpContext?.Request;
+        var baseAddress = $"{request?.Scheme}://{request?.Host}";
+        return new HttpClient { BaseAddress = new Uri(baseAddress) };
+    }
+
+    // 生产模式：使用 API 服务
     var factory = sp.GetRequiredService<IHttpClientFactory>();
     return factory.CreateClient("ApiService");
 });
+
+// 注册 Mock 数据存储（仅在 Demo 模式下使用）
+if (demoModeEnabled)
+{
+    builder.Services.AddSingleton<MockDataStore>();
+}
 
 builder.Services.AddKiotaClient();
 
@@ -32,6 +55,7 @@ builder.Services.AddClientServices();
 builder.Services.AddOutputCache();
 
 builder.Services.AddHttpForwarder();
+builder.Services.AddHttpContextAccessor();
 
 
 var app = builder.Build();
@@ -44,10 +68,23 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Forward API requests to the API service
-app.MapForwarder("/api/{**catch-all}", "http+https://apiservice/");
-
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+
+// 根据 Demo 模式配置 API 路由
+if (demoModeEnabled)
+{
+    // Demo 模式：使用 Mock APIs
+    var mockDataStore = app.Services.GetRequiredService<MockDataStore>();
+    var apiGroup = app.MapGroup("");
+    apiGroup.MapUsersManagementMockApis(mockDataStore);
+    apiGroup.MapRolesManagementMockApis(mockDataStore);
+}
+else
+{
+    // 生产模式：转发请求到 API 服务
+    app.MapForwarder("/api/{**catch-all}", "http+https://apiservice/");
+}
+
 app.UseHttpsRedirection();
 
 app.UseAntiforgery();
