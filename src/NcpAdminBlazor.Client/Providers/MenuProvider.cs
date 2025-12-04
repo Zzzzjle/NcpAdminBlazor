@@ -32,6 +32,46 @@ public class MenuProvider
 
         _menuItems = builder.Items;
     }
+
+    /// <summary>
+    /// 根据 href 查找最匹配的菜单项
+    /// </summary>
+    public MenuItem? FindMenuItemByHref(string href)
+    {
+        return FindMenuItemByHref(MenuItems, href);
+    }
+
+    /// <summary>
+    /// 生成路由的备用标题（当菜单中找不到时使用）
+    /// </summary>
+    public static string GenerateFallbackTitle(string route)
+    {
+        var lastSegment = route.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s));
+        // 将 "PageName" 转换为 "Page Name"
+        return System.Text.RegularExpressions.Regex.Replace(lastSegment ?? "Page", "([A-Z])", " $1").Trim();
+    }
+
+    private static MenuItem? FindMenuItemByHref(IEnumerable<MenuItem> items, string href)
+    {
+        MenuItem? bestMatch = null;
+        foreach (var item in items)
+        {
+            if (item.Href != null && href.StartsWith(item.Href, StringComparison.OrdinalIgnoreCase) &&
+                (bestMatch == null || item.Href.Length > bestMatch.Href!.Length))
+            {
+                bestMatch = item;
+            }
+
+            if (item.ChildItems is null || item.ChildItems.Count == 0) continue;
+            var childMatch = FindMenuItemByHref(item.ChildItems, href);
+            if (childMatch != null && (bestMatch == null || childMatch.Href!.Length > bestMatch.Href!.Length))
+            {
+                bestMatch = childMatch;
+            }
+        }
+
+        return bestMatch;
+    }
 }
 
 public class MenuBuilder(MenuItem? parent = null)

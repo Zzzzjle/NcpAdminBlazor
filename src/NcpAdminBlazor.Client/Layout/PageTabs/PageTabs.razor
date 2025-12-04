@@ -1,60 +1,84 @@
+@using Blazored.LocalStorage
 @implements IDisposable
 @inject NavigationManager NavigationManager
 @inject MenuProvider MenuProvider
+@inject ILocalStorageService LocalStorage
+@inject IJSRuntime JsRuntime
+@inject ILogger<PageTabs> Logger
 
 @namespace NcpAdminBlazor.Client.Layout
 
 <div
     class="pl-2 w-full flex items-center border-b border-(--mud-palette-lines-default) bg-(--mud-palette-appbar-background)">
-    <div class="flex my-0.5 h-10 items-center gap-1">
-        @for (var index = 0; index < _pageTabs.Count; index++)
-        {
-            var item = _pageTabs[index];
-            <MudButton
-                Class="shrink-0"
-                StartIcon="@item.Icon"
-                Color="@(_activeRoute == item.Route ? Color.Primary : Color.Default)"
-                Style="@(_activeRoute == item.Route ? "background-color: var(--mud-palette-primary-hover)" : "")"
-                OnClick="@(() => OnClicked(item))"
-                Ripple="false">
-                @item.Title
-                @if (item.IsCloseable)
-                {
-                    <span
-                        class="ml-2 -mr-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-sm text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-300"
-                        role="button"
-                        title="Close tab"
-                        aria-label="Close tab"
-                        @onclick="@(_ => OnClosed(item))"
-                        @onclick:preventDefault
-                        @onclick:stopPropagation>&times;</span>
-                }
-            </MudButton>
-            @if (index < _pageTabs.Count - 1)
+    <div id="page-tabs-container"
+         class="flex my-0.5 h-10 items-center gap-1 overflow-x-auto scrollbar-hide select-none @(_isDragging ? "cursor-grabbing" : "cursor-grab")"
+         style="scrollbar-width: none; -ms-overflow-style: none;"
+         @onmousedown="@((MouseEventArgs e) => OnMouseDown(e))"
+         @onmousemove="@((MouseEventArgs e) => OnMouseMove(e))"
+         @onmouseup="@((MouseEventArgs _) => OnMouseUp())"
+         @onmouseleave="@((MouseEventArgs _) => OnMouseLeave())"
+         @onwheel="@(async (WheelEventArgs e) => await OnWheel(e))"
+         @onwheel:preventDefault>
+        @{
+            var index = 0;
+            var totalCount = _tabs.Count;
+            foreach (var item in AllTabs)
             {
-                <MudDivider Vertical="true" Class="h-1/2"/>
+                var isLast = index == totalCount - 1;
+                <MudButton
+                    Class="shrink-0"
+                    StartIcon="@item.Icon"
+                    Color="@(_activeRoute == item.Route ? Color.Primary : Color.Default)"
+                    Style="@(_activeRoute == item.Route ? "background-color: var(--mud-palette-primary-hover)" : "")"
+                    OnClick="@(() => OnClicked(item))"
+                    Ripple="false">
+                    @item.Title
+                    @if (!item.IsPinned && item.Route != "/")
+                    {
+                        <span
+                            class="ml-2 -mr-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-sm text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-300"
+                            role="button"
+                            title="Close tab"
+                            aria-label="Close tab"
+                            @onclick="@(_ => OnClosed(item))"
+                            @onclick:preventDefault
+                            @onclick:stopPropagation>&times;</span>
+                    }
+                </MudButton>
+                @if (!isLast)
+                {
+                    <MudDivider Vertical="true" Class="h-1/2"/>
+                }
+
+                index++;
             }
         }
     </div>
     <MudButtonGroup Color="Color.Inherit" Variant="Variant.Text" Class="ml-auto">
         <MudMenu Dense Icon="@Icons.Material.Filled.KeyboardArrowDown">
             <ChildContent>
-                <MudMenuItem Label="刷新" Icon="@Icons.Material.Filled.Autorenew"/>
-                <MudMenuItem Label="固定" Icon="@Icons.Material.Filled.PushPin"/>
-                <MudMenuItem Label="在新窗口打开" Icon="@Icons.Material.Filled.OpenInNew"></MudMenuItem>
+                <MudMenuItem Label="刷新" Icon="@Icons.Material.Filled.Autorenew" OnClick="@RefreshCurrentTab"/>
+                <MudMenuItem Label="@(_currentTabPinned ? "取消固定" : "固定")" Icon="@Icons.Material.Filled.PushPin"
+                             OnClick="@TogglePinCurrentTab"/>
+                <MudMenuItem Label="在新窗口打开" Icon="@Icons.Material.Filled.OpenInNew" OnClick="@OpenInNewWindow"/>
                 <MudDivider/>
-                <MudMenuItem Label="关闭左侧标签页" Icon="@Icons.Material.Filled.ArrowBack"/>
-                <MudMenuItem Label="关闭右侧标签页" Icon="@Icons.Material.Filled.ArrowForward"/>
+                <MudMenuItem Label="关闭左侧标签页" Icon="@Icons.Material.Filled.ArrowBack" OnClick="@CloseLeftTabs"/>
+                <MudMenuItem Label="关闭右侧标签页" Icon="@Icons.Material.Filled.ArrowForward"
+                             OnClick="@CloseRightTabs"/>
                 <MudDivider/>
-                <MudMenuItem Label="关闭其他标签页" Icon="@Icons.Material.Filled.CompareArrows"/>
-                <MudMenuItem Label="关闭全部标签页" Icon="@Icons.Material.Filled.Close"></MudMenuItem>
+                <MudMenuItem Label="关闭其他标签页" Icon="@Icons.Material.Filled.CompareArrows"
+                             OnClick="@CloseOtherTabs"/>
+                <MudMenuItem Label="关闭全部标签页" Icon="@Icons.Material.Filled.Close" OnClick="@CloseAllTabs"/>
             </ChildContent>
         </MudMenu>
-        <MudIconButton Icon="@Icons.Material.Filled.Fullscreen"></MudIconButton>
+        <MudIconButton Icon="@(_isFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+                       OnClick="@ToggleFullscreen"/>
     </MudButtonGroup>
 </div>
 
 @code {
+    private const string TabsStorageKey = "page-tabs";
+    private const string ActiveTabStorageKey = "active-tab";
 
     /// <summary>
     /// 定义一个公共事件，当标签页关闭时触发。
@@ -62,16 +86,30 @@
     /// </summary>
     public event Action<string>? OnTabClosed;
 
-    private readonly List<PageTabItem> _pageTabs = [];
+    private readonly List<PageTabItem> _tabs = [];
+
+    /// <summary>
+    /// 获取所有标签页（固定的标签页在前）
+    /// </summary>
+    private IReadOnlyList<PageTabItem> AllTabs => _tabs;
 
     private string? _activeRoute;
+    private bool _isFullscreen;
+    private bool _currentTabPinned;
+
+    // 拖动滚动相关状态
+    private bool _isDragging;
+    private double _startX;
+    private double _scrollLeft;
 
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        await LoadTabsFromStorage();
         NavigationManager.LocationChanged += OnLocationChanged;
         HandleLocationChange(NavigationManager.Uri);
     }
+
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
@@ -88,12 +126,21 @@
     {
         var currentRoute = GetCurrentRoute(newLocation);
         _activeRoute = currentRoute;
+        UpdateCurrentTabPinnedState();
 
-        if (_pageTabs.Any(c => c.Route == currentRoute)) return;
-        var menuItem = FindMenuItemByHref(MenuProvider.MenuItems, currentRoute);
-        var title = menuItem?.Title ?? GenerateFallbackTitle(currentRoute);
+        if (_tabs.Any(c => c.Route == currentRoute)) return;
+        var menuItem = MenuProvider.FindMenuItemByHref(currentRoute);
+        var title = menuItem?.Title ?? MenuProvider.GenerateFallbackTitle(currentRoute);
         var icon = menuItem?.Icon ?? string.Empty;
-        _pageTabs.Add(new PageTabItem(currentRoute, title, icon, currentRoute != "/"));
+
+        // 新标签页默认不固定，添加到列表末尾
+        _tabs.Add(new PageTabItem(currentRoute, title, icon));
+    }
+
+    private void UpdateCurrentTabPinnedState()
+    {
+        var currentTab = AllTabs.FirstOrDefault(t => t.Route == _activeRoute);
+        _currentTabPinned = currentTab?.IsPinned ?? false;
     }
 
     private void OnClicked(PageTabItem page)
@@ -106,58 +153,256 @@
 
     private void OnClosed(PageTabItem pageTabItem)
     {
-        _pageTabs.Remove(pageTabItem);
+        if (pageTabItem.IsPinned) return; // 固定的标签页不能关闭
 
-        if (_activeRoute == pageTabItem.Route && _pageTabs.Count > 0)
+        var removed = _tabs.Remove(pageTabItem);
+        if (!removed) return;
+
+
+        if (_activeRoute == pageTabItem.Route)
         {
-            NavigationManager.NavigateTo(_pageTabs[^1].Route);
+            var lastTab = AllTabs.LastOrDefault();
+            if (lastTab != null)
+            {
+                NavigationManager.NavigateTo(lastTab.Route);
+            }
         }
 
         OnTabClosed?.Invoke(pageTabItem.Route);
     }
 
-    // 从 MenuProvider 查找菜单项的核心逻辑
-    private static MenuItem? FindMenuItemByHref(IEnumerable<MenuItem> items, string href)
-    {
-        MenuItem? bestMatch = null;
-        foreach (var item in items)
-        {
-            if (item.Href != null && href.StartsWith(item.Href, StringComparison.OrdinalIgnoreCase) &&
-                (bestMatch == null || item.Href.Length > bestMatch.Href!.Length))
-            {
-                bestMatch = item;
-            }
+    #region Menu Operations
 
-            if (item.ChildItems is null || item.ChildItems.Count == 0) continue;
-            var childMatch = FindMenuItemByHref(item.ChildItems, href);
-            if (childMatch != null && (bestMatch == null || childMatch.Href!.Length > bestMatch.Href!.Length))
+    private void RefreshCurrentTab()
+    {
+        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+    }
+
+    private void TogglePinCurrentTab()
+    {
+        var currentTab = AllTabs.FirstOrDefault(t => t.Route == _activeRoute);
+        if (currentTab == null) return;
+
+        var index = _tabs.IndexOf(currentTab);
+        if (index == -1) return;
+
+        var updatedTab = currentTab with { IsPinned = !currentTab.IsPinned };
+        _tabs.RemoveAt(index);
+
+        if (updatedTab.IsPinned)
+        {
+            // 固定时，插入到最后一个固定标签页之后
+            var lastPinnedIndex = _tabs.FindLastIndex(t => t.IsPinned);
+            _tabs.Insert(lastPinnedIndex + 1, updatedTab);
+        }
+        else
+        {
+            // 取消固定时，添加到列表末尾
+            _tabs.Add(updatedTab);
+        }
+
+        _currentTabPinned = updatedTab.IsPinned;
+    }
+
+    private async Task OpenInNewWindow()
+    {
+        if (!string.IsNullOrEmpty(_activeRoute))
+        {
+            await JsRuntime.InvokeVoidAsync("open", _activeRoute, "_blank");
+        }
+    }
+
+    private void CloseLeftTabs()
+    {
+        // 找到当前标签页前的所有未固定标签页
+        var tabsToRemove = new List<PageTabItem>();
+        foreach (var tab in AllTabs)
+        {
+            if (tab.Route == _activeRoute) break;
+            if (!tab.IsPinned)
             {
-                bestMatch = childMatch;
+                tabsToRemove.Add(tab);
             }
         }
 
-        return bestMatch;
+        foreach (var tab in tabsToRemove)
+        {
+            OnTabClosed?.Invoke(tab.Route);
+            _tabs.Remove(tab);
+        }
     }
 
-    // 当无法从菜单中找到标题时的备用方法
-    private static string GenerateFallbackTitle(string route)
+    private void CloseRightTabs()
     {
-        var lastSegment = route.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s));
-        // 将 "PageName" 转换为 "Page Name"
-        return System.Text.RegularExpressions.Regex.Replace(lastSegment ?? "Page", "([A-Z])", " $1").Trim();
+        // 找到当前标签页后的所有未固定标签页
+        var tabsToRemove = new List<PageTabItem>();
+        var foundCurrent = false;
+        foreach (var tab in AllTabs)
+        {
+            if (tab.Route == _activeRoute)
+            {
+                foundCurrent = true;
+                continue;
+            }
+
+            if (foundCurrent && !tab.IsPinned)
+            {
+                tabsToRemove.Add(tab);
+            }
+        }
+
+        foreach (var tab in tabsToRemove)
+        {
+            OnTabClosed?.Invoke(tab.Route);
+            _tabs.Remove(tab);
+        }
     }
+
+    private void CloseOtherTabs()
+    {
+        var currentTab = AllTabs.FirstOrDefault(t => t.Route == _activeRoute);
+        if (currentTab == null) return;
+
+        // 保留首页、固定的标签页和当前标签页
+        var tabsToRemove = _tabs.Where(t => !t.IsPinned && t.Route != "/" && t.Route != _activeRoute).ToList();
+        foreach (var tab in tabsToRemove)
+        {
+            OnTabClosed?.Invoke(tab.Route);
+            _tabs.Remove(tab);
+        }
+    }
+
+    private void CloseAllTabs()
+    {
+        // 保留首页和固定的标签页
+        var tabsToRemove = _tabs.Where(t => !t.IsPinned && t.Route != "/").ToList();
+        foreach (var tab in tabsToRemove)
+        {
+            OnTabClosed?.Invoke(tab.Route);
+            _tabs.Remove(tab);
+        }
+
+        // 如果当前标签页被关闭,导航到首页
+        if (AllTabs.All(t => t.Route != _activeRoute))
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private async Task ToggleFullscreen()
+    {
+        if (_isFullscreen)
+        {
+            await JsRuntime.InvokeVoidAsync("eval", "document.exitFullscreen()");
+        }
+        else
+        {
+            await JsRuntime.InvokeVoidAsync("eval", "document.documentElement.requestFullscreen()");
+        }
+
+        _isFullscreen = !_isFullscreen;
+    }
+
+    #endregion
+
+    #region Storage Persistence
+
+    private async Task SaveTabsToStorage()
+    {
+        try
+        {
+            var allTabs = AllTabs.ToList();
+            await LocalStorage.SetItemAsync(TabsStorageKey, allTabs);
+            await LocalStorage.SetItemAsync(ActiveTabStorageKey, _activeRoute);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "保存标签页到本地存储失败。");
+        }
+    }
+
+    private async Task LoadTabsFromStorage()
+    {
+        try
+        {
+            var storedTabs = await LocalStorage.GetItemAsync<List<PageTabItem>>(TabsStorageKey);
+            if (storedTabs != null && storedTabs.Count > 0)
+            {
+                _tabs.Clear();
+                _tabs.AddRange(storedTabs);
+            }
+
+            var storedActiveRoute = await LocalStorage.GetItemAsync<string>(ActiveTabStorageKey);
+            if (!string.IsNullOrEmpty(storedActiveRoute))
+            {
+                _activeRoute = storedActiveRoute;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "从本地存储加载标签页失败，将使用默认设置。");
+        }
+    }
+
+    #endregion
+
+    #region Drag Scroll & Wheel Scroll
+
+    private const string TabsContainerSelector = "#page-tabs-container";
+
+    private async Task OnMouseDown(MouseEventArgs e)
+    {
+        if (e.Button != 0) return; // 只响应左键
+
+        _isDragging = true;
+        _startX = e.ClientX;
+        _scrollLeft = await JsRuntime.InvokeAsync<double>("eval",
+            $"document.querySelector('{TabsContainerSelector}')?.scrollLeft ?? 0");
+    }
+
+    private async Task OnMouseMove(MouseEventArgs e)
+    {
+        if (!_isDragging) return;
+
+        var x = e.ClientX;
+        var walk = (x - _startX) * 1.5; // 滚动速度倍数
+        var newScrollLeft = _scrollLeft - walk;
+
+        await JsRuntime.InvokeVoidAsync("eval",
+            $"document.querySelector('{TabsContainerSelector}').scrollLeft = {newScrollLeft}");
+    }
+
+    private void OnMouseUp()
+    {
+        _isDragging = false;
+    }
+
+    private void OnMouseLeave()
+    {
+        _isDragging = false;
+    }
+
+    private async Task OnWheel(WheelEventArgs e)
+    {
+        // 将垂直滚动转换为水平滚动
+        await JsRuntime.InvokeVoidAsync("eval",
+            $"document.querySelector('{TabsContainerSelector}').scrollLeft += {e.DeltaY}");
+    }
+
+    #endregion
 
     public void Dispose()
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
+        _ = SaveTabsToStorage();
     }
 
-    // 数据模型 (建议将其移至一个共享的 Models 文件夹)
+    // 数据模型
     private sealed record PageTabItem(
         string Route,
         string Title,
         string Icon,
-        bool IsCloseable
+        bool IsPinned = false
     );
 
 }
