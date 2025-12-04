@@ -5,6 +5,7 @@
 @inject ILocalStorageService LocalStorage
 @inject IJSRuntime JsRuntime
 @inject ILogger<PageTabs> Logger
+@inject LayoutStore LayoutStore
 
 @namespace NcpAdminBlazor.Client.Layout
 
@@ -13,11 +14,11 @@
     <div id="page-tabs-container"
          class="flex my-0.5 h-10 items-center gap-1 overflow-x-auto scrollbar-hide select-none @(_isDragging ? "cursor-grabbing" : "cursor-grab")"
          style="scrollbar-width: none; -ms-overflow-style: none;"
-         @onmousedown="@((MouseEventArgs e) => OnMouseDown(e))"
-         @onmousemove="@((MouseEventArgs e) => OnMouseMove(e))"
-         @onmouseup="@((MouseEventArgs _) => OnMouseUp())"
-         @onmouseleave="@((MouseEventArgs _) => OnMouseLeave())"
-         @onwheel="@(async (WheelEventArgs e) => await OnWheel(e))"
+         @onmousedown="@(OnMouseDown)"
+         @onmousemove="@(OnMouseMove)"
+         @onmouseup="@(OnMouseUp)"
+         @onmouseleave="@(OnMouseLeave)"
+         @onwheel="@(OnWheel)"
          @onwheel:preventDefault>
         @{
             var index = 0;
@@ -71,8 +72,9 @@
                 <MudMenuItem Label="关闭全部标签页" Icon="@Icons.Material.Filled.Close" OnClick="@CloseAllTabs"/>
             </ChildContent>
         </MudMenu>
-        <MudIconButton Icon="@(_isFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
-                       OnClick="@ToggleFullscreen"/>
+        <MudIconButton
+            Icon="@(LayoutStore.IsContentFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+            OnClick="@ToggleFullscreen"/>
     </MudButtonGroup>
 </div>
 
@@ -94,7 +96,6 @@
     private IReadOnlyList<PageTabItem> AllTabs => _tabs;
 
     private string? _activeRoute;
-    private bool _isFullscreen;
     private bool _currentTabPinned;
 
     // 拖动滚动相关状态
@@ -289,18 +290,9 @@
         }
     }
 
-    private async Task ToggleFullscreen()
+    private void ToggleFullscreen()
     {
-        if (_isFullscreen)
-        {
-            await JsRuntime.InvokeVoidAsync("eval", "document.exitFullscreen()");
-        }
-        else
-        {
-            await JsRuntime.InvokeVoidAsync("eval", "document.documentElement.requestFullscreen()");
-        }
-
-        _isFullscreen = !_isFullscreen;
+        LayoutStore.ToggleContentFullscreen();
     }
 
     #endregion
@@ -326,7 +318,7 @@
         try
         {
             var storedTabs = await LocalStorage.GetItemAsync<List<PageTabItem>>(TabsStorageKey);
-            if (storedTabs != null && storedTabs.Count > 0)
+            if (storedTabs is { Count: > 0 })
             {
                 _tabs.Clear();
                 _tabs.AddRange(storedTabs);
@@ -372,12 +364,12 @@
             $"document.querySelector('{TabsContainerSelector}').scrollLeft = {newScrollLeft}");
     }
 
-    private void OnMouseUp()
+    private void OnMouseUp(MouseEventArgs _)
     {
         _isDragging = false;
     }
 
-    private void OnMouseLeave()
+    private void OnMouseLeave(MouseEventArgs _)
     {
         _isDragging = false;
     }

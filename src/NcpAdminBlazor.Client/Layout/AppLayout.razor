@@ -1,3 +1,4 @@
+@using MudBlazor.Utilities
 @using NcpAdminBlazor.Client.Pages.Authentication
 
 @layout MainLayout
@@ -6,54 +7,58 @@
 @inject IJSRuntime JsRuntime
 
 <MudLayout Class="flex">
-    <MudAppBar Dense Elevation="0" Gutters="false" Class="pr-3 border-b border-(--mud-palette-lines-default)">
-        <MudIconButton Class="p-2" Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit"
-                       OnClick="@DrawerToggle"/>
-        <MudHidden Breakpoint="Breakpoint.SmAndDown">
-            <MudBreadcrumbs Class="py-3 px-1" Items="_breadcrumbItems"></MudBreadcrumbs>
-        </MudHidden>
-        <MudSpacer/>
-        <MudIconButton Class="p-2"
-                       Icon="@(_isFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
-                       OnClick="@ToggleFullscreen"/>
-        <MudIconButton Class="p-2" Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit"
-                       OnClick="@DarkModeToggle"/>
-        <CultureSelector/>
-        <MudMenu Dense="true">
-            <ActivatorContent>
-                <MudIconButton Class="p-2" Color="Color.Inherit" Icon="@Icons.Material.Outlined.Widgets"/>
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Href="https://mudblazor.com/">MudBlazor</MudMenuItem>
-                <MudMenuItem Href="https://github.com/Garderoben/MudBlazor.Templates">Source Code</MudMenuItem>
-            </ChildContent>
-        </MudMenu>
-        <MudMenu Class="ml-4">
-            <ActivatorContent>
-                <MudAvatar Size="Size.Small"/>
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Icon="@Icons.Material.Outlined.Person"
-                             Href="/personal/account">
-                    Account
-                </MudMenuItem>
-                <MudMenuItem Icon="@Icons.Material.Outlined.Logout"
-                             OnClick="@Logout">
-                    Logout
-                </MudMenuItem>
-            </ChildContent>
-        </MudMenu>
-    </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" Class="border-r border-(--mud-palette-lines-default)">
-        <MudDrawerHeader>
-            <NavLink ActiveClass="d-flex align-center me-4" href="/">
-                <MudIcon Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Primary" Size="Size.Large" Class="mr-2"/>
-                <MudText Typo="Typo.h5" Color="Color.Primary">NcpAdmin</MudText>
-            </NavLink>
-        </MudDrawerHeader>
-        <NavMenu/>
-    </MudDrawer>
-    <MudMainContent Class="flex flex-col overflow-hidden">
+    @if (!LayoutStore.IsContentFullscreen)
+    {
+        <MudAppBar Dense Elevation="0" Gutters="false" Class="pr-3 border-b border-(--mud-palette-lines-default)">
+            <MudIconButton Class="p-2" Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit"
+                           OnClick="@DrawerToggle"/>
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudBreadcrumbs Class="py-3 px-1" Items="_breadcrumbItems"></MudBreadcrumbs>
+            </MudHidden>
+            <MudSpacer/>
+            <MudIconButton Class="p-2"
+                           Icon="@(_isBrowserFullscreen ? Icons.Material.Filled.FullscreenExit : Icons.Material.Filled.Fullscreen)"
+                           OnClick="@ToggleBrowserFullscreen"/>
+            <MudIconButton Class="p-2" Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit"
+                           OnClick="@DarkModeToggle"/>
+            <CultureSelector/>
+            <MudMenu Dense="true">
+                <ActivatorContent>
+                    <MudIconButton Class="p-2" Color="Color.Inherit" Icon="@Icons.Material.Outlined.Widgets"/>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Href="https://mudblazor.com/">MudBlazor</MudMenuItem>
+                    <MudMenuItem Href="https://github.com/Garderoben/MudBlazor.Templates">Source Code</MudMenuItem>
+                </ChildContent>
+            </MudMenu>
+            <MudMenu Class="ml-4">
+                <ActivatorContent>
+                    <MudAvatar Size="Size.Small"/>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudMenuItem Icon="@Icons.Material.Outlined.Person"
+                                 Href="/personal/account">
+                        Account
+                    </MudMenuItem>
+                    <MudMenuItem Icon="@Icons.Material.Outlined.Logout"
+                                 OnClick="@Logout">
+                        Logout
+                    </MudMenuItem>
+                </ChildContent>
+            </MudMenu>
+        </MudAppBar>
+        <MudDrawer @bind-Open="_drawerOpen" Elevation="0" Class="border-r border-(--mud-palette-lines-default)">
+            <MudDrawerHeader>
+                <NavLink ActiveClass="d-flex align-center me-4" href="/">
+                    <MudIcon Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Primary" Size="Size.Large"
+                             Class="mr-2"/>
+                    <MudText Typo="Typo.h5" Color="Color.Primary">NcpAdmin</MudText>
+                </NavLink>
+            </MudDrawerHeader>
+            <NavMenu/>
+        </MudDrawer>
+    }
+    <MudMainContent Class="@MainContentClass()">
         <PageTabs/>
         <MudContainer MaxWidth="MaxWidth.False" Class="p-4 overflow-auto grow">
             @Body
@@ -68,14 +73,50 @@
     [Inject] BreadcrumbService BreadcrumbService { get; set; } = null!;
     [Inject] LayoutStore LayoutStore { get; set; } = null!;
     private bool _drawerOpen = true;
+    private bool _isBrowserFullscreen;
     private List<BreadcrumbItem> _breadcrumbItems = [];
-    private bool _isFullscreen;
+    private DotNetObjectReference<AppLayout>? _dotNetRef;
+
+    private string MainContentClass() =>
+        new CssBuilder("flex flex-col overflow-hidden")
+            .AddClass("p-0", when: LayoutStore.IsContentFullscreen)
+            .Build();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         BreadcrumbService.OnBreadcrumbsChanged += UpdateBreadcrumbs;
+        LayoutStore.OnContentFullscreenChanged += OnContentFullscreenChanged;
         _breadcrumbItems = BreadcrumbService.CurrentItems.ToList();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            await JsRuntime.InvokeVoidAsync("eval", """
+                window.setFullscreenDotNetRef = (dotNetRef) => {
+                    window.__fullscreenDotNetRef = dotNetRef;
+                    if (!window.__fullscreenChangeRegistered) {
+                        window.__fullscreenChangeRegistered = true;
+                        document.addEventListener('fullscreenchange', () => {
+                            if (window.__fullscreenDotNetRef) {
+                                window.__fullscreenDotNetRef.invokeMethodAsync('OnBrowserFullscreenChanged', !!document.fullscreenElement);
+                            }
+                        });
+                    }
+                };
+            """);
+            await JsRuntime.InvokeVoidAsync("setFullscreenDotNetRef", _dotNetRef);
+        }
+    }
+
+    [JSInvokable]
+    public void OnBrowserFullscreenChanged(bool isFullscreen)
+    {
+        _isBrowserFullscreen = isFullscreen;
+        StateHasChanged();
     }
 
     private void UpdateBreadcrumbs(List<BreadcrumbItem> items)
@@ -84,14 +125,21 @@
         StateHasChanged();
     }
 
+    private void OnContentFullscreenChanged(bool isFullscreen)
+    {
+        StateHasChanged();
+    }
+
     public void Dispose()
     {
         BreadcrumbService.OnBreadcrumbsChanged -= UpdateBreadcrumbs;
+        LayoutStore.OnContentFullscreenChanged -= OnContentFullscreenChanged;
+        _dotNetRef?.Dispose();
     }
 
-    private async Task ToggleFullscreen()
+    private async Task ToggleBrowserFullscreen()
     {
-        if (_isFullscreen)
+        if (_isBrowserFullscreen)
         {
             await JsRuntime.InvokeVoidAsync("eval", "document.exitFullscreen()");
         }
@@ -99,8 +147,7 @@
         {
             await JsRuntime.InvokeVoidAsync("eval", "document.documentElement.requestFullscreen()");
         }
-
-        _isFullscreen = !_isFullscreen;
+        // 状态由 fullscreenchange 事件监听器自动更新
     }
 
     private void DrawerToggle()
