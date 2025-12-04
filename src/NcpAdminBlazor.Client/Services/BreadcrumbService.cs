@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using MudBlazor;
 
-namespace NcpAdminBlazor.Client.Stores;
+namespace NcpAdminBlazor.Client.Services;
 
-public sealed class BreadcrumbStore : IDisposable
+public sealed class BreadcrumbService : IDisposable
 {
     private readonly NavigationManager _navigationManager;
     private readonly MenuProvider _menuProvider;
@@ -12,7 +12,7 @@ public sealed class BreadcrumbStore : IDisposable
     public IReadOnlyList<BreadcrumbItem> CurrentItems { get; private set; } = [];
     public event Action<List<BreadcrumbItem>>? OnBreadcrumbsChanged;
 
-    public BreadcrumbStore(NavigationManager navigationManager, MenuProvider menuProvider)
+    public BreadcrumbService(NavigationManager navigationManager, MenuProvider menuProvider)
     {
         _navigationManager = navigationManager;
         _menuProvider = menuProvider;

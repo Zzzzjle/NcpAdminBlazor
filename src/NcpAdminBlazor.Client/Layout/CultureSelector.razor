@@ -1,14 +1,19 @@
 @using System.Globalization
 @using Blazored.LocalStorage
 
-<MudMenu Icon="@Icons.Material.Outlined.Translate" Color="Color.Inherit" Dense>
-    @foreach (var culture in _supportedCultures)
-    {
-        <MudMenuItem OnClick="@(() => SetCultureAsync(culture))"
-                     Disabled="@(CultureInfo.CurrentCulture.Equals(culture))">
-            @culture.DisplayName
-        </MudMenuItem>
-    }
+<MudMenu Color="Color.Inherit" Dense>
+    <ActivatorContent>
+        <MudIconButton Class="p-2" Color="Color.Inherit" Icon="@Icons.Material.Outlined.Translate"/>
+    </ActivatorContent>
+    <ChildContent>
+        @foreach (var culture in _supportedCultures)
+        {
+            <MudMenuItem OnClick="@(() => SetCultureAsync(culture))"
+                         Disabled="@(CultureInfo.CurrentCulture.Equals(culture))">
+                @culture.DisplayName
+            </MudMenuItem>
+        }
+    </ChildContent>
 </MudMenu>
 
 @code

@@ -5,20 +5,24 @@
 @implements IDisposable
 
 <MudLayout Class="flex">
-    <MudAppBar Dense Elevation="0" Gutters="false" Class="pr-3 border-b border-[var(--mud-palette-lines-default)]">
-        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit"
+    <MudAppBar Dense Elevation="0" Gutters="false" Class="pr-3 border-b border-(--mud-palette-lines-default)">
+        <MudIconButton Class="p-2" Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit"
                        OnClick="@DrawerToggle"/>
         <MudHidden Breakpoint="Breakpoint.SmAndDown">
             <MudBreadcrumbs Class="py-3 px-1" Items="_breadcrumbItems"></MudBreadcrumbs>
         </MudHidden>
         <MudSpacer/>
-        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit"
+        <MudIconButton Class="p-2" Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit"
                        OnClick="@DarkModeToggle"/>
-        <CultureSelector />
-        <MudMenu Icon="@Icons.Material.Outlined.Widgets" Color="Color.Inherit" Dense="true">
-            <MudMenuItem Href="https://mudblazor.com/">MudBlazor</MudMenuItem>
-            <MudMenuItem Href="https://github.com/Garderoben/MudBlazor.Templates">Source Code
-            </MudMenuItem>
+        <CultureSelector/>
+        <MudMenu Dense="true">
+            <ActivatorContent>
+                <MudIconButton Class="p-2" Color="Color.Inherit" Icon="@Icons.Material.Outlined.Widgets"/>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem Href="https://mudblazor.com/">MudBlazor</MudMenuItem>
+                <MudMenuItem Href="https://github.com/Garderoben/MudBlazor.Templates">Source Code</MudMenuItem>
+            </ChildContent>
         </MudMenu>
         <MudMenu Class="ml-4">
             <ActivatorContent>
@@ -36,7 +40,7 @@
             </ChildContent>
         </MudMenu>
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" Class="border-r border-[var(--mud-palette-lines-default)]">
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" Class="border-r border-(--mud-palette-lines-default)">
         <MudDrawerHeader>
             <NavLink ActiveClass="d-flex align-center me-4" href="/">
                 <MudIcon Icon="@Icons.Custom.Brands.MudBlazor" Size="Size.Large" Class="mr-2"/>
@@ -46,7 +50,7 @@
         <NavMenu/>
     </MudDrawer>
     <MudMainContent Class="flex flex-col overflow-hidden">
-        <PageTabs @ref="_pageTabs"/>
+        <PageTabs/>
         <MudContainer MaxWidth="MaxWidth.False" Class="p-4 overflow-auto grow">
             @Body
         </MudContainer>
@@ -57,17 +61,16 @@
     [CascadingParameter] private RouteData? RouteData { get; set; }
     [Inject] TokenAuthenticationStateProvider AuthStateProvider { get; set; } = null!;
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
-    [Inject] BreadcrumbStore BreadcrumbStore { get; set; } = null!;
+    [Inject] BreadcrumbService BreadcrumbService { get; set; } = null!;
     [Inject] LayoutStore LayoutStore { get; set; } = null!;
-    private PageTabs _pageTabs = null!;
     private bool _drawerOpen = true;
     private List<BreadcrumbItem> _breadcrumbItems = [];
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        BreadcrumbStore.OnBreadcrumbsChanged += UpdateBreadcrumbs;
-        _breadcrumbItems = BreadcrumbStore.CurrentItems.ToList();
+        BreadcrumbService.OnBreadcrumbsChanged += UpdateBreadcrumbs;
+        _breadcrumbItems = BreadcrumbService.CurrentItems.ToList();
     }
 
     private void UpdateBreadcrumbs(List<BreadcrumbItem> items)
@@ -78,7 +81,7 @@
 
     public void Dispose()
     {
-        BreadcrumbStore.OnBreadcrumbsChanged -= UpdateBreadcrumbs;
+        BreadcrumbService.OnBreadcrumbsChanged -= UpdateBreadcrumbs;
     }
 
     private void DrawerToggle()

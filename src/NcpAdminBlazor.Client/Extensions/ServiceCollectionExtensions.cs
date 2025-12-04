@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
         {
             services.AddScoped<MenuProvider>();
             services.AddScoped<LayoutStore>();
-            services.AddScoped<BreadcrumbStore>();
+            services.AddScoped<BreadcrumbService>();
             return services;
         }
 
