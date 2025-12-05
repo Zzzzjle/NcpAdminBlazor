@@ -7,7 +7,7 @@ using NcpAdminBlazor.Client.Pages.Personal;
 
 namespace NcpAdminBlazor.Client.Providers;
 
-public class MenuProvider
+public partial class MenuProvider
 {
     private readonly List<MenuItem> _menuItems;
 
@@ -18,15 +18,15 @@ public class MenuProvider
         var builder = new MenuBuilder();
 
         builder
-            .AddLink("首页", Home.PageUri, Icons.Material.Filled.Home)
-            .AddGroup("系统管理", Icons.Material.Filled.Settings, system =>
+            .AddLink("首页", Home.PageUri, Icons.Material.Outlined.Airplay)
+            .AddGroup("系统管理", Icons.Material.Outlined.Settings, system =>
             {
-                system.AddLink("用户管理", UserList.PageUri, Icons.Material.Outlined.People);
-                system.AddLink("角色管理", RoleList.PageUri, Icons.Material.Outlined.Security);
+                system.AddLink("用户管理", UserList.PageUri, Icons.Material.Outlined.ManageAccounts);
+                system.AddLink("角色管理", RoleList.PageUri, Icons.Material.Outlined.AdminPanelSettings);
             })
-            .AddGroup("App Examples", Icons.Material.Filled.ShoppingBag, products =>
+            .AddGroup("App Examples", @Icons.Material.Outlined.DynamicFeed, products =>
             {
-                products.AddLink("仪表盘", Dashboard.PageUri);
+                products.AddLink("仪表盘", Dashboard.PageUri, Icons.Material.Outlined.Dashboard);
                 products.AddLink("Email", Email.PageUri, Icons.Material.Outlined.Email);
             });
 
@@ -48,7 +48,7 @@ public class MenuProvider
     {
         var lastSegment = route.Split('/').LastOrDefault(s => !string.IsNullOrEmpty(s));
         // 将 "PageName" 转换为 "Page Name"
-        return System.Text.RegularExpressions.Regex.Replace(lastSegment ?? "Page", "([A-Z])", " $1").Trim();
+        return MyRegex().Replace(lastSegment ?? "Page", " $1").Trim();
     }
 
     private static MenuItem? FindMenuItemByHref(IEnumerable<MenuItem> items, string href)
@@ -72,6 +72,9 @@ public class MenuProvider
 
         return bestMatch;
     }
+
+    [System.Text.RegularExpressions.GeneratedRegex("([A-Z])")]
+    private static partial System.Text.RegularExpressions.Regex MyRegex();
 }
 
 public class MenuBuilder(MenuItem? parent = null)

@@ -26,7 +26,14 @@
         _theme = new MudTheme
         {
             PaletteLight = _lightPalette,
-            PaletteDark = _darkPalette
+            PaletteDark = _darkPalette,
+            Typography = new Typography()
+            {
+                Default = new DefaultTypography()
+                {
+                    FontFamily = ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"]
+                }
+            }
         };
     }
 

@@ -34,7 +34,7 @@
                     OnClick="@(() => OnClicked(item))"
                     Ripple="false">
                     @item.Title
-                    @if (!item.IsPinned && item.Route != "/")
+                    @if (!item.IsPinned)
                     {
                         <span
                             class="ml-2 -mr-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-sm text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-300"
@@ -135,8 +135,7 @@
         var title = menuItem?.Title ?? MenuProvider.GenerateFallbackTitle(currentRoute);
         var icon = menuItem?.Icon ?? string.Empty;
 
-        // 新标签页默认不固定，添加到列表末尾
-        _tabs.Add(new PageTabItem(currentRoute, title, icon));
+        _tabs.Add(new PageTabItem(currentRoute, title, icon, IsPinned: currentRoute == "/"));
     }
 
     private void UpdateCurrentTabPinnedState()
@@ -168,6 +167,11 @@
             {
                 NavigationManager.NavigateTo(lastTab.Route);
             }
+        }
+
+        if (!_tabs.Any())
+        {
+            NavigationManager.NavigateTo("/");
         }
 
         OnTabClosed?.Invoke(pageTabItem.Route);
