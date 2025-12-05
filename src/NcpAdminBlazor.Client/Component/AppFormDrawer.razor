@@ -5,10 +5,11 @@
            @bind-Open:after="()=>OpenChanged.InvokeAsync(Open)"
            Anchor="Anchor.End"
            Variant="DrawerVariant.Temporary"
+           Breakpoint="Breakpoint.None"
            Elevation="1"
            Width="@Width"
            Class="h-dvh max-md:w-full flex flex-col">
-    <MudDrawerHeader Dense Class="shrink-0 items-center border-b border-[var(--mud-palette-lines-default)]">
+    <MudDrawerHeader Dense Class="shrink-0 items-center border-b border-(--mud-palette-lines-default)">
         <MudText Typo="@Typo.h6">@Title</MudText>
         <MudIconButton
             Class="ml-auto"
@@ -24,7 +25,7 @@
         }
     </div>
 
-    <div class="shrink-0 py-2 px-6 border-t border-[var(--mud-palette-lines-default)]">
+    <div class="shrink-0 py-2 px-6 border-t border-(--mud-palette-lines-default)">
         <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center" Spacing="4">
             <MudButton Variant="Variant.Outlined"
                        Disabled="@CancelButtonDisabled"
