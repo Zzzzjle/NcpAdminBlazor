@@ -1,0 +1,52 @@
+namespace NcpAdminBlazor.Client;
+
+public static class CustomIcons
+{
+    public const string Logo = """
+                               <svg width="24" height="24" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                   <defs>
+                                       <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                           <stop offset="0%" style="stop-color:#6366F1;stop-opacity:1" />
+                                           <stop offset="100%" style="stop-color:#4338CA;stop-opacity:1" />
+                                       </linearGradient>
+                                       <linearGradient id="accentGrad" x1="100%" y1="0%" x2="0%" y2="100%">
+                                           <stop offset="0%" style="stop-color:#38BDF8;stop-opacity:1" />
+                                           <stop offset="100%" style="stop-color:#0EA5E9;stop-opacity:1" />
+                                       </linearGradient>
+                                       <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                                           <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                                           <feOffset dx="0" dy="4" result="offsetblur"/>
+                                           <feComponentTransfer>
+                                               <feFuncA type="linear" slope="0.3"/>
+                                           </feComponentTransfer>
+                                           <feMerge> 
+                                               <feMergeNode/>
+                                               <feMergeNode in="SourceGraphic"/> 
+                                           </feMerge>
+                                       </filter>
+                                       <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                                           <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="1" stroke-opacity="0.1"/>
+                                       </pattern>
+                                   </defs>
+                                   
+                                   <!-- Modern Squircle Background -->
+                                   <rect x="20" y="20" width="160" height="160" rx="45" fill="url(#bgGrad)"/>
+                                   
+                                   <!-- Subtle Grid Overlay -->
+                                   <rect x="20" y="20" width="160" height="160" rx="45" fill="url(#grid)"/>
+
+                                   <!-- The "N" Ribbon - Fluid & Floating -->
+                                   <g filter="url(#dropShadow)">
+                                       <!-- Left Stem -->
+                                       <path d="M75 135 C 75 135, 75 80, 75 80 C 75 55, 95 55, 105 75" stroke="white" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                       <!-- Right Stem -->
+                                       <path d="M125 65 C 125 65, 125 120, 125 120 C 125 145, 105 145, 95 125" stroke="white" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                       <!-- Connection Visual (Middle) -->
+                                       <path d="M75 80 Q 100 100 125 120" stroke="white" stroke-width="14" stroke-linecap="round" fill="none"/>
+                                   </g>
+
+                                   <!-- The Core/Cloud Spark -->
+                                   <circle cx="145" cy="55" r="12" fill="url(#accentGrad)" stroke="white" stroke-width="3"/>
+                               </svg>
+                               """;
+}

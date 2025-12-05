@@ -51,8 +51,7 @@
         <MudDrawer @bind-Open="_drawerOpen" Elevation="0" Class="border-r border-(--mud-palette-lines-default)">
             <MudDrawerHeader>
                 <NavLink ActiveClass="d-flex align-center me-4" href="/">
-                    <MudIcon Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Primary" Size="Size.Large"
-                             Class="mr-2"/>
+                    <MudIcon Icon="@Logo" Size="Size.Large" Class="mr-2"/>
                     <MudText Typo="Typo.h6" Color="Color.Primary" Class="font-semibold">Ncp Admin</MudText>
                 </NavLink>
             </MudDrawerHeader>
@@ -168,5 +167,6 @@
         await AuthStateProvider.LogoutAsync();
         NavigationManager.NavigateTo(Login.PageUri);
     }
+
 
 }
