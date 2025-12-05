@@ -13,7 +13,18 @@
         </style>
     </HeadContent>
     -->
-    <WasmLoading/>
+    <div class="flex justify-center items-center w-full h-full min-h-screen p-4 box-border">
+        @if (IsDarkMode)
+        {
+            <img src="images/loading-dark.svg" alt="Loading..."
+                 class="w-full max-w-[280px] sm:max-w-[320px] md:max-w-[400px] h-auto"/>
+        }
+        else
+        {
+            <img src="images/loading-light.svg" alt="Loading..."
+                 class="w-full max-w-[280px] sm:max-w-[320px] md:max-w-[400px] h-auto"/>
+        }
+    </div>
 }
 else
 {
@@ -22,4 +33,5 @@ else
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool IsDarkMode { get; set; }
 }
