@@ -9,7 +9,7 @@
 <MudLayout Class="flex">
     @if (!LayoutStore.IsContentFullscreen)
     {
-        <MudAppBar Dense Elevation="0" Gutters="false" Class="pr-3 border-b border-(--mud-palette-lines-default)">
+        <MudAppBar Dense Elevation="0" Gutters="false" Class="pr-3 border-b border-(--mud-palette-lines-default) z-1000">
             <MudIconButton Class="p-2" Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit"
                            OnClick="@DrawerToggle"/>
             <MudHidden Breakpoint="Breakpoint.SmAndDown">
@@ -48,7 +48,7 @@
                 </ChildContent>
             </MudMenu>
         </MudAppBar>
-        <MudDrawer @bind-Open="_drawerOpen" Elevation="0" Class="border-r border-(--mud-palette-lines-default)">
+        <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
             <MudDrawerHeader>
                 <NavLink ActiveClass="d-flex align-center me-4" href="/">
                     <MudIcon Icon="@Logo" Size="Size.Large" Class="mr-2"/>
