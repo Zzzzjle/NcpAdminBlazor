@@ -1,7 +1,7 @@
 name: Build and deploy ASP.Net Core app to an Azure Web App
 
 env:
-  AZURE_WEBAPP_NAME: NcpAdminBlazor   # set this to your application's name
+  AZURE_WEBAPP_NAME: NcpAdminBlazor-Demo   # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: './src/NcpAdminBlazor.Web'      # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '10.0'                 # set this to the .NET Core version to use
 
